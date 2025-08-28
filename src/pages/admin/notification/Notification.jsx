@@ -11,16 +11,16 @@ const Notification = () => {
 
   const socket = io(getEnv("SERVER_URL"));
 
-  setInterval(() => {
-    setTimeout(() => {
-      socket.emit("notification", { message: "hello world!" });
-    }, 2000);
-  }, 3000);
+  // setInterval(() => {
+  //   setTimeout(() => {
+  //     socket.emit("notification", { message: "hello world!" });
+  //   }, 2000);
+  // }, 3000);
 
-  socket.on("notification", (data) => {
-    console.log("coming in socket-------", data);
-    toast.success(data, { duration: 3000 });
-  });
+  // socket.on("notification", (data) => {
+  //   console.log("coming in socket-------", data);
+  //   toast.success(data, { duration: 3000 });
+  // });
 
   const grouped = groupByDate(notifications);
 
