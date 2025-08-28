@@ -3,7 +3,10 @@ import getEnv from "../../configs/config.js";
 
 const authApis = createApi({
   reducerPath: "authApis",
-  baseQuery: fetchBaseQuery({ baseUrl: `${getEnv("SERVER_URL")}/api/auth`, credentials: "include" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${getEnv("SERVER_URL")}/api/auth`,
+    credentials: "include",
+  }),
 
   endpoints: (builder) => ({
     // register
@@ -67,13 +70,6 @@ const authApis = createApi({
         body: data,
       }),
     }),
-    // google login 
-    googleLogin: builder.mutation({
-      query: () => ({
-        url: "/google",
-        method: "GET",
-      }),
-    })
   }),
 });
 
@@ -86,6 +82,5 @@ export const {
   useCheckLoginMutation,
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,
-  useGoogleLoginMutation
 } = authApis;
 export default authApis;

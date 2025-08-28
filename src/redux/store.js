@@ -5,6 +5,7 @@ import authSlice from "./slices/authSlice";
 import userSlice from "./slices/userSlice";
 import claimsApis from "./apis/claimsApis";
 import chatApis from "./apis/chatApis";
+import notificationsApis from "./apis/notificationsApis";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     [userApis.reducerPath]: userApis.reducer,
     [claimsApis.reducerPath]: claimsApis.reducer,
     [chatApis.reducerPath]: chatApis.reducer,
+    [notificationsApis.reducerPath]: notificationsApis.reducer,
 
     // slices
     [authSlice.name]: authSlice.reducer,
@@ -23,7 +25,8 @@ const store = configureStore({
       .concat(authApis.middleware)
       .concat(userApis.middleware)
       .concat(claimsApis.middleware)
-      .concat(chatApis.middleware);
+      .concat(chatApis.middleware)
+      .concat(notificationsApis.middleware);
   },
 });
 

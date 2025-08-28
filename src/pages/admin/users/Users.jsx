@@ -239,7 +239,7 @@ const Users = () => {
             {filteredData.map((user) => (
               <UsersDetailCard
                 user={user}
-                key={user.id}
+                key={user._id}
                 onEdit={() => handleOnEdit(user)}
                 onDelete={() => handleOnDeleteConfirmation(user._id)}
               />

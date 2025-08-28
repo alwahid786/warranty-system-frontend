@@ -10,6 +10,8 @@ import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
+import { useLogoutMutation } from "../../../redux/apis/authApis";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -133,15 +135,27 @@ const Header = () => {
 export default Header;
 
 const Profile = ({ menuRef }) => {
+  const { data: logout } = useLogoutMutation();
+  const handleLogout = async () => {
+    try {
+      const res = await logout().unwrap();
+      if (res.success) {
+        toast.success(res.message, { duration: 3000 });
+      }
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
+    }
+  };
   return (
     <div className="w-full">
-      <div
+      <button
         ref={menuRef}
         className="flex items-center gap-2 rounded-md border-b bg-white px-2 py-2 cursor-pointer hover:bg-gray-100"
+        onClick={handleLogout}
       >
         <IoLogOutOutline fontSize={18} />
         <h6>Logout</h6>
-      </div>
+      </button>
     </div>
   );
 };

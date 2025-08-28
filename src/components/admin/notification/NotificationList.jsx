@@ -14,7 +14,14 @@ const NotificationList = ({ groupedNotifications }) => {
           <h3 className="text-sm font-medium text-dark mb-2">{group}</h3>
           <div>
             {groupedNotifications[group].map((n) => (
-              <NotificationItem key={n.id} message={n.message} time={n.time} />
+              <NotificationItem
+                key={n._id}
+                id={n._id}
+                title={n.title}
+                message={n.message}
+                time={n.createdAt}
+                isRead={n.isRead}
+              />
             ))}
           </div>
         </div>

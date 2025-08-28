@@ -45,7 +45,7 @@ export default function ChatModal({
     if (!selectedFile) return;
 
     if (selectedFile.type === "image/gif") {
-      alert("GIFs are not allowed.");
+      toast.error("GIFs are not supported", { duration: 3000 });
       return;
     }
 
