@@ -6,6 +6,7 @@ import userSlice from "./slices/userSlice";
 import claimsApis from "./apis/claimsApis";
 import chatApis from "./apis/chatApis";
 import notificationsApis from "./apis/notificationsApis";
+import notificationsSlice from "./slices/notificationsSlice";
 
 const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ const store = configureStore({
     // slices
     [authSlice.name]: authSlice.reducer,
     [userSlice.name]: userSlice.reducer,
+    [notificationsSlice.name]: notificationsSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({ serializableCheck: false })

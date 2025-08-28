@@ -21,66 +21,7 @@ import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import { IoLogOutOutline } from "react-icons/io5";
 // import { jwtDecode } from "jwt-decode";
-
-const pages = [
-  {
-    id: 1,
-    title: "Dashboard",
-    link: ["/"],
-    icon: <DashboardIcon />,
-  },
-  {
-    id: 2,
-    title: "Actions",
-    link: ["/actions"],
-    icon: <ActionsIcon />,
-  },
-  {
-    id: 3,
-    title: "Invoices",
-    link: ["/invoices"],
-    icon: <InvoicesIcon />,
-  },
-  {
-    id: 4,
-    title: "Notification",
-    link: ["/notification"],
-    icon: <NotifictionIcon />,
-  },
-  {
-    id: 4,
-    title: "Users",
-    link: ["/users"],
-    icon: <UsersIcon />,
-  },
-  {
-    id: 5,
-    title: "Archieved",
-    link: ["/archieved"],
-    icon: <ArchievedIcon />,
-    children: [
-      {
-        id: 1,
-        title: "Actions",
-        link: "/archieved/actions",
-        icon: <ActionSubLink />,
-      },
-      {
-        id: 2,
-        title: "Invoices",
-        link: "/archieved/invoices",
-        icon: <InvoicesSubLink />,
-      },
-    ],
-  },
-
-  {
-    id: 6,
-    title: "Settings",
-    link: ["/settings"],
-    icon: <SettingsIcon />,
-  },
-];
+import { useSelector } from "react-redux";
 
 const Aside = () => {
   const { pathname } = useLocation();
@@ -126,6 +67,67 @@ const Aside = () => {
       }
     };
   }, [navigate]);
+
+  const pages = [
+    {
+      id: 1,
+      title: "Dashboard",
+      link: ["/"],
+      icon: <DashboardIcon />,
+    },
+    {
+      id: 2,
+      title: "Actions",
+      link: ["/actions"],
+      icon: <ActionsIcon />,
+    },
+    {
+      id: 3,
+      title: "Invoices",
+      link: ["/invoices"],
+      icon: <InvoicesIcon />,
+    },
+    {
+      id: 4,
+      title: "Notification",
+      link: ["/notification"],
+      icon: <NotifictionIcon />,
+      showBadge: true,
+    },
+    {
+      id: 4,
+      title: "Users",
+      link: ["/users"],
+      icon: <UsersIcon />,
+    },
+    {
+      id: 5,
+      title: "Archieved",
+      link: ["/archieved"],
+      icon: <ArchievedIcon />,
+      children: [
+        {
+          id: 1,
+          title: "Actions",
+          link: "/archieved/actions",
+          icon: <ActionSubLink />,
+        },
+        {
+          id: 2,
+          title: "Invoices",
+          link: "/archieved/invoices",
+          icon: <InvoicesSubLink />,
+        },
+      ],
+    },
+
+    {
+      id: 6,
+      title: "Settings",
+      link: ["/settings"],
+      icon: <SettingsIcon />,
+    },
+  ];
 
   return (
     <aside
@@ -207,6 +209,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   const isLinkActive = page?.link.some((item) => item === pathname);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const unreadCount = useSelector((state) => state.notifications.notification);
 
   if (page.title === "Archieved") {
     return (
@@ -266,7 +269,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   return (
     <Link
       to={page?.link[0]}
-      className={`flex items-center py-[10px] px-[12px] rounded-lg text-sm ${
+      className={`flex items-center justify-between py-[10px] px-[12px] rounded-lg text-sm ${
         isMenuOpen ? "gap-0 justify-center" : "gap-2"
       } ${
         isLinkActive
@@ -274,16 +277,17 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
           : "text-white hover:text-[#043655] bg-none hover:bg-white"
       }`}
     >
-      {React.cloneElement(page?.icon, { isLinkActive })}
-      <span
-        className={`transition-all duration-100 text-nowrap ${
-          isMenuOpen
-            ? "opacity-0 scale-x-0 w-0 h-0"
-            : "opacity-100 scale-x-100 h-auto w-auto"
-        }`}
-      >
-        {page?.title}
-      </span>
+      <div className="flex items-center gap-2">
+        {React.cloneElement(page?.icon, { isLinkActive })}
+        {!isMenuOpen && <span>{page?.title}</span>}
+      </div>
+
+      {/* 🔔 Show badge for notifications */}
+      {page.showBadge && unreadCount > 0 && !isMenuOpen && (
+        <span className="ml-2 px-2 py-0.5 text-xs font-bold bg-red-500 text-white rounded-full">
+          {unreadCount}
+        </span>
+      )}
     </Link>
   );
 };

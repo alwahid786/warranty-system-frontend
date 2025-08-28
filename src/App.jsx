@@ -27,6 +27,11 @@ const AdminResetPassword = lazy(() =>
   import("./pages/admin/adminLogin/AdminResetPassword")
 );
 import { Toaster } from "react-hot-toast";
+import { useGetNotificationsQuery } from "./redux/apis/notificationsApis";
+import {
+  unReadNotifications,
+  noUnReadNotifications,
+} from "./redux/slices/notificationsSlice";
 
 function App() {
   const dispatch = useDispatch();
@@ -34,13 +39,22 @@ function App() {
 
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
 
+  const { data: notifications } = useGetNotificationsQuery();
+
   useEffect(() => {
     if (isSuccess && data?.data) {
       dispatch(userExist(data?.data));
+
+      if (notifications?.data?.length > 0) {
+        dispatch(unReadNotifications(notifications?.unReadCount));
+      } else {
+        dispatch(noUnReadNotifications());
+      }
     } else if (isError) {
       dispatch(userNotExist());
+      dispatch(noUnReadNotifications());
     }
-  }, [data, isSuccess, isError, dispatch]);
+  }, [data, isSuccess, isError, notifications, dispatch]);
 
   if (isLoading) return <Loader />;
 
