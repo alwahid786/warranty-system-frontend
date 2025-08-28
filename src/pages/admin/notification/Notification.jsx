@@ -1,10 +1,26 @@
 import React, { useEffect } from "react";
 import NotificationList from "../../../components/admin/notification/NotificationList";
 import { useGetNotificationsQuery } from "../../../redux/apis/notificationsApis";
+import { io } from "socket.io-client";
+import getEnv from "../../../configs/config";
+import toast from "react-hot-toast";
 
 const Notification = () => {
   const { data: notificationsResponse } = useGetNotificationsQuery();
   const notifications = notificationsResponse?.data || [];
+
+  const socket = io(getEnv("SERVER_URL"));
+
+  setInterval(() => {
+    setTimeout(() => {
+      socket.emit("notification", { message: "hello world!" });
+    }, 2000);
+  }, 3000);
+
+  socket.on("notification", (data) => {
+    console.log("coming in socket-------", data);
+    toast.success(data, { duration: 3000 });
+  });
 
   const grouped = groupByDate(notifications);
 
