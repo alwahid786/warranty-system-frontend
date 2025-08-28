@@ -11,7 +11,6 @@ import {
   InvoicesIcon,
   UsersIcon,
 } from "../../../assets/icons/icons";
-// import logoWithText from "../../../assets/images/logo-with-text.svg";
 // import profilePic from "../../../assets/images/default/profile.png";
 // import { BsThreeDots } from "react-icons/bs";
 // import Modal from "../../../components/shared/small/Modal";
