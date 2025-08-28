@@ -20,7 +20,6 @@ import { IoIosArrowDown } from "react-icons/io";
 import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import { IoLogOutOutline } from "react-icons/io5";
-// import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 
 const Aside = () => {
