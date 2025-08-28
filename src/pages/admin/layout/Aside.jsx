@@ -11,7 +11,6 @@ import {
   InvoicesIcon,
   UsersIcon,
 } from "../../../assets/icons/icons";
-// import profilePic from "../../../assets/images/default/profile.png";
 // import { BsThreeDots } from "react-icons/bs";
 // import Modal from "../../../components/shared/small/Modal";
 import { IoIosArrowDown } from "react-icons/io";
