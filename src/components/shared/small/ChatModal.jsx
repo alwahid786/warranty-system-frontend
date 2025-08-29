@@ -101,7 +101,7 @@ export default function ChatModal({
           </button>
         </div>
 
-        {/* Chat Messages */}
+        {/* Chat Messages ---------- */}
         <div className="p-4 flex-1 overflow-y-auto space-y-4">
           {messages.map((msg, idx) => (
             <div
