@@ -101,7 +101,7 @@ export default function ChatModal({
           </button>
         </div>
 
-        {/* Chat Messages */}
+        {/* Chat Messages ---- */}
         <div className="p-4 flex-1 overflow-y-auto space-y-4">
           {messages.map((msg, idx) => (
             <div
@@ -130,15 +130,19 @@ export default function ChatModal({
                         className="max-w-[200px] rounded-md"
                       />
                     ) : (
-                      <a
-                        href={msg.fileData.url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        Download {msg.fileData.format?.toUpperCase() || "File"}
-                      </a>
+                      <>
+                        <p>{msg.fileData.name}</p>
+                        <a
+                          href={msg.fileData.url}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          Download{" "}
+                          {msg.fileData.format?.toUpperCase() || "File"}
+                        </a>
+                      </>
                     )}
                   </>
                 )}

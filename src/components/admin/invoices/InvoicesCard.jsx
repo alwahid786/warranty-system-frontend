@@ -184,7 +184,7 @@ export default function InvoiceCard({
                         <FaDiamond size={8} /> Date of issue
                       </p>
                       <span className="text-[10px] font-semibold">
-                        06-Jan-2025
+                        {invoice.createdAt}
                       </span>
                     </div>
                     <div className="flex flex-col gap-0.5">
@@ -192,7 +192,7 @@ export default function InvoiceCard({
                         <FaDiamond size={8} /> Invoice number
                       </p>
                       <span className="text-[10px] font-semibold">
-                        INV-2025-1048
+                        {invoice.invoiceNumber}
                       </span>
                     </div>
                     <div className="flex flex-col gap-0.5">
