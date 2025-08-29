@@ -91,6 +91,11 @@ export default function ChatModal({
               <p className="text-sm text-green-600">{user?.claimId}</p>
             </div>
           </div>
+          <div>
+            <p className="text-lg text-green-700">
+              RO#: {user?.roNumber} - {user?.roSuffix}
+            </p>
+          </div>
           <button onClick={onClose}>
             <MdCancel fill="#043655" size={24} />
           </button>

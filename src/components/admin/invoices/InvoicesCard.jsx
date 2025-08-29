@@ -88,18 +88,20 @@ export default function InvoiceCard({
         <div className="text-sm text-gray-700 space-y-1">
           <div className="flex justify-between items-center ">
             <p className="font-inter font-medium text-[14px] text-dark-text ">
-              VIN:
+              RO#:
             </p>{" "}
             <p className="font-inter font-normal text-[12px] text-light text-dark-text ">
-              {invoice.VIN}
+              {invoice.roNumber} - {invoice.roSuffix}
             </p>
           </div>
           <div className="flex justify-between items-center ">
             <p className="font-inter font-medium text-[14px] text-dark-text ">
-              Repair Date:
+              Invoice Date:
             </p>{" "}
             <p className="font-inter font-normal text-[12px] text-light text-dark-text ">
-              {invoice.repairDate}
+              {invoice.createdAt
+                ? new Date(invoice.createdAt).toLocaleDateString("en-CA")
+                : ""}
             </p>
           </div>
           <div className="flex justify-between items-center ">
@@ -107,15 +109,15 @@ export default function InvoiceCard({
               Total Credit:
             </p>
             <p className="font-inter font-normal text-[12px] text-light text-dark-text ">
-              ${invoice.totalCredit}
+              ${invoice.totalCost}
             </p>
           </div>
           <div className="flex justify-between items-center ">
             <p className="font-inter font-medium text-[14px] text-dark-text ">
-              Brand:
+              Claim Type:
             </p>{" "}
             <p className="font-inter font-normal text-[12px] text-light text-dark-text ">
-              {invoice.carBrand}
+              {invoice.claimType}
             </p>
           </div>
           <div className="flex justify-between items-center ">

@@ -74,6 +74,7 @@ const customStyles = {
   rows: {
     style: {
       minHeight: "64px",
+      padding: "20px 0",
       "&:nth-of-type(even)": {
         backgroundColor: "#f9fafb",
       },
@@ -104,18 +105,16 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         idx === rowIdx ? { ...row, status: newStatus } : row
       )
     );
-
-    if (newStatus === "Pending Credit") {
-      try {
-        const res = await updateClaims({
-          id: row._id,
-          status: "Pending Credit",
-          archived: archived,
-        }).unwrap();
-        toast.success(res.message, { duration: 3000 });
-      } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
-      }
+    console.log("new status", newStatus);
+    try {
+      const res = await updateClaims({
+        id: row._id,
+        status: newStatus,
+        archived: archived,
+      }).unwrap();
+      toast.success(res.message, { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
     }
   };
 
@@ -127,7 +126,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
     setAnimateIn(false);
     setTimeout(() => {
       handleChatClose();
-    }, 1000); // Match duration-500
+    }, 1000);
   };
 
   React.useEffect(() => {
@@ -142,37 +141,94 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       cell: (row) => (
         <span className="text-dark font-normal text-xs ">{row.claimId}</span>
       ),
+      sortable: false,
+    },
+    {
+      name: "RO Information",
+      selector: (row) => row.claimId,
+      cell: (row) => (
+        <div className="flex flex-col gap-1">
+          <div>
+            <span>RO#: </span>
+            <span className="text-dark font-normal text-xs ">
+              {row.roNumber}
+            </span>
+            <span> - </span>
+            <span>{row.roSuffix}</span>
+          </div>
+          <div>
+            <span>Type: </span>
+            <span className="text-dark font-normal text-xs ">
+              {row.claimType}
+            </span>
+          </div>
+        </div>
+      ),
       sortable: true,
     },
     {
-      name: "User Name",
+      name: "Operation Inform",
       selector: (row) => row.userName,
       cell: (row) => (
-        <span className="text-dark font-normal text-xs ">{row.userName}</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-dark font-normal text-xs ">
+            OP: {row.mainOp}
+          </span>
+          <span className="text-dark font-normal text-xs ">Sym: {row.sym}</span>
+          <span className="text-dark font-normal text-xs ">
+            Cause: {row.causeCode}
+          </span>
+        </div>
       ),
       sortable: true,
     },
     {
-      name: "Car Brand",
+      name: "Dates",
       selector: (row) => row.carBrand,
       cell: (row) => (
-        <span className="text-dark font-normal text-xs ">{row.carBrand}</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-dark font-normal text-xs ">
+            RO Date:{" "}
+            {row.roDate ? new Date(row.roDate).toLocaleDateString("en-CA") : ""}
+          </span>
+          <span className="text-dark font-normal text-xs ">
+            Entry Date:{" "}
+            {row.claimEntryDate
+              ? new Date(row.claimEntryDate).toLocaleDateString("en-CA")
+              : ""}
+          </span>
+        </div>
       ),
       sortable: true,
     },
     {
-      name: "Claim Date",
+      name: "Amounts",
       selector: (row) => row.claimDate,
       cell: (row) => (
-        <span className="text-dark font-normal text-xs ">{row.claimDate}</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-dark font-normal text-xs ">
+            Labor: {row.laborCost}
+          </span>
+          <span className="text-dark font-normal text-xs ">
+            Parts: {row.partCost}
+          </span>
+          <span className="text-dark font-normal text-xs ">
+            Sublet: {row.subletCost}
+          </span>
+          <span className="text-dark font-normal text-xs ">
+            Total: {row.totalCost}
+          </span>
+        </div>
       ),
       sortable: true,
     },
     {
-      name: "Notes",
+      name: "Error Notes",
       selector: (row) => row.notes,
       cell: (row) => (
-        <span className="text-dark font-normal text-xs ">{row.notes}</span>
+        <span className="text-dark font-normal text-xs ">
+          {row.errorDescription}
+        </span>
       ),
       sortable: false,
     },
