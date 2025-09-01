@@ -1,25 +1,62 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import NotificationList from "../../../components/admin/notification/NotificationList";
 import { useGetNotificationsQuery } from "../../../redux/apis/notificationsApis";
 import { io } from "socket.io-client";
 import getEnv from "../../../configs/config";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useRef } from "react";
 
 const Notification = () => {
   const { data: notificationsResponse } = useGetNotificationsQuery();
-  const notifications = notificationsResponse?.data || [];
+  const [liveNotifications, setLiveNotifications] = useState([]);
+  const user = useSelector((state) => state.auth.user);
 
-  const socket = io(getEnv("SERVER_URL"));
+  const notifications = [
+    ...(notificationsResponse?.data || []),
+    ...liveNotifications,
+  ];
 
-  // setInterval(() => {
-  //   setTimeout(() => {
-  //     socket.emit("notification", { message: "hello world!" });
-  //   }, 10000);
-  // }, 10000);
+  const socketRef = useRef(null);
 
-  socket.on("notification", (data) => {
-    console.log("coming in socket-------", data);
-    toast.success(data, { duration: 5000 });
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(getEnv("SERVER_URL"), {
+        withCredentials: true,
+      });
+    }
+
+    const socket = socketRef.current;
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      if (user?._id) {
+        socket.emit("registerUser", user._id);
+        console.log("User registered on socket:", user._id);
+      }
+    });
+
+    socket.on("notification:new", (data) => {
+      toast.success(data?.message || "New Notification", { duration: 5000 });
+      setLiveNotifications((prev) => [...prev, data]);
+    });
+
+    socket.on("notification:update", (data) => {
+      setLiveNotifications((prev) =>
+        prev.map((n) => (n._id === data._id ? { ...n, ...data.updatedDoc } : n))
+      );
+    });
+
+    socket.on("notification:delete", ({ _id }) => {
+      setLiveNotifications((prev) => prev.filter((n) => n._id !== _id));
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("notification:new");
+      socket.off("notification:update");
+      socket.off("notification:delete");
+    };
   });
 
   const grouped = groupByDate(notifications);
