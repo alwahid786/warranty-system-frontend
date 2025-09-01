@@ -38,7 +38,7 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
         isRead ? "bg-gray-100" : "bg-white hover:bg-gray-50"
       }`}
     >
-      {/* Left side --- */}
+      {/* Left side */}
       <div className="flex items-start gap-3">
         <div
           className={`w-5 h-5 rounded-full ${
