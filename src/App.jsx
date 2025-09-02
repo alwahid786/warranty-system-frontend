@@ -1,10 +1,20 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import Loader from "./components/shared/small/Loader";
+import { lazy, Suspense, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { userExist, userNotExist } from "./redux/slices/authSlice";
-import { useGetMyProfileQuery } from "./redux/apis/authApis";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import Loader from "./components/shared/small/Loader";
+import { useGetMyProfileQuery } from "./redux/apis/authApis";
+import { useGetNotificationsQuery } from "./redux/apis/notificationsApis";
+import { userExist, userNotExist } from "./redux/slices/authSlice";
+import {
+  noUnReadNotifications,
+  unReadNotifications,
+  setNotifications,
+  addNotification,
+} from "./redux/slices/notificationsSlice";
+import { SOCKET } from "./utils/socket";
+import toast from "react-hot-toast";
 
 const AdminDashboard = lazy(() => import("./pages/admin/index"));
 const Dashboard = lazy(() => import("./pages/admin/dashboard/Dashboard"));
@@ -26,19 +36,11 @@ const AdminLogin = lazy(() => import("./pages/admin/adminLogin/AdminLogin"));
 const AdminResetPassword = lazy(() =>
   import("./pages/admin/adminLogin/AdminResetPassword")
 );
-import { Toaster } from "react-hot-toast";
-import { useGetNotificationsQuery } from "./redux/apis/notificationsApis";
-import {
-  unReadNotifications,
-  noUnReadNotifications,
-} from "./redux/slices/notificationsSlice";
 
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
-
   const { data: notifications } = useGetNotificationsQuery();
 
   useEffect(() => {
@@ -47,6 +49,7 @@ function App() {
 
       if (notifications?.data?.length > 0) {
         dispatch(unReadNotifications(notifications?.unReadCount));
+        dispatch(setNotifications(notifications?.data));
       } else {
         dispatch(noUnReadNotifications());
       }
@@ -55,6 +58,26 @@ function App() {
       dispatch(noUnReadNotifications());
     }
   }, [data, isSuccess, isError, notifications, dispatch]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+    SOCKET.auth = { userId: user?._id };
+    SOCKET.connect();
+
+    SOCKET.on("connect", () => {
+      console.log("Connected to server with userId:", user._id);
+    });
+
+    SOCKET.on("notification:insert", (data) => {
+      toast.success(data?.message || "New Notification", { duration: 5000 });
+      console.log("data in scokets in app", data);
+      dispatch(addNotification(data));
+    });
+
+    return () => {
+      SOCKET.disconnect();
+    };
+  }, [user?._id]);
 
   if (isLoading) return <Loader />;
 

@@ -205,7 +205,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   const isLinkActive = page?.link.some((item) => item === pathname);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const unreadCount = useSelector((state) => state.notifications.notification);
+  const unreadCount = useSelector((state) => state.notifications.unReadCount);
 
   if (page.title === "Archieved") {
     return (

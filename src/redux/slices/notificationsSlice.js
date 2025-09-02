@@ -1,19 +1,34 @@
+// notificationsSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const notificationsSlice = createSlice({
   name: "notifications",
-  initialState: { notification: null },
+  initialState: {
+    items: [],
+    unReadCount: 0,
+  },
   reducers: {
+    setNotifications: (state, action) => {
+      state.items = action.payload;
+    },
     unReadNotifications: (state, action) => {
-      state.notification = action.payload;
+      state.unReadCount = action.payload;
     },
     noUnReadNotifications: (state) => {
-      state.notification = null;
+      state.unReadCount = 0;
+    },
+    addNotification: (state, action) => {
+      state.items.unshift(action.payload);
+      state.unReadCount += 1;
     },
   },
 });
 
-export const { unReadNotifications, noUnReadNotifications } =
-  notificationsSlice.actions;
+export const {
+  setNotifications,
+  unReadNotifications,
+  noUnReadNotifications,
+  addNotification,
+} = notificationsSlice.actions;
 
 export default notificationsSlice;
