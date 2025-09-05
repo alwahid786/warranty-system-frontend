@@ -15,7 +15,9 @@ import toast from "react-hot-toast";
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
   const imageInputRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(user?.image?.url || "");
+  const [imageSrc, setImageSrc] = useState(
+    user?.image?.url || "/profile-pic.png"
+  );
   const {
     data,
     isLoading: isLoadingForGetMyProfile,
