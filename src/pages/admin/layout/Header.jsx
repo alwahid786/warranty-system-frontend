@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -84,7 +85,7 @@ const Header = () => {
       <div className="hidden md:flex items-center gap-4 bg-white">
         <div className="relative flex items-center gap-2">
           <img
-            src={user.image.url || "/profile-pic.png"}
+            src={user?.image?.url || "/profile-pic.png"}
             alt="User avatar"
             className="h-12 w-12 rounded-full border border-gray-700 object-cover"
           />
@@ -135,17 +136,20 @@ const Header = () => {
 export default Header;
 
 const Profile = ({ menuRef }) => {
-  const { data: logout } = useLogoutMutation();
+  const [logout, { data, isLoading, error }] = useLogoutMutation();
+
   const handleLogout = async () => {
     try {
       const res = await logout().unwrap();
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
+        useNavigate("/admin/login");
       }
     } catch (err) {
-      toast.error(err.data.message, { duration: 3000 });
+      toast.error(err?.data?.message || "Logout failed", { duration: 3000 });
     }
   };
+
   return (
     <div className="w-full">
       <button

@@ -6,6 +6,7 @@ import { useLoginMutation } from "../../../redux/apis/authApis";
 import { useForgetPasswordMutation } from "../../../redux/apis/authApis";
 import { userExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -28,6 +29,7 @@ function AdminLogin() {
       dispatch(userExist(res.data));
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
+        useNavigate("/admin/dashboard");
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });

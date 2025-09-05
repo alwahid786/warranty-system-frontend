@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
   const imageInputRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(user.image.url || "");
+  const [imageSrc, setImageSrc] = useState(user?.image?.url || "");
   const {
     data,
     isLoading: isLoadingForGetMyProfile,
@@ -52,7 +52,7 @@ const Settings = () => {
         companyName: user.companyName || "",
         designation: user.designation || "",
       });
-      if (user.image.url) setImageSrc(user.image.url);
+      if (user?.image?.url) setImageSrc(user?.image?.url);
     }
   }, [user]);
 
