@@ -174,7 +174,6 @@ const Users = () => {
     overview: [
       { label: "Active", value: userCount?.activeUsers, color: "green" },
       { label: "Inactive", value: userCount?.inactiveUsers, color: "red" },
-      { label: "Pending", value: 10, color: "yellow" },
     ],
   };
 
@@ -182,38 +181,32 @@ const Users = () => {
     {
       month: "Jan",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: -10,
+      Inactive: userCount?.inactiveUsers,
     },
     {
       month: "Feb",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: 5,
+      Inactive: userCount?.inactiveUsers,
     },
     {
       month: "Mar",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: 10,
+      Inactive: userCount?.inactiveUsers,
     },
     {
       month: "Apr",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: 15,
+      Inactive: userCount?.inactiveUsers,
     },
     {
       month: "May",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: 18,
+      Inactive: userCount?.inactiveUsers,
     },
     {
       month: "Jun",
       Active: userCount?.activeUsers,
-      OnLeave: userCount?.inactiveUsers,
-      Pending: 22,
+      Inactive: userCount?.inactiveUsers,
     },
   ];
 

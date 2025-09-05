@@ -27,14 +27,8 @@ const AttendanceChart = ({ data }) => (
         />
         <Line
           type="monotone"
-          dataKey="OnLeave"
+          dataKey="Inactive"
           stroke="#EF4444"
-          strokeWidth={2}
-        />
-        <Line
-          type="monotone"
-          dataKey="Pending"
-          stroke="#F59E0B"
           strokeWidth={2}
         />
       </LineChart>
@@ -47,11 +41,7 @@ const AttendanceChart = ({ data }) => (
       </div>
       <div className="flex items-center space-x-2">
         <span className="w-3 h-3 rounded-full bg-red-500"></span>
-        <span className="text-sm text-dark-text">On leave</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-        <span className="text-sm text-dark-text">Pending</span>
+        <span className="text-sm text-dark-text">Inactive</span>
       </div>
     </div>
   </div>

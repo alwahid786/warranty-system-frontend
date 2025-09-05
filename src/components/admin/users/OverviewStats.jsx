@@ -17,12 +17,6 @@ const StatusOverviewCard = (userData) => {
       color: "text-red-500",
       dotColor: "bg-red-500",
     },
-    {
-      label: "Pending",
-      count: 10,
-      color: "text-orange-500",
-      dotColor: "bg-orange-500",
-    },
   ];
 
   return (
