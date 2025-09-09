@@ -41,7 +41,7 @@ function AdminResetPassword() {
         />
       </div>
 
-      {/* Right Form Section --------------=== */}
+      {/* Right Form Section -------------- */}
       <div className="col-span-12 lg:col-span-7 flex items-center justify-center">
         <div className="flex w-full px-5 md:w-[60%] lg:w-full lg:px-[120px] flex-col gap-[35px] md:gap-[38px]">
           <h1 className="text-[34px] text-center">National Warranty</h1>
