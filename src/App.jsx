@@ -64,23 +64,28 @@ function App() {
 
   useEffect(() => {
     if (!user?._id) return;
+
     SOCKET.auth = { userId: user?._id };
     SOCKET.connect();
+
+    const handleNotification = (data) => {
+      toast.success(data?.message || "New Notification", { duration: 5000 });
+      console.log("data in sockets in app", data);
+      dispatch(addNotification(data));
+    };
 
     SOCKET.on("connect", () => {
       console.log("Connected to server with userId:", user._id);
     });
 
-    SOCKET.on("notification:insert", (data) => {
-      toast.success(data?.message || "New Notification", { duration: 5000 });
-      console.log("data in scokets in app", data);
-      dispatch(addNotification(data));
-    });
+    SOCKET.on("notification:insert", handleNotification);
 
     return () => {
+      SOCKET.off("notification:insert", handleNotification);
+      SOCKET.off("connect");
       SOCKET.disconnect();
     };
-  }, [user?._id]);
+  }, [user?._id, dispatch]);
 
   if (isLoading) return <Loader />;
 
