@@ -12,6 +12,11 @@ import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import {
+  resetNotifications,
+  setNotifications,
+} from "../../../redux/slices/notificationsSlice";
+import notificationsApis from "../../../redux/apis/notificationsApis";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -143,9 +148,10 @@ const Profile = ({ menuRef }) => {
     try {
       const res = await logout().unwrap();
       if (res.success) {
-        dispatch(userExist(null));
+        dispatch(userNotExist());
+        dispatch(setNotifications([]));
         toast.success(res.message, { duration: 3000 });
-        navigate("/login");
+        return navigate("/login");
       }
     } catch (err) {
       toast.error(err?.data?.message || "Logout failed", { duration: 3000 });

@@ -32,6 +32,7 @@ const ArchievedInvoices = lazy(() =>
   import("./pages/admin/archieved/Invoices.Archieved")
 );
 const Settings = lazy(() => import("./pages/admin/settings/Settings"));
+const Clients = lazy(() => import("./pages/admin/clients/Clients"));
 const AdminLogin = lazy(() => import("./pages/admin/adminLogin/AdminLogin"));
 const AdminResetPassword = lazy(() =>
   import("./pages/admin/adminLogin/AdminResetPassword")
@@ -41,7 +42,9 @@ function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
-  const { data: notifications } = useGetNotificationsQuery();
+  const { data: notifications } = useGetNotificationsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   useEffect(() => {
     if (isSuccess && data?.data) {
@@ -119,6 +122,18 @@ function App() {
             <Route path="archieved/actions" element={<ArchievedActions />} />
             <Route path="archieved/invoices" element={<ArchievedInvoices />} />
             <Route path="settings" element={<Settings />} />
+            <Route
+              path="clients"
+              element={
+                <ProtectedRoute
+                  user={user}
+                  redirect="/login"
+                  allowedRoles={["Admin"]}
+                >
+                  <Clients />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Routes>
       </Suspense>

@@ -15,7 +15,9 @@ const defaultFilters = {
 
 const Actions = () => {
   const [filters, setFilters] = useState(defaultFilters);
-  const { data } = useGetClaimsQuery();
+  const { data } = useGetClaimsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const [selectedClaims, setSelectedClaims] = useState([]);
   const claims = Array.isArray(data) ? data : data?.data ?? [];
   const initialData = claims;

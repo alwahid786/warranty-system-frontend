@@ -27,7 +27,9 @@ const ArchievedInvoices = () => {
   const [filters, setFilters] = useState(defaultFilters);
   const [animateIn, setAnimateIn] = useState(false);
   const handleChatOpen = (invoice) => setChatUser(invoice);
-  const { data } = useGetArchieveInvoicesQuery();
+  const { data } = useGetArchieveInvoicesQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
 

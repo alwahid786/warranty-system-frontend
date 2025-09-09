@@ -1,8 +1,15 @@
 /* eslint-disable react/prop-types */
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children, user, redirect = "/login" }) => {
+const ProtectedRoute = ({
+  children,
+  user,
+  allowedRoles,
+  redirect = "/login",
+}) => {
   if (!user) return <Navigate to={redirect} />;
+  if (allowedRoles && !allowedRoles?.includes(user.role))
+    return <Navigate to={redirect} />;
   return children;
 };
 

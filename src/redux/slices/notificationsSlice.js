@@ -21,6 +21,10 @@ const notificationsSlice = createSlice({
       state.items.unshift(action.payload);
       state.unReadCount += 1;
     },
+    resetNotifications: (state) => {
+      state.items = [];
+      state.unReadCount = 0;
+    },
   },
 });
 
@@ -29,6 +33,7 @@ export const {
   unReadNotifications,
   noUnReadNotifications,
   addNotification,
+  resetNotifications,
 } = notificationsSlice.actions;
 
 export default notificationsSlice;

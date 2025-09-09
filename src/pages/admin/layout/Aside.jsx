@@ -30,39 +30,41 @@ const Aside = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let timeoutId;
+  const { user } = useSelector((state) => state.auth);
 
-    const checkTokenExpiryAndSetTimeout = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          setEmail(decodedToken?.email);
-          setFirstName(decodedToken?.first_name);
-          setAvatar(decodedToken?.avatar);
-          const currentTime = Date.now() / 1000;
-          if (decodedToken.exp && decodedToken.exp < currentTime) {
-            setIsTokenExpired(true);
-          } else if (decodedToken.exp) {
-            const timeLeft = decodedToken.exp * 1000 - Date.now() - 60 * 1000; // 1 minute before expiration
-            timeoutId = setTimeout(checkTokenExpiryAndSetTimeout, timeLeft); // Set the next check
-          }
-        } catch (error) {
-          console.error("Invalid token");
-        }
-      }
-    };
+  // useEffect(() => {
+  //   let timeoutId;
 
-    checkTokenExpiryAndSetTimeout();
+  //   const checkTokenExpiryAndSetTimeout = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (token) {
+  //       try {
+  //         const decodedToken = jwtDecode(token);
+  //         setEmail(decodedToken?.email);
+  //         setFirstName(decodedToken?.first_name);
+  //         setAvatar(decodedToken?.avatar);
+  //         const currentTime = Date.now() / 1000;
+  //         if (decodedToken.exp && decodedToken.exp < currentTime) {
+  //           setIsTokenExpired(true);
+  //         } else if (decodedToken.exp) {
+  //           const timeLeft = decodedToken.exp * 1000 - Date.now() - 60 * 1000; // 1 minute before expiration
+  //           timeoutId = setTimeout(checkTokenExpiryAndSetTimeout, timeLeft); // Set the next check
+  //         }
+  //       } catch (error) {
+  //         console.error("Invalid token");
+  //       }
+  //     }
+  //   };
 
-    // Cleanup timeout on unmount or when dependencies change
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [navigate]);
+  //   checkTokenExpiryAndSetTimeout();
+
+  //   // Cleanup timeout on unmount or when dependencies change
+  //   return () => {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId);
+  //     }
+  //   };
+  // }, [navigate]);
 
   const pages = [
     {
@@ -123,7 +125,20 @@ const Aside = () => {
       link: ["/settings"],
       icon: <SettingsIcon />,
     },
+    {
+      id: 7,
+      title: "Clients",
+      link: ["/clients"],
+      icon: <UsersIcon />,
+    },
   ];
+
+  const filteredPages = pages.filter((page) => {
+    if (page.title === "Clients" && user?.role !== "Admin") {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <aside
@@ -167,7 +182,7 @@ const Aside = () => {
               MENU
             </h4>
             <div className="mt-3 flex flex-col gap-[6px]">
-              {pages.map((page, i) => (
+              {filteredPages.map((page, i) => (
                 <LinkItem
                   key={i}
                   page={page}

@@ -25,27 +25,6 @@ import ConfirmationModal from "../../../utils/ConfirmationModal";
 import toast from "react-hot-toast";
 import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 
-// Mock backend data
-const mockUsers = Array.from({ length: 24 }, (_, i) => ({
-  id: 635261 + i,
-  name: i % 3 === 0 ? "Merchant" : "Mudassar",
-  avatar: `https://i.pravatar.cc/150?img=${i + 1}`,
-  claimsRate: i % 2 === 0 ? "88%" : undefined,
-  deliveryRate: i % 2 !== 0 ? "92%" : undefined,
-  joiningDate: "7/10/2025",
-  email: "Mudassar123@gmail.com",
-  phone: "(229) 555-0109",
-}));
-
-// const defaultFilters = {
-//   searchType: 'id',
-//   searchValue: '',
-//   fromDate: '',
-//   toDate: '',
-//   selectedBrand: null,
-//   status: '',
-// };
-
 const Users = () => {
   const { userCount } = useSelector((state) => state.user);
 
@@ -76,7 +55,7 @@ const Users = () => {
     isError,
     isLoading,
     refetch: refetchUsers,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const [deleteUser] = useDeleteUserMutation();
 

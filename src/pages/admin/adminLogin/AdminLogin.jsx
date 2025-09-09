@@ -2,11 +2,20 @@ import { useState } from "react";
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
 import { useDispatch } from "react-redux";
-import { useLoginMutation } from "../../../redux/apis/authApis";
+import {
+  useGetMyProfileQuery,
+  useLoginMutation,
+} from "../../../redux/apis/authApis";
 import { useForgetPasswordMutation } from "../../../redux/apis/authApis";
-import { userExist } from "../../../redux/slices/authSlice";
+import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useGetNotificationsQuery } from "../../../redux/apis/notificationsApis";
+import {
+  resetNotifications,
+  setNotifications,
+} from "../../../redux/slices/notificationsSlice";
+import notificationsApis from "../../../redux/apis/notificationsApis";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -21,6 +30,8 @@ function AdminLogin() {
   const [login, { isLoading, error }] = useLoginMutation();
   const [forgetPassword, { isLoading: resetLoading, error: resetError }] =
     useForgetPasswordMutation();
+  const { refetch } = useGetMyProfileQuery();
+  const { refetch: notificationsRefetch } = useGetNotificationsQuery();
 
   const navigate = useNavigate();
 
@@ -28,19 +39,20 @@ function AdminLogin() {
     e.preventDefault();
     try {
       const res = await login(formData).unwrap();
-      dispatch(userExist(res.data));
       if (res.success) {
+        dispatch(notificationsApis.util.resetApiState());
+        dispatch(resetNotifications());
+        await refetch();
+        await notificationsRefetch();
         toast.success(res.message, { duration: 3000 });
-        navigate("/admin/dashboard");
+        dispatch(userExist(res?.data));
+        return navigate("/");
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
   };
   const handleReset = async (e) => {
-    e.preventDefault();
-    // setForgotPassword(false);
-    // setResetPassword(true);
     try {
       const res = await forgetPassword(formData).unwrap();
       dispatch(userExist(res.data));

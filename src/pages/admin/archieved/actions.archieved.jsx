@@ -15,7 +15,9 @@ const defaultFilters = {
 
 const ArchievedActions = () => {
   const [filters, setFilters] = useState(defaultFilters);
-  const { data } = useGetArchieveClaimsQuery();
+  const { data } = useGetArchieveClaimsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const [selectedClaims, setSelectedClaims] = useState([]);
 
   const claims = Array.isArray(data) ? data : data?.data ?? [];
