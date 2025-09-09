@@ -1,11 +1,10 @@
 import { useState } from "react";
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
-import { useDispatch } from "react-redux";
 import { useResetPasswordMutation } from "../../../redux/apis/authApis";
-import { userExist } from "../../../redux/slices/authSlice";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function AdminResetPassword() {
   const [formData, setFormData] = useState({
@@ -13,17 +12,18 @@ function AdminResetPassword() {
     confirmPassword: "",
   });
 
-  const dispatch = useDispatch();
   const [resetPassword, { isLoading, error }] = useResetPasswordMutation();
   const { token } = useParams();
+
+  const navigate = useNavigate();
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
     try {
       const res = await resetPassword({ ...formData, token }).unwrap();
-      dispatch(userExist(res.data));
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
+        navigate("/login");
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });

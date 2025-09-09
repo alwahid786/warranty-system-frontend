@@ -7,7 +7,6 @@ import Aside from "./Aside";
 import { HiChevronDown } from "react-icons/hi";
 import { IoChevronForwardOutline, IoLogOutOutline } from "react-icons/io5";
 import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
-import { Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
@@ -137,13 +136,16 @@ export default Header;
 
 const Profile = ({ menuRef }) => {
   const [logout, { data, isLoading, error }] = useLogoutMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     try {
       const res = await logout().unwrap();
       if (res.success) {
+        dispatch(userExist(null));
         toast.success(res.message, { duration: 3000 });
-        useNavigate("/admin/login");
+        navigate("/login");
       }
     } catch (err) {
       toast.error(err?.data?.message || "Logout failed", { duration: 3000 });
@@ -154,7 +156,7 @@ const Profile = ({ menuRef }) => {
     <div className="w-full">
       <button
         ref={menuRef}
-        className="flex items-center gap-2 rounded-md border-b bg-white px-2 py-2 cursor-pointer hover:bg-gray-100"
+        className="w-full flex items-center gap-2 rounded-md border-b bg-white px-2 py-2 cursor-pointer hover:bg-gray-100"
         onClick={handleLogout}
       >
         <IoLogOutOutline fontSize={18} />

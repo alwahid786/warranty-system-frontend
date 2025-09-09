@@ -22,6 +22,8 @@ function AdminLogin() {
   const [forgetPassword, { isLoading: resetLoading, error: resetError }] =
     useForgetPasswordMutation();
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -29,7 +31,7 @@ function AdminLogin() {
       dispatch(userExist(res.data));
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
-        useNavigate("/admin/dashboard");
+        navigate("/admin/dashboard");
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
