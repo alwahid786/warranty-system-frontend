@@ -158,7 +158,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
     setTableData(data);
   }, [data]);
 
-  // Table columns
+  // Table columns--
   const columns = [
     {
       name: "RO Information",
