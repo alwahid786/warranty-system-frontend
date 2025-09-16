@@ -27,6 +27,13 @@ const UsersHeader = () => {
       if (res.success) {
         setIsOpen(false);
         await getUsersStatRefetch();
+        setformData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          password: "",
+        });
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });

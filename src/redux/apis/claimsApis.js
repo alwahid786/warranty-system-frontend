@@ -38,10 +38,30 @@ const claimsApis = createApi({
       invalidatesTags: ["Claims"],
     }),
 
+    // export Claims
+    exportClaims: builder.query({
+      query: () => ({
+        url: "/exportClaims",
+        method: "GET",
+        responseHandler: (res) => res.blob(),
+      }),
+      providesTags: ["Claims"],
+    }),
+
     // Update Claims
     updateClaims: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/updateClaim/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Claims"],
+    }),
+
+    // Update Claims Additional Data
+    updateClaimsAdditionalData: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/updateClaimAdditionalData/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -130,6 +150,7 @@ const claimsApis = createApi({
 export const {
   useGetClaimsQuery,
   useAddClaimsMutation,
+  useLazyExportClaimsQuery,
   useUpdateClaimsMutation,
   useGetInvoicesQuery,
   useGetArchieveClaimsQuery,
@@ -140,6 +161,7 @@ export const {
   useRemoveArchieveInvoicesMutation,
   useGetInvoicesStatQuery,
   useGetClaimsStatQuery,
+  useUpdateClaimsAdditionalDataMutation,
 } = claimsApis;
 
 export default claimsApis;

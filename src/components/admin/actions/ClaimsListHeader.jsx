@@ -9,12 +9,15 @@ import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useAddArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
+import { saveAs } from "file-saver";
+import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
 
 const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
   const fileInputRef = useRef(null);
   const [addClaims] = useAddClaimsMutation();
   const [addArchieveClaims] = useAddArchieveClaimsMutation();
   const [removeArchieveClaims] = useRemoveArchieveClaimsMutation();
+  const [getExportClaims] = useLazyExportClaimsQuery();
 
   const handleAddArchieveClaims = async (e) => {
     e.preventDefault();
@@ -39,18 +42,30 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file && file.type === "text/csv") {
       // send to backend
       const formData = new FormData();
       formData.append("file", file);
       try {
-        const res = addClaims(formData).unwrap();
-        toast.success(res.message, { duration: 3000 });
+        const res = await addClaims(formData).unwrap();
+        if (res.success) {
+          toast.success(res.message, { duration: 3000 });
+        }
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
+    }
+  };
+
+  const handleExportClaims = async () => {
+    try {
+      const blob = await getExportClaims().unwrap();
+      saveAs(blob, "claims_export.csv");
+      toast.success(res.message || "Claims exported", { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message || "Failed to export", { duration: 3000 });
     }
   };
   return (
@@ -92,6 +107,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
                 bg="bg-[#04365599] hover:bg-slate-600"
                 color="text-white"
                 cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
+                onClick={handleExportClaims}
               />
               <div className="flex gap-2 justify-end">
                 <input

@@ -1,27 +1,35 @@
 import React, { useState, useRef } from "react";
 import DataTable from "react-data-table-component";
-import { HiChatBubbleLeftRight, HiChevronDown } from "react-icons/hi2";
+import {
+  HiChatBubbleLeftRight,
+  HiChevronDown,
+  HiOutlineCheck,
+  HiOutlineXMark,
+} from "react-icons/hi2";
+
 import ChatModal from "../../shared/small/ChatModal";
-import { useUpdateClaimsMutation } from "../../../redux/apis/claimsApis";
+import {
+  useUpdateClaimsMutation,
+  useUpdateClaimsAdditionalDataMutation,
+} from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
 
 // Custom Status Dropdown styled as button
 const StatusDropdown = ({ status, onChange }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
-  const options = [
-    "Pending Credit",
-    "Pending Correction",
-    "Pending Question",
-    "Pending Analysis",
-    "Rejected",
-    "Appealed",
-  ];
+  const options = ["PC", "PO", "PQ", "PR", "PA", "CR"];
 
   // Color logic for button
   let btnColor = "bg-[#FFCC00] text-white";
-  if (status === "Rejected") btnColor = "bg-red-500 text-white";
-  else if (status === "Appealed") btnColor = "bg-blue-500 text-white";
+
+  if (status === "PC") btnColor = "bg-[#3B82F6] text-white"; // Blue
+  else if (status === "PO") btnColor = "bg-[#22C55E] text-white"; // Green
+  else if (status === "PQ") btnColor = "bg-[#F97316] text-white"; // Orange
+  else if (status === "PR") btnColor = "bg-[#A855F7] text-white"; // Purple
+  else if (status === "PA") btnColor = "bg-[#EAB308] text-black";
+  // Yellow (better contrast with black text)
+  else if (status === "CR") btnColor = "bg-[#EF4444] text-white"; // Red
 
   // Close dropdown on outside click
   React.useEffect(() => {
@@ -97,6 +105,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const [showChat, setShowChat] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const [updateClaims] = useUpdateClaimsMutation();
+  const [updateClaimsAdditionalData] = useUpdateClaimsAdditionalDataMutation();
 
   // Handler to update status for a row
   const handleStatusChange = async (rowIdx, newStatus, row) => {
@@ -111,6 +120,22 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         id: row._id,
         status: newStatus,
         archived: archived,
+      }).unwrap();
+      toast.success(res.message, { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
+    }
+  };
+
+  const handleClaimsUpdate = async (rowId, claimField, claimValue) => {
+    const claimData = {
+      claimField: claimField,
+      claimValue: claimValue,
+    };
+    try {
+      const res = await updateClaimsAdditionalData({
+        id: rowId,
+        claimData: claimData,
       }).unwrap();
       toast.success(res.message, { duration: 3000 });
     } catch (err) {
@@ -136,101 +161,38 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   // Table columns
   const columns = [
     {
-      name: "Claim ID",
-      selector: (row) => row.claimId,
-      cell: (row) => (
-        <span className="text-dark font-normal text-xs ">{row.claimId}</span>
-      ),
-      sortable: false,
-    },
-    {
       name: "RO Information",
-      selector: (row) => row.claimId,
+      selector: (row) => row,
       cell: (row) => (
-        <div className="flex flex-col gap-1">
-          <div>
-            <span>RO#: </span>
-            <span className="text-dark font-normal text-xs ">
-              {row.roNumber}
-            </span>
-            <span> - </span>
-            <span>{row.roSuffix}</span>
-          </div>
-          <div>
-            <span>Type: </span>
-            <span className="text-dark font-normal text-xs ">
-              {row.claimType}
-            </span>
-          </div>
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Operation Inform",
-      selector: (row) => row.userName,
-      cell: (row) => (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <span className="text-dark font-normal text-xs ">
-            OP: {row.mainOp}
+            RO Number: {row.roNumber}
           </span>
-          <span className="text-dark font-normal text-xs ">Sym: {row.sym}</span>
           <span className="text-dark font-normal text-xs ">
-            Cause: {row.causeCode}
+            RO Suffix: {row.roSuffix}
+          </span>
+          <span className="text-dark font-normal text-xs ">
+            RO Date: {row.roDate}
           </span>
         </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Dates",
-      selector: (row) => row.carBrand,
-      cell: (row) => (
-        <div className="flex flex-col gap-1">
-          <span className="text-dark font-normal text-xs ">
-            RO Date:{" "}
-            {row.roDate ? new Date(row.roDate).toLocaleDateString("en-CA") : ""}
-          </span>
-          <span className="text-dark font-normal text-xs ">
-            Entry Date:{" "}
-            {row.claimEntryDate
-              ? new Date(row.claimEntryDate).toLocaleDateString("en-CA")
-              : ""}
-          </span>
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Amounts",
-      selector: (row) => row.claimDate,
-      cell: (row) => (
-        <div className="flex flex-col gap-1">
-          <span className="text-dark font-normal text-xs ">
-            Labor: {row.laborCost}
-          </span>
-          <span className="text-dark font-normal text-xs ">
-            Parts: {row.partCost}
-          </span>
-          <span className="text-dark font-normal text-xs ">
-            Sublet: {row.subletCost}
-          </span>
-          <span className="text-dark font-normal text-xs ">
-            Total: {row.totalCost}
-          </span>
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Error Notes",
-      selector: (row) => row.notes,
-      cell: (row) => (
-        <span className="text-dark font-normal text-xs ">
-          {row.errorDescription}
-        </span>
       ),
       sortable: false,
+    },
+    {
+      name: "Job #",
+      selector: (row) => row.jobNumber,
+      cell: (row) => (
+        <span className="text-dark font-normal text-xs ">{row.jobNumber}</span>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Quoted",
+      selector: (row) => row.quoted,
+      cell: (row) => (
+        <span className="text-dark font-normal text-xs ">{row.quoted}</span>
+      ),
+      sortable: true,
     },
     {
       name: "Status",
@@ -241,6 +203,114 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         />
       ),
       sortable: false,
+    },
+    {
+      name: "Entry Date",
+      selector: (row) => row.entryDate,
+      cell: (row) => (
+        <span className="text-dark font-normal text-xs ">{row.entryDate}</span>
+      ),
+      sortable: false,
+    },
+    {
+      name: "Error Description",
+      selector: (row) => row.errorDescription,
+      cell: (row) => (
+        <span className="text-dark font-normal text-xs ">
+          {row.errorDescription}
+        </span>
+      ),
+      sortable: false,
+    },
+    {
+      name: "Additional Information",
+      selector: (row) => row.additionalInfo,
+      cell: (row) => {
+        const [showIcons, setShowIcons] = React.useState(false);
+        const [tempValue, setTempValue] = React.useState(
+          row.additionalInfo || ""
+        );
+
+        return (
+          <div className="flex flex-col">
+            <textarea
+              type="text"
+              rows="3"
+              className="border border-gray-300 rounded-md px-2 py-1 text-xs"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onFocus={() => setShowIcons(true)}
+            />
+            {showIcons && (
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClaimsUpdate(row._id, "additionalInfo", tempValue);
+                    setShowIcons(false);
+                  }}
+                >
+                  <HiOutlineCheck fill="#22C55E" size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTempValue(row.additionalInfo || "");
+                    setShowIcons(false);
+                  }}
+                >
+                  <HiOutlineXMark fill="#EF4444" size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      name: "Internal Notes",
+      selector: (row) => row.internalNotes,
+      cell: (row) => {
+        const [showIcons, setShowIcons] = React.useState(false);
+        const [tempValue, setTempValue] = React.useState(
+          row.internalNotes || ""
+        );
+
+        return (
+          <div className="flex flex-col">
+            <textarea
+              type="text"
+              rows="3"
+              className="border border-gray-300 rounded-md px-2 py-1 text-xs"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onFocus={() => setShowIcons(true)}
+            />
+            {showIcons && (
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClaimsUpdate(row._id, "internalNotes", tempValue);
+                    setShowIcons(false);
+                  }}
+                >
+                  <HiOutlineCheck fill="#22C55E" size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTempValue(row.internalNotes || "");
+                    setShowIcons(false);
+                  }}
+                >
+                  <HiOutlineXMark fill="#EF4444" size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       name: "Actions",
