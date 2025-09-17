@@ -134,7 +134,7 @@ const Aside = () => {
   ];
 
   const filteredPages = pages.filter((page) => {
-    if (page.title === "Clients" && user?.role !== "Admin") {
+    if (page.title === "Clients" && user?.role !== "admin") {
       return false;
     }
     return true;

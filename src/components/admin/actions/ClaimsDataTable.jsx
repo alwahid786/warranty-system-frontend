@@ -13,6 +13,7 @@ import {
   useUpdateClaimsAdditionalDataMutation,
 } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 // Custom Status Dropdown styled as button
 const StatusDropdown = ({ status, onChange }) => {
@@ -106,6 +107,8 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const [animateIn, setAnimateIn] = useState(false);
   const [updateClaims] = useUpdateClaimsMutation();
   const [updateClaimsAdditionalData] = useUpdateClaimsAdditionalDataMutation();
+  const [editingCell, setEditingCell] = useState(null);
+  const { user } = useSelector((state) => state.auth);
 
   // Handler to update status for a row
   const handleStatusChange = async (rowIdx, newStatus, row) => {
@@ -177,6 +180,8 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       sortable: false,
+      grow: 2,
+      minWidth: "150px",
     },
     {
       name: "Job #",
@@ -185,6 +190,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.jobNumber}</span>
       ),
       sortable: true,
+      width: "90px",
     },
     {
       name: "Quoted",
@@ -193,6 +199,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.quoted}</span>
       ),
       sortable: true,
+      width: "110px",
     },
     {
       name: "Status",
@@ -203,6 +210,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         />
       ),
       sortable: false,
+      width: "100px",
     },
     {
       name: "Entry Date",
@@ -211,6 +219,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.entryDate}</span>
       ),
       sortable: false,
+      width: "130px",
     },
     {
       name: "Error Description",
@@ -221,33 +230,57 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </span>
       ),
       sortable: false,
+      grow: 3,
+      minWidth: "250px",
     },
     {
       name: "Additional Information",
       selector: (row) => row.additionalInfo,
       cell: (row) => {
-        const [showIcons, setShowIcons] = React.useState(false);
         const [tempValue, setTempValue] = React.useState(
           row.additionalInfo || ""
         );
 
+        React.useEffect(() => {
+          setTempValue(row.additionalInfo || "");
+        }, [row.additionalInfo]);
+
+        const isEditing =
+          editingCell?.rowId === row._id &&
+          editingCell?.field === "additionalInfo";
+
+        React.useEffect(() => {
+          const handleClickOutside = (e) => {
+            if (!e.target.closest(`#cell-additional-${row._id}`)) {
+              if (isEditing) setEditingCell(null);
+            }
+          };
+          document.addEventListener("mousedown", handleClickOutside);
+          return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+        }, [isEditing]);
+
         return (
-          <div className="flex flex-col">
+          <div
+            id={`cell-additional-${row._id}`}
+            className="flex flex-col w-full"
+          >
             <textarea
-              type="text"
               rows="3"
-              className="border border-gray-300 rounded-md px-2 py-1 text-xs"
+              className="border border-gray-300 rounded-md px-2 py-1 text-xs w-full"
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
-              onFocus={() => setShowIcons(true)}
+              onFocus={() =>
+                setEditingCell({ rowId: row._id, field: "additionalInfo" })
+              }
             />
-            {showIcons && (
+            {isEditing && (
               <div className="flex gap-2 mt-2">
                 <button
                   type="button"
                   onClick={() => {
                     handleClaimsUpdate(row._id, "additionalInfo", tempValue);
-                    setShowIcons(false);
+                    setEditingCell(null);
                   }}
                 >
                   <HiOutlineCheck fill="#22C55E" size={20} />
@@ -256,7 +289,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
                   type="button"
                   onClick={() => {
                     setTempValue(row.additionalInfo || "");
-                    setShowIcons(false);
+                    setEditingCell(null);
                   }}
                 >
                   <HiOutlineXMark fill="#EF4444" size={20} />
@@ -266,33 +299,61 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           </div>
         );
       },
+      grow: 2,
+      minWidth: "200px",
     },
-    {
+  ];
+
+  // to show internal notes to admin only
+  if (user?.role === "admin") {
+    columns.push({
       name: "Internal Notes",
       selector: (row) => row.internalNotes,
       cell: (row) => {
-        const [showIcons, setShowIcons] = React.useState(false);
         const [tempValue, setTempValue] = React.useState(
           row.internalNotes || ""
         );
 
+        React.useEffect(() => {
+          setTempValue(row.internalNotes || "");
+        }, [row.internalNotes]);
+
+        const isEditing =
+          editingCell?.rowId === row._id &&
+          editingCell?.field === "internalNotes";
+
+        React.useEffect(() => {
+          const handleClickOutside = (e) => {
+            if (!e.target.closest(`#cell-additional-${row._id}`)) {
+              if (isEditing) setEditingCell(null);
+            }
+          };
+          document.addEventListener("mousedown", handleClickOutside);
+          return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+        }, [isEditing]);
+
         return (
-          <div className="flex flex-col">
+          <div
+            id={`cell-additional-${row._id}`}
+            className="flex flex-col w-full"
+          >
             <textarea
-              type="text"
               rows="3"
-              className="border border-gray-300 rounded-md px-2 py-1 text-xs"
+              className="border border-gray-300 rounded-md px-2 py-1 text-xs w-full"
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
-              onFocus={() => setShowIcons(true)}
+              onFocus={() =>
+                setEditingCell({ rowId: row._id, field: "internalNotes" })
+              }
             />
-            {showIcons && (
+            {isEditing && (
               <div className="flex gap-2 mt-2">
                 <button
                   type="button"
                   onClick={() => {
                     handleClaimsUpdate(row._id, "internalNotes", tempValue);
-                    setShowIcons(false);
+                    setEditingCell(null);
                   }}
                 >
                   <HiOutlineCheck fill="#22C55E" size={20} />
@@ -300,8 +361,8 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    setTempValue(row.internalNotes || "");
-                    setShowIcons(false);
+                    setTempValue(row.additionalInfo || "");
+                    setEditingCell(null);
                   }}
                 >
                   <HiOutlineXMark fill="#EF4444" size={20} />
@@ -311,24 +372,28 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           </div>
         );
       },
-    },
-    {
-      name: "Actions",
-      cell: (row) => (
-        <button className="text-primary">
-          <HiChatBubbleLeftRight
-            fill="#043655"
-            onClick={() => {
-              setChatUser(row);
-              setShowChat(true);
-            }}
-            size={30}
-          />
-        </button>
-      ),
-      right: true,
-    },
-  ];
+      grow: 2,
+      minWidth: "200px",
+    });
+  }
+
+  columns.push({
+    name: "Actions",
+    cell: (row) => (
+      <button className="text-primary">
+        <HiChatBubbleLeftRight
+          fill="#043655"
+          onClick={() => {
+            setChatUser(row);
+            setShowChat(true);
+          }}
+          size={30}
+        />
+      </button>
+    ),
+    right: true,
+    width: "100px",
+  });
 
   return (
     <div className="p-2 overflow-auto w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">

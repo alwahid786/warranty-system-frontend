@@ -1,15 +1,25 @@
 import { MdOutlineFileDownload } from "react-icons/md";
-import { LuUpload } from "react-icons/lu";
+import { LuUpload, LuPlus } from "react-icons/lu";
 import Button from "../../shared/small/Button";
 // import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
 import { useAddArchieveInvoicesMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchieveInvoicesMutation } from "../../../redux/apis/claimsApis";
+import InvoiceForm from "./AddNewInvoice";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import { useAddInvoiceMutation } from "../../../redux/apis/invoiceApis";
 
-const InvoicesListHeader = ({ selectedIds, showImportExport = true }) => {
+const InvoicesListHeader = ({
+  selectedIds,
+  showImportExport = true,
+  clientsData,
+}) => {
   const [addArchieveInvoices] = useAddArchieveInvoicesMutation();
   const [removeArchieveInvoices] = useRemoveArchieveInvoicesMutation();
+  const [addInvoice] = useAddInvoiceMutation();
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleAddArchieveInvoices = async (e) => {
     e.preventDefault();
@@ -27,6 +37,16 @@ const InvoicesListHeader = ({ selectedIds, showImportExport = true }) => {
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
+    }
+  };
+
+  const handleOutGoingData = async (value) => {
+    console.log("outgoing data", value);
+    try {
+      const res = await addInvoice(value).unwrap();
+      toast.success(res.message, { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
     }
   };
 
@@ -48,6 +68,14 @@ const InvoicesListHeader = ({ selectedIds, showImportExport = true }) => {
         {/* Buttons */}
         <div className="flex items-center gap-2 justify-end">
           <Button
+            icon={<LuPlus className="text-xs sm:text-sm" />}
+            text="Create New Invoice"
+            bg="bg-[#04365599] hover:bg-slate-600"
+            color="text-white"
+            cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
+            onClick={() => setIsOpen(true)}
+          />
+          <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
             text={showImportExport ? "Move To Archieve" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
@@ -63,13 +91,6 @@ const InvoicesListHeader = ({ selectedIds, showImportExport = true }) => {
           {showImportExport && (
             <>
               <Button
-                icon={<LuUpload className="text-xs sm:text-sm" />}
-                text="Export"
-                bg="bg-[#04365599] hover:bg-slate-600"
-                color="text-white"
-                cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
-              />
-              <Button
                 icon={<MdOutlineFileDownload className="text-xs sm:text-sm" />}
                 text="Import"
                 bg="bg-primary hover:bg-sky-900"
@@ -79,6 +100,12 @@ const InvoicesListHeader = ({ selectedIds, showImportExport = true }) => {
             </>
           )}
         </div>
+        <InvoiceForm
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          clientsData={clientsData}
+          outgoingData={(e) => handleOutGoingData(e)}
+        />
       </div>
     </>
   );

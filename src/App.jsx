@@ -133,7 +133,7 @@ function App() {
                 <ProtectedRoute
                   user={user}
                   redirect="/login"
-                  allowedRoles={["Admin"]}
+                  allowedRoles={["admin"]}
                 >
                   <Clients />
                 </ProtectedRoute>

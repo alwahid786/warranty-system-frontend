@@ -7,6 +7,7 @@ import ChatModal from "../../../components/shared/small/ChatModal";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
 import { useGetInvoicesQuery } from "../../../redux/apis/claimsApis";
+import { useGetClientsQuery } from "../../../redux/apis/invoiceApis";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -29,6 +30,7 @@ const Invoices = () => {
   const { data } = useGetInvoicesQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
+  const { data: clientsData } = useGetClientsQuery();
 
   const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
 
@@ -78,7 +80,11 @@ const Invoices = () => {
   return (
     <div className="w-full mx-auto ">
       <>
-        <InvoicesListHeader selectedIds={selectedIds} showImportExport={true} />
+        <InvoicesListHeader
+          selectedIds={selectedIds}
+          showImportExport={true}
+          clientsData={clientsData}
+        />
       </>
       <div className="mb-4">
         <InvoicesFilterBar
