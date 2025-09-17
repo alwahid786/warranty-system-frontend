@@ -132,7 +132,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       }
     });
 
-    // Append files individually---------
+    // Append files individually-------
     files.forEach((file) => {
       formDataObj.append("files", file);
     });
