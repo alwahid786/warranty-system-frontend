@@ -100,14 +100,6 @@ const Invoices = () => {
         onChatOpen={handleChatOpen}
         clientsData={clientsData}
       />
-      <ChatModal
-        setAnimateIn={setAnimateIn}
-        animateIn={animateIn}
-        isOpen={!!chatUser}
-        onClose={handleClose}
-        user={chatUser}
-        forInvoice
-      />
       <Pagination current={page} total={totalPages} onPageChange={setPage} />
     </div>
   );

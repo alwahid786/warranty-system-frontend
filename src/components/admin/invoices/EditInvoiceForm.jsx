@@ -74,9 +74,13 @@ const EditInvoiceForm = ({
 
   // Adjustments handler
   const handleAdjustmentChange = (index, field, value) => {
-    const newAdjustments = [...formData.adjustments];
-    newAdjustments[index][field] = value;
-    setFormData({ ...formData, adjustments: newAdjustments });
+    setFormData((prev) => {
+      const newAdjustments = prev.adjustments.map((adj, i) =>
+        i === index ? { ...adj, [field]: value } : adj
+      );
+
+      return { ...prev, adjustments: newAdjustments };
+    });
   };
 
   const addAdjustmentRow = () => {
@@ -195,7 +199,7 @@ const EditInvoiceForm = ({
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label for="client" className="font-semibold">
+              <label htmlFor="client" className="font-semibold">
                 Client
               </label>
               <select
@@ -303,7 +307,7 @@ const EditInvoiceForm = ({
             >
               <select
                 className="border rounded p-2"
-                value={adj.type}
+                value={adj.type === "add" ? "Charge" : "Deduction"}
                 onChange={(e) =>
                   handleAdjustmentChange(idx, "type", e.target.value)
                 }
@@ -392,7 +396,17 @@ const EditInvoiceForm = ({
         {/* Attachments */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="font-semibold">Attachments</h2>
-          <div className="flex flex-wrap gap-3">
+
+          <label className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer w-fit">
+            Upload Files
+            <input
+              type="file"
+              className="hidden"
+              multiple
+              onChange={handleFileUpload}
+            />
+          </label>
+          <div className="flex flex-wrap gap-3 mt-5">
             {existingFiles.map((file, idx) => (
               <div
                 key={idx}
@@ -434,16 +448,6 @@ const EditInvoiceForm = ({
               </div>
             ))}
           </div>
-
-          <label className="px-4 py-2 my-5 bg-blue-600 text-white rounded-lg cursor-pointer w-fit">
-            Upload Files
-            <input
-              type="file"
-              className="hidden"
-              multiple
-              onChange={handleFileUpload}
-            />
-          </label>
 
           <div className="flex flex-col gap-2">
             <label htmlFor="explanation" className="font-semibold">
