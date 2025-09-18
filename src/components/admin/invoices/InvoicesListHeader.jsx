@@ -88,17 +88,6 @@ const InvoicesListHeader = ({
             onClick={handleAddArchieveInvoices}
             cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
           />
-          {showImportExport && (
-            <>
-              <Button
-                icon={<MdOutlineFileDownload className="text-xs sm:text-sm" />}
-                text="Import"
-                bg="bg-primary hover:bg-sky-900"
-                color="text-white"
-                cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
-              />
-            </>
-          )}
         </div>
         <InvoiceForm
           isOpen={isOpen}

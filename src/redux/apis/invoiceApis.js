@@ -18,6 +18,14 @@ const invoiceApis = createApi({
       }),
       providesTags: ["Invoices"],
     }),
+    // Get all Invoices
+    getInvoices: builder.query({
+      query: () => ({
+        url: "/getInvoices",
+        method: "GET",
+      }),
+      providesTags: ["Invoices"],
+    }),
     // Get single invoice by ID
     getInvoiceById: builder.query({
       query: (id) => ({
@@ -39,8 +47,8 @@ const invoiceApis = createApi({
 
     // Update Invoice
     updateInvoice: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/updateInvoice/${id}`,
+      query: ({ id, data }) => ({
+        url: `/editInvoice/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -49,7 +57,7 @@ const invoiceApis = createApi({
 
     // Delete Invoice
     deleteInvoice: builder.mutation({
-      query: (id) => ({
+      query: ({ id }) => ({
         url: `/deleteInvoice/${id}`,
         method: "DELETE",
       }),
@@ -82,6 +90,7 @@ export const {
   useDeleteInvoiceMutation,
   useGetActiveInactiveCountQuery,
   useGetInvoicesStatQuery,
+  useGetInvoicesQuery,
 } = invoiceApis;
 
 export default invoiceApis;

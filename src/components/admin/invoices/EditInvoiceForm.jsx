@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
+const EditInvoiceForm = ({
+  isOpen,
+  onClose,
+  clientsData,
+  invoiceData,
+  onSubmit,
+}) => {
   if (!isOpen) return null;
 
   const clients = clientsData?.data.map((client) => ({
@@ -10,6 +16,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     companyName: client.companyName,
   }));
 
+  // Preload state with invoiceData
   const [formData, setFormData] = useState({
     clientId: "",
     client: "",
@@ -24,7 +31,30 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     explanation: "",
   });
 
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState([]); // new uploads
+  const [existingFiles, setExistingFiles] = useState([]); // previously uploaded files
+
+  // Hydrate with invoiceData
+  useEffect(() => {
+    if (invoiceData) {
+      setFormData({
+        clientId: invoiceData.clientId || "",
+        client: invoiceData.clientName || "",
+        company: invoiceData.warrantyCompany || "",
+        statementType: invoiceData.statementType || "",
+        statementNumber: invoiceData.statementNumber || "",
+        statementTotal: invoiceData.statementTotal || "",
+        adjustments: invoiceData.adjustments?.length
+          ? invoiceData.adjustments
+          : [{ type: "Charge", amount: "", reason: "" }],
+        assignedPercentage: invoiceData.assignedPercentage || "",
+        finalTotal: invoiceData.finalTotal || "",
+        bypass: invoiceData.bypassPercentage || false,
+        explanation: invoiceData.freeTextExplanation || "",
+      });
+      setExistingFiles(invoiceData.attachedReports || []);
+    }
+  }, [invoiceData]);
 
   // Dealer Change
   const onDealerChange = (e) => {
@@ -76,12 +106,14 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   };
 
   const removeFile = (index) => {
-    const newFiles = files.filter((_, i) => i !== index);
-    setFiles(newFiles);
+    setFiles(files.filter((_, i) => i !== index));
   };
 
-  // Calculation
-  // automatically recalc when dependencies change
+  const removeExistingFile = (index) => {
+    setExistingFiles(existingFiles.filter((_, i) => i !== index));
+  };
+
+  // Auto calculation
   useEffect(() => {
     let total = Number(formData.statementTotal) || 0;
 
@@ -107,9 +139,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   ]);
 
   // Save Handler
-
   const handleSave = async (finalize = false) => {
-    // Basic validation
     if (!formData.client || !formData.company || !formData.statementTotal) {
       toast.error("Please fill all required fields");
       return;
@@ -118,6 +148,8 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     const payload = {
       ...formData,
       status: finalize ? "finalized" : "draft",
+      // keep track of files that remain vs removed
+      existingFiles,
     };
 
     const formDataObj = new FormData();
@@ -134,11 +166,14 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       formDataObj.append("files", file);
     });
 
-    console.log("Sending to backend:", payload);
+    onSubmit({
+      id: invoiceData._id,
+      data: formDataObj,
+    }); // pass back
 
-    outgoingData(formDataObj);
-
-    toast.success(finalize ? "Invoice finalized" : "Draft saved");
+    toast.success(
+      finalize ? "Invoice updated & finalized" : "Invoice draft updated"
+    );
     onClose();
   };
 
@@ -152,77 +187,109 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         >
           ✖
         </button>
-        <h2 className="text-xl font-bold">Add Invoice</h2>
+
+        <h2 className="text-xl font-bold">Edit Invoice</h2>
 
         {/* Header Section */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select className="border rounded p-2" onChange={onDealerChange}>
-              <option value="">Choose Client</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="border rounded p-2"
-              value={formData.company}
-              onChange={onCompanyChange}
-            >
-              <option value="">Choose Company</option>
-              {clients
-                .filter((c) => c.name === formData.client)
-                .map((c) => (
-                  <option key={c.id} value={c.companyName}>
-                    {c.companyName}
+            <div className="flex flex-col gap-2">
+              <label for="client" className="font-semibold">
+                Client
+              </label>
+              <select
+                className="border rounded p-2"
+                value={formData.clientId}
+                onChange={onDealerChange}
+              >
+                <option value="">Choose Client</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
                   </option>
                 ))}
-            </select>
-            <input type="file" className="border rounded p-2" />
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="company" className="font-semibold">
+                Warranty Company
+              </label>
+              <select
+                className="border rounded p-2"
+                value={formData.company}
+                onChange={onCompanyChange}
+              >
+                <option value="">Choose Company</option>
+                {clients
+                  .filter((c) => c.name === formData.client)
+                  .map((c) => (
+                    <option key={c.id} value={c.companyName}>
+                      {c.companyName}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Statement Section */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Statement</h2>
-          <div className="space-x-4">
-            {["Weekly", "Monthly", "Custom"].map((type) => (
-              <label key={type}>
-                <input
-                  type="radio"
-                  name="statementType"
-                  value={type}
-                  checked={formData.statementType === type}
-                  onChange={(e) =>
-                    setFormData({ ...formData, statementType: e.target.value })
-                  }
-                />{" "}
-                {type}
-              </label>
-            ))}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="statementType" className="font-semibold">
+              Statement Type
+            </label>
+            <div className="space-x-4">
+              {["Weekly", "Monthly", "Custom"].map((type) => (
+                <label key={type}>
+                  <input
+                    type="radio"
+                    name="statementType"
+                    value={type}
+                    checked={formData.statementType === type}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        statementType: e.target.value,
+                      })
+                    }
+                  />{" "}
+                  {type}
+                </label>
+              ))}
+            </div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Statement Number"
-              className="border rounded p-2"
-              value={formData.statementNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, statementNumber: e.target.value })
-              }
-            />
-            <input
-              type="number"
-              placeholder="Statement Total"
-              className="border rounded p-2"
-              value={formData.statementTotal}
-              onChange={(e) =>
-                setFormData({ ...formData, statementTotal: e.target.value })
-              }
-            />
+            <div className="flex flex-col gap-2">
+              <label htmlFor="statementNumber" className="font-semibold">
+                Statement Number
+              </label>
+              <input
+                type="text"
+                placeholder="Statement Number"
+                className="border rounded p-2"
+                value={formData.statementNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, statementNumber: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="statementTotal" className="font-semibold">
+                Statement Total
+              </label>
+              <input
+                type="number"
+                placeholder="Statement Total"
+                className="border rounded p-2"
+                value={formData.statementTotal}
+                onChange={(e) =>
+                  setFormData({ ...formData, statementTotal: e.target.value })
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -232,11 +299,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
           {formData.adjustments.map((adj, idx) => (
             <div
               key={idx}
-              className={`grid grid-cols-1 ${
-                formData.adjustments.length > 1
-                  ? "md:grid-cols-4"
-                  : "md:grid-cols-3"
-              } gap-4 items-center`}
+              className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
             >
               <select
                 className="border rounded p-2"
@@ -270,7 +333,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                 <button
                   type="button"
                   onClick={() => removeAdjustmentRow(idx)}
-                  className="text-red-600 font-medium mt-2"
+                  className="text-red-600"
                 >
                   ✖
                 </button>
@@ -280,7 +343,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
           <button
             type="button"
             onClick={addAdjustmentRow}
-            className="text-blue-600 font-medium mt-2"
+            className="text-blue-600"
           >
             + Add Another
           </button>
@@ -290,21 +353,26 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Calculation</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="number"
-              placeholder="Assigned Percentage"
-              className={`border rounded p-2 ${
-                formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
-              }`}
-              disabled={formData.bypass}
-              value={formData.assignedPercentage}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  assignedPercentage: e.target.value,
-                })
-              }
-            />
+            <div className="flex flex-col gap-2">
+              <label htmlFor="percentage" className="font-semibold">
+                Percentage
+              </label>
+              <input
+                type="number"
+                placeholder="Assigned Percentage"
+                className={`border rounded p-2 ${
+                  formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
+                }`}
+                disabled={formData.bypass}
+                value={formData.assignedPercentage}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    assignedPercentage: e.target.value,
+                  })
+                }
+              />
+            </div>
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -323,8 +391,51 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
 
         {/* Attachments */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h2 className="text-lg font-semibold">Attachments</h2>
-          <label className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer w-fit">
+          <h2 className="font-semibold">Attachments</h2>
+          <div className="flex flex-wrap gap-3">
+            {existingFiles.map((file, idx) => (
+              <div
+                key={idx}
+                className="border rounded-lg p-2 flex items-center space-x-2 bg-white shadow"
+              >
+                <a
+                  href={file.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-blue-600 underline"
+                >
+                  {file.public_id}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => removeExistingFile(idx)}
+                  className="text-red-500"
+                >
+                  ✖
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {files.map((file, idx) => (
+              <div
+                key={idx}
+                className="border rounded-lg p-2 flex items-center space-x-2 bg-white shadow"
+              >
+                <span className="text-sm">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(idx)}
+                  className="text-red-500"
+                >
+                  ✖
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <label className="px-4 py-2 my-5 bg-blue-600 text-white rounded-lg cursor-pointer w-fit">
             Upload Files
             <input
               type="file"
@@ -333,32 +444,17 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
               onChange={handleFileUpload}
             />
           </label>
-          <div className="flex flex-wrap gap-3">
-            {files.map((file, idx) => (
-              <div
-                key={idx}
-                className="relative border rounded-lg p-2 flex items-center space-x-2 bg-white shadow"
-              >
-                <span className="text-sm">{file.name}</span>
-                <button
-                  type="button"
-                  onClick={() => removeFile(idx)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  ✖
-                </button>
-              </div>
-            ))}
-          </div>
 
-          <div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="explanation" className="font-semibold">
+              Explanation(optional)
+            </label>
             <textarea
-              name="notes"
-              id="notes"
               cols="30"
-              rows="10"
+              rows="4"
               placeholder="Optional explanation..."
               className="border rounded p-2 w-full"
+              value={formData.explanation}
               onChange={(e) =>
                 setFormData({ ...formData, explanation: e.target.value })
               }
@@ -386,4 +482,4 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   );
 };
 
-export default InvoiceForm;
+export default EditInvoiceForm;

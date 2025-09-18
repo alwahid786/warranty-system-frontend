@@ -8,6 +8,7 @@ export default function InvoicesGrid({
   selectedIds,
   onChatOpen,
   onSelect,
+  clientsData,
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -18,6 +19,7 @@ export default function InvoicesGrid({
           selected={selectedIds.includes(invoice._id)}
           onSelect={onSelect}
           onChatOpen={onChatOpen}
+          clientsData={clientsData}
         />
       ))}
     </div>
