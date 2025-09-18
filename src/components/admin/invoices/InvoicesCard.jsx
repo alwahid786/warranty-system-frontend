@@ -86,7 +86,7 @@ export default function InvoiceCard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // change invoice status to finalize..----------------
+  // change invoice status to finalize..--------
   const handleFinalizeInvoice = async (invoice) => {
     try {
       const res = await changeInvoiceStatus({
