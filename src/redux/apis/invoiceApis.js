@@ -55,11 +55,31 @@ const invoiceApis = createApi({
       invalidatesTags: ["Invoices"],
     }),
 
+    // Change Invoice Status
+    changeInvoiceStatus: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/changeInvoiceStatus/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Invoices"],
+    }),
+
     // Delete Invoice
     deleteInvoice: builder.mutation({
       query: ({ id }) => ({
         url: `/deleteInvoice/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Invoices"],
+    }),
+
+    // Send Invoice
+    sendInvoice: builder.mutation({
+      query: ({ id }) => ({
+        url: `/sendInvoice/${id}`,
+        method: "POST",
+        responseHandler: (res) => res.blob(),
       }),
       invalidatesTags: ["Invoices"],
     }),
@@ -91,6 +111,8 @@ export const {
   useGetActiveInactiveCountQuery,
   useGetInvoicesStatQuery,
   useGetInvoicesQuery,
+  useChangeInvoiceStatusMutation,
+  useSendInvoiceMutation,
 } = invoiceApis;
 
 export default invoiceApis;

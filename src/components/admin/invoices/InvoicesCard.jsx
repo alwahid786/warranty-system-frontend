@@ -8,21 +8,28 @@ import EditInvoiceForm from "./EditInvoiceForm";
 import {
   useUpdateInvoiceMutation,
   useDeleteInvoiceMutation,
+  useChangeInvoiceStatusMutation,
+  useSendInvoiceMutation,
 } from "../../../redux/apis/invoiceApis";
 import toast from "react-hot-toast";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
+import { HiOutlinePencilSquare, HiOutlineLockClosed } from "react-icons/hi2";
+import { saveAs } from "file-saver";
 
 const statusColor = {
   draft: "bg-[#007AFF] text-white text-[14px] font-medium",
-  "Pending Credits": "bg-[#FFCC00] text-white text-[14px] font-medium truncate",
-  finalize: "bg-[#FF3B30] text-white text-[14px] font-medium",
+  finalized: "bg-[#FF3B30] text-white text-[14px] font-medium",
+};
+
+const statusIcons = {
+  draft: <HiOutlinePencilSquare className="text-white w-6 h-6" />,
+  finalized: <HiOutlineLockClosed className="text-white w-6 h-6" />,
 };
 
 export default function InvoiceCard({
   invoice,
   selected,
   onSelect,
-  onChatOpen,
   clientsData,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,6 +40,8 @@ export default function InvoiceCard({
 
   const [updateInvoice] = useUpdateInvoiceMutation();
   const [deleteInvoice] = useDeleteInvoiceMutation();
+  const [changeInvoiceStatus] = useChangeInvoiceStatusMutation();
+  const [sendInvoice] = useSendInvoiceMutation();
 
   const onEdit = () => {
     setIsEditOpen(true);
@@ -77,6 +86,32 @@ export default function InvoiceCard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // change invoice status to finalize..
+  const handleFinalizeInvoice = async (invoice) => {
+    try {
+      const res = await changeInvoiceStatus({
+        id: invoice?._id,
+        data: { status: "finalized" },
+      }).unwrap();
+      toast.success(res.message, { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
+    }
+  };
+
+  // send invoice on clients email address
+  const handleSendInvoice = async (invoice) => {
+    try {
+      const blob = await sendInvoice({
+        id: invoice?._id,
+      }).unwrap();
+      saveAs(blob, `invoice-${invoice?.invoiceNumber}.pdf`);
+      toast.success(res.message || "Invoice sent", { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message || "Failed to send", { duration: 3000 });
+    }
+  };
+
   return (
     <>
       <div
@@ -100,11 +135,12 @@ export default function InvoiceCard({
           </div>
           <span
             className={clsx(
-              "px-2 py-[6px] rounded",
+              "px-2 py-[6px] rounded flex items-center font-200 gap-2",
               statusColor[invoice?.status]
             )}
           >
-            {invoice?.status}
+            {statusIcons[invoice?.status]}{" "}
+            {invoice?.status === "draft" ? "Draft" : "Finalized"}
           </span>
         </div>
 
@@ -220,6 +256,7 @@ export default function InvoiceCard({
               bg="bg-[#B1B1B1]"
               color="text-white"
               cn=" !px-6 !py-2 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
+              onClick={() => handleFinalizeInvoice(invoice)}
             />
           ) : (
             <Button
@@ -227,6 +264,7 @@ export default function InvoiceCard({
               bg="bg-[#B1B1B1]"
               color="text-white"
               cn=" !px-6 !py-2 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
+              onClick={() => handleSendInvoice(invoice)}
             />
           )}
         </div>
