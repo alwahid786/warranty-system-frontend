@@ -3,11 +3,9 @@
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 import { useState } from "react";
-import ChatModal from "../../../components/shared/small/ChatModal";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
-import { useGetInvoicesQuery } from "../../../redux/apis/claimsApis";
-import { useGetArchieveInvoicesQuery } from "../../../redux/apis/claimsApis";
+import { useGetArchieveInvoicesQuery } from "../../../redux/apis/invoiceApis";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -81,6 +79,7 @@ const ArchievedInvoices = () => {
       <>
         <InvoicesListHeader
           selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
           showImportExport={false}
         />
       </>
@@ -96,13 +95,6 @@ const ArchievedInvoices = () => {
         selectedIds={selectedIds}
         onSelect={handleSelect}
         onChatOpen={handleChatOpen}
-      />
-      <ChatModal
-        setAnimateIn={setAnimateIn}
-        animateIn={animateIn}
-        isOpen={!!chatUser}
-        onClose={handleClose}
-        user={chatUser}
       />
       <Pagination current={page} total={totalPages} onPageChange={setPage} />
     </div>

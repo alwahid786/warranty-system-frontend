@@ -14,11 +14,13 @@ import {
 const ITEMS_PER_PAGE = 6;
 
 const defaultFilters = {
-  searchType: "id",
+  searchType: "invoiceNumber",
   searchValue: "",
   fromDate: "",
   toDate: "",
   selectedBrand: null,
+  minFinalTotal: "",
+  maxFinalTotal: "",
   status: "",
 };
 
@@ -54,36 +56,78 @@ const Invoices = () => {
     page * ITEMS_PER_PAGE
   );
 
-  const filteredData = currentInvoices.filter((row) => {
-    if (filters.searchValue) {
-      const val = filters.searchValue.toLowerCase();
-      if (
-        filters.searchType === "id" &&
-        !row.claimId.toString().toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "name" &&
-        !row.brand.toLowerCase().includes(val)
-      )
-        return false;
-      if (filters.searchType === "phone") return true;
-    }
-    return true;
-  });
-
-  // Handler to update filters
-  const handleFilterChange = (newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+  const handleFilterChange = (updated) => {
+    setFilters((prev) => ({ ...prev, ...updated }));
   };
+
+  // Apply all filters
+  const filteredData = currentInvoices.filter((invoice) => {
+    let isMatch = true;
+
+    // 1. Search by field type
+    if (filters.searchValue) {
+      const fieldValue = String(
+        invoice[filters.searchType] || ""
+      ).toLowerCase();
+      if (!fieldValue.includes(filters.searchValue.toLowerCase())) {
+        isMatch = false;
+      }
+    }
+
+    // 2. From / To Invoice Date
+    if (filters.fromDate) {
+      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
+      if (invDate < new Date(filters.fromDate)) {
+        isMatch = false;
+      }
+    }
+    if (filters.toDate) {
+      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
+      if (invDate > new Date(filters.toDate)) {
+        isMatch = false;
+      }
+    }
+
+    // 3. Statement Type
+    if (filters.selectedBrand) {
+      if (
+        invoice.statementType?.toLowerCase() !==
+        filters.selectedBrand.name.toLowerCase()
+      ) {
+        isMatch = false;
+      }
+    }
+
+    // 4. Status
+    if (filters.status) {
+      if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
+        isMatch = false;
+      }
+    }
+
+    // 5. Min / Max Final Total
+    if (filters.minFinalTotal) {
+      if (Number(invoice.finalTotal) < Number(filters.minFinalTotal)) {
+        isMatch = false;
+      }
+    }
+    if (filters.maxFinalTotal) {
+      if (Number(invoice.finalTotal) > Number(filters.maxFinalTotal)) {
+        isMatch = false;
+      }
+    }
+
+    return isMatch;
+  });
 
   return (
     <div className="w-full mx-auto ">
       <>
         <InvoicesListHeader
-          selectedIds={selectedIds}
           showImportExport={true}
           clientsData={clientsData}
+          selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
         />
       </>
       <div className="mb-4">

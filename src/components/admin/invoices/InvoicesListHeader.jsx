@@ -3,8 +3,8 @@ import { LuUpload, LuPlus } from "react-icons/lu";
 import Button from "../../shared/small/Button";
 // import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
-import { useAddArchieveInvoicesMutation } from "../../../redux/apis/claimsApis";
-import { useRemoveArchieveInvoicesMutation } from "../../../redux/apis/claimsApis";
+import { useAddArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
+import { useRemoveArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
 import InvoiceForm from "./AddNewInvoice";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -12,6 +12,7 @@ import { useAddInvoiceMutation } from "../../../redux/apis/invoiceApis";
 
 const InvoicesListHeader = ({
   selectedIds,
+  setSelectedIds,
   showImportExport = true,
   clientsData,
 }) => {
@@ -23,20 +24,20 @@ const InvoicesListHeader = ({
 
   const handleAddArchieveInvoices = async (e) => {
     e.preventDefault();
-    if (showImportExport) {
-      try {
+    try {
+      if (showImportExport) {
         const res = await addArchieveInvoices(selectedIds).unwrap();
         toast.success(res.message, { duration: 3000 });
-      } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
-      }
-    } else {
-      try {
+      } else {
         const res = await removeArchieveInvoices(selectedIds).unwrap();
         toast.success(res.message, { duration: 3000 });
-      } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
       }
+
+      setSelectedIds([]);
+    } catch (err) {
+      toast.error(err?.data?.message || "Something went wrong", {
+        duration: 3000,
+      });
     }
   };
 

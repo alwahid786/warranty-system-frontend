@@ -5,10 +5,12 @@ import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
 import { useGetArchieveClaimsQuery } from "../../../redux/apis/claimsApis";
 
 const defaultFilters = {
-  searchType: "id",
+  searchType: "roNumber",
   searchValue: "",
   fromDate: "",
   toDate: "",
+  entryFromDate: "",
+  entryToDate: "",
   selectedBrand: null,
   status: "",
 };
@@ -25,53 +27,61 @@ const ArchievedActions = () => {
   const initialData = claims;
 
   const filteredData = initialData.filter((row) => {
-    // Search filter
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
       if (
-        filters.searchType === "id" &&
-        !row.claimId.toLowerCase().includes(val)
+        filters.searchType === "roNumber" &&
+        !row.roNumber?.toLowerCase().includes(val)
       )
         return false;
       if (
-        filters.searchType === "name" &&
-        !row.userName.toLowerCase().includes(val)
+        filters.searchType === "roSuffix" &&
+        !row.roSuffix?.toLowerCase().includes(val)
       )
         return false;
-      if (filters.searchType === "phone") return true; // No phone in mock data
-    }
-
-    // Brand filter
-    if (filters.selectedBrand && filters.selectedBrand.name) {
       if (
-        !row.carBrand
-          .toLowerCase()
-          .includes(filters.selectedBrand.name.toLowerCase())
+        filters.searchType === "quoted" &&
+        !row.quoted?.toLowerCase().includes(val)
       )
         return false;
     }
 
-    // Status filter
     if (filters.status && filters.status !== "all") {
-      if (row.status.toLowerCase() !== filters.status.toLowerCase())
+      if (row.status?.toLowerCase() !== filters.status.toLowerCase())
         return false;
     }
 
-    // Date filter
     if (filters.fromDate || filters.toDate) {
-      const [month, day, year] = row.claimDate.split("/");
-      const rowDate = new Date(
+      const [month, day, year] = row.roDate.split("/");
+      const roDate = new Date(
         `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
       );
 
       if (filters.fromDate) {
         const from = new Date(filters.fromDate);
-        if (rowDate < from) return false;
+        if (roDate < from) return false;
       }
 
       if (filters.toDate) {
         const to = new Date(filters.toDate);
-        if (rowDate > to) return false;
+        if (roDate > to) return false;
+      }
+    }
+
+    if (filters.entryFromDate || filters.entryToDate) {
+      const [month, day, year] = row.entryDate.split("/");
+      const entryDate = new Date(
+        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+      );
+
+      if (filters.entryFromDate) {
+        const from = new Date(filters.entryFromDate);
+        if (entryDate < from) return false;
+      }
+
+      if (filters.entryToDate) {
+        const to = new Date(filters.entryToDate);
+        if (entryDate > to) return false;
       }
     }
 

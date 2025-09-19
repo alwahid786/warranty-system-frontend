@@ -77,16 +77,6 @@ const claimsApis = createApi({
       providesTags: ["Claims"],
     }),
 
-    // get Archieve Invoices
-
-    getArchieveInvoices: builder.query({
-      query: () => ({
-        url: "/getArchieveInvoices",
-        method: "GET",
-      }),
-      providesTags: ["Claims"],
-    }),
-
     // Add Archieve Claims
     addArchieveClaims: builder.mutation({
       query: (data) => ({
@@ -97,30 +87,10 @@ const claimsApis = createApi({
       invalidatesTags: ["Claims"],
     }),
 
-    // Add Archieve Invoices
-    addArchieveInvoices: builder.mutation({
-      query: (data) => ({
-        url: "/createArchiveInvoices",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["Claims"],
-    }),
-
-    // move out of archieve
+    // move claims out of archieve
     removeArchieveClaims: builder.mutation({
       query: (data) => ({
         url: "/removeArchieveClaims",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["Claims"],
-    }),
-
-    // move out of invoice archieve
-    removeArchieveInvoices: builder.mutation({
-      query: (data) => ({
-        url: "/removeArchiveInvoices",
         method: "POST",
         body: data,
       }),
@@ -156,9 +126,6 @@ export const {
   useGetArchieveClaimsQuery,
   useAddArchieveClaimsMutation,
   useRemoveArchieveClaimsMutation,
-  useGetArchieveInvoicesQuery,
-  useAddArchieveInvoicesMutation,
-  useRemoveArchieveInvoicesMutation,
   useGetInvoicesStatQuery,
   useGetClaimsStatQuery,
   useUpdateClaimsAdditionalDataMutation,
