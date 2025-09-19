@@ -5,9 +5,9 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   if (!isOpen) return null;
 
   const clients = clientsData?.data.map((client) => ({
-    id: client._id,
-    name: client.name,
-    companyName: client.companyName,
+    id: client?._id,
+    name: client?.name,
+    companyName: client?.companyName || client?.storeName,
   }));
 
   const [formData, setFormData] = useState({

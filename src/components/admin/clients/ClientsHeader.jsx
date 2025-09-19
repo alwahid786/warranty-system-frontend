@@ -8,6 +8,10 @@ import { MdClose } from "react-icons/md";
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
+    clientName: "",
+    clientEmail: "",
+    clientPhone: "",
+    clientPassword: "",
     storeName: "",
     dealerId: "",
     address: {
@@ -19,7 +23,7 @@ const ClientsHeader = () => {
       country: "",
       zip: "",
     },
-    phone: "",
+    storePhone: "",
     emails: [""],
     accountOwner: "",
     businessOwner: "",
@@ -65,6 +69,10 @@ const ClientsHeader = () => {
       if (res.success) {
         setIsOpen(false);
         setFormData({
+          clientName: "",
+          clientEmail: "",
+          clientPhone: "",
+          clientPassword: "",
           storeName: "",
           dealerId: "",
           address: {
@@ -76,7 +84,7 @@ const ClientsHeader = () => {
             country: "",
             zip: "",
           },
-          phone: "",
+          storePhone: "",
           emails: [""],
           accountOwner: "",
           businessOwner: "",
@@ -111,6 +119,77 @@ const ClientsHeader = () => {
           className="space-y-6 max-h-[80vh] overflow-y-auto pr-2"
           onSubmit={handleAddClient}
         >
+          {/* Section: Client Credentials */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 border-b pb-1">
+              Client Info
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Client Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clientName: e.target.value })
+                  }
+                  placeholder="Enter Client Name"
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Client Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clientEmail: e.target.value })
+                  }
+                  placeholder="Enter Client Email"
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Client Password
+                </label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clientPassword: e.target.value })
+                  }
+                  placeholder="Enter Password"
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Client Phone
+                </label>
+                <input
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clientPhone: e.target.value })
+                  }
+                  placeholder="Phone Number"
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Section: Store Info */}
           <div>
             <h3 className="text-lg font-semibold mb-3 border-b pb-1">
@@ -154,7 +233,7 @@ const ClientsHeader = () => {
           {/* Section: Address */}
           <div>
             <h3 className="text-lg font-semibold mb-3 border-b pb-1">
-              Address
+              Store Address
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
@@ -212,16 +291,18 @@ const ClientsHeader = () => {
           {/* Section: Contact */}
           <div>
             <h3 className="text-lg font-semibold mb-3 border-b pb-1">
-              Contact
+              Store Contact
             </h3>
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium mb-1">Phone</label>
+              <label className="block text-sm font-medium mb-1">
+                Store Phone
+              </label>
               <input
                 type="text"
                 value={formData.phone}
                 onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
+                  setFormData({ ...formData, storePhone: e.target.value })
                 }
                 placeholder="Phone Number"
                 className="w-full border px-3 py-2 rounded"
