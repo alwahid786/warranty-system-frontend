@@ -87,7 +87,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
         <div className="flex gap-1 sm:gap-2 justify-end">
           <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
-            text={showImportExport ? "Move To Archieve" : "Move Out of Archive"}
+            text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
             color="text-white"
             disabled={selectedClaims?.length === 0}

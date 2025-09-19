@@ -48,6 +48,8 @@ const ClientsHeader = () => {
 
   // Add new email field
   const addEmailField = () => {
+    if (formData.emails.length >= 5)
+      return toast.error("Maximum 5 emails allowed");
     setFormData((prev) => ({ ...prev, emails: [...prev.emails, ""] }));
   };
 

@@ -78,7 +78,7 @@ const InvoicesListHeader = ({
           />
           <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
-            text={showImportExport ? "Move To Archieve" : "Move Out of Archive"}
+            text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
             color="text-white"
             disabled={selectedIds?.length === 0}

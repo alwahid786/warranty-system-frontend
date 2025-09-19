@@ -4,6 +4,20 @@ import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
+import {
+  FaPhone,
+  FaUserTie,
+  FaUser,
+  FaShareNodes,
+  FaBell,
+  FaRegBuilding,
+  FaEnvelope,
+} from "react-icons/fa6";
+import {
+  HiOutlineBuildingStorefront,
+  HiOutlineUserGroup,
+} from "react-icons/hi2";
+import { MdLocationOn } from "react-icons/md";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -102,10 +116,13 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
 
         {/* Row 2 */}
         <div className="flex justify-between">
-          <p className="text-xs text-gray-600">
-            ☎️ Store Phone: {client.storePhone}
+          <p className="text-xs text-gray-600 flex items-center gap-2">
+            <FaPhone className="text-gray-500" /> {client.storePhone}
           </p>
-          <p className="text-xs text-gray-600">📊 {client.percentage}% Share</p>
+          <p className="text-xs text-gray-600 flex items-center gap-2">
+            <FaShareNodes className="text-gray-500" /> {client.percentage}%
+            Share
+          </p>
         </div>
 
         {/* Contact */}
@@ -120,27 +137,32 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
 
         {/* Address */}
         {client.address && (
-          <div className="text-xs text-gray-600">
-            <FaLocationDot className="text-red-500" />{" "}
-            {[
-              client.address.store,
-              client.address.street,
-              client.address.area,
-              client.address.city,
-              client.address.state,
-              client.address.country,
-              client.address.zip,
-            ]
-              .filter(Boolean)
-              .join(", ")}
+          <div className="flex items-center gap-1 text-xs text-gray-600">
+            <MdLocationOn className="text-gray-500 text-lg" />
+            <span className="leading-4">
+              {[
+                client.address.store,
+                client.address.street,
+                client.address.area,
+                client.address.city,
+                client.address.state,
+                client.address.country,
+                client.address.zip,
+              ]
+                .filter(Boolean)
+                .join(", ")}
+            </span>
           </div>
         )}
 
         {/* Owners */}
         <div className="flex justify-between items-center text-xs text-gray-700">
-          <span>👤 Account Owner: {client.accountOwner}</span>
+          <p className="text-xs text-gray-600 flex items-center gap-2">
+            <FaUser className="text-gray-500" /> Account Owner:{" "}
+            {client.accountOwner}
+          </p>
           <span className="flex items-center gap-1">
-            👔 {client.businessOwner}{" "}
+            <FaUserTie className="text-gray-500" /> {client.businessOwner}{" "}
             {client.businessOwnerView ? (
               <FaRegEye className="text-green-500" />
             ) : (
@@ -152,8 +174,9 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         {/* Notifications */}
         {client.emails?.length > 0 && (
           <div className="mt-2">
-            <p className="font-semibold text-xs text-gray-700 mb-1">
-              🔔 Notifications
+            <p className="flex items-center gap-1 font-semibold text-xs text-gray-700 mb-1">
+              <FaBell className="text-gray-500" />
+              <span>Notifications</span>
             </p>
             <div className="flex flex-wrap gap-2">
               {client.emails.map((em, i) => (

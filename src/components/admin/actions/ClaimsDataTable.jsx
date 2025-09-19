@@ -7,6 +7,8 @@ import {
   HiOutlineXMark,
 } from "react-icons/hi2";
 
+import { MdClose } from "react-icons/md";
+
 import ChatModal from "../../shared/small/ChatModal";
 import {
   useUpdateClaimsMutation,
@@ -109,6 +111,13 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const [updateClaimsAdditionalData] = useUpdateClaimsAdditionalDataMutation();
   const [editingCell, setEditingCell] = useState(null);
   const { user } = useSelector((state) => state.auth);
+  const [infoModal, setInfoModal] = useState(null);
+  const [infoModalTitle, setInfoModalTitle] = useState(null);
+
+  const handleShowMore = (title, text) => {
+    setInfoModal(text);
+    setInfoModalTitle(title);
+  };
 
   // Handler to update status for a row
   const handleStatusChange = async (rowIdx, newStatus, row) => {
@@ -223,82 +232,57 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
     },
     {
       name: "Error Description",
-      selector: (row) => row.errorDescription,
+      selector: (row) => row?.errorDescription,
       cell: (row) => (
-        <span className="text-dark font-normal text-xs ">
-          {row.errorDescription}
-        </span>
+        <div
+          className="flex items-center text-dark font-normal text-xs max-w-[150px]"
+          title={row.errorDescription}
+        >
+          <span className="truncate">
+            {row.errorDescription.length > 30
+              ? row.errorDescription.slice(0, 30) + "..."
+              : row.errorDescription}
+          </span>
+          {row.errorDescription && (
+            <button
+              onClick={() =>
+                handleShowMore("Error Description", row.errorDescription)
+              }
+              className="ml-1 text-blue-500 hover:underline shrink-0"
+            >
+              View
+            </button>
+          )}
+        </div>
       ),
-      sortable: false,
       grow: 3,
       minWidth: "250px",
     },
     {
       name: "Additional Information",
-      selector: (row) => row.additionalInfo,
-      cell: (row) => {
-        const [tempValue, setTempValue] = React.useState(
-          row.additionalInfo || ""
-        );
-
-        React.useEffect(() => {
-          setTempValue(row.additionalInfo || "");
-        }, [row.additionalInfo]);
-
-        const isEditing =
-          editingCell?.rowId === row._id &&
-          editingCell?.field === "additionalInfo";
-
-        React.useEffect(() => {
-          const handleClickOutside = (e) => {
-            if (!e.target.closest(`#cell-additional-${row._id}`)) {
-              if (isEditing) setEditingCell(null);
-            }
-          };
-          document.addEventListener("mousedown", handleClickOutside);
-          return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-        }, [isEditing]);
-
-        return (
-          <div
-            id={`cell-additional-${row._id}`}
-            className="flex flex-col w-full"
-          >
-            <textarea
-              rows="3"
-              className="border border-gray-300 rounded-md px-2 py-1 text-xs w-full"
-              value={tempValue}
-              onChange={(e) => setTempValue(e.target.value)}
-              onFocus={() =>
-                setEditingCell({ rowId: row._id, field: "additionalInfo" })
+      selector: (row) => row?.additionalInfo,
+      cell: (row) => (
+        <div
+          className="flex items-center text-dark font-normal text-xs max-w-[150px]"
+          title={row.additionalInfo}
+        >
+          <span className="truncate">
+            {row.additionalInfo.length > 30
+              ? row.additionalInfo.slice(0, 30) + "..."
+              : row.additionalInfo}
+          </span>
+          {row.additionalInfo && (
+            <button
+              onClick={() =>
+                handleShowMore("Additional Information", row.additionalInfo)
               }
-            />
-            {isEditing && (
-              <div className="flex gap-2 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleClaimsUpdate(row._id, "additionalInfo", tempValue);
-                    setEditingCell(null);
-                  }}
-                >
-                  <HiOutlineCheck fill="#22C55E" size={20} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTempValue(row.additionalInfo || "");
-                    setEditingCell(null);
-                  }}
-                >
-                  <HiOutlineXMark fill="#EF4444" size={20} />
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      },
+              className="ml-1 text-blue-500 hover:underline shrink-0"
+            >
+              View
+            </button>
+          )}
+        </div>
+      ),
       grow: 2,
       minWidth: "200px",
     },
@@ -308,70 +292,29 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   if (user?.role === "admin") {
     columns.push({
       name: "Internal Notes",
-      selector: (row) => row.internalNotes,
-      cell: (row) => {
-        const [tempValue, setTempValue] = React.useState(
-          row.internalNotes || ""
-        );
-
-        React.useEffect(() => {
-          setTempValue(row.internalNotes || "");
-        }, [row.internalNotes]);
-
-        const isEditing =
-          editingCell?.rowId === row._id &&
-          editingCell?.field === "internalNotes";
-
-        React.useEffect(() => {
-          const handleClickOutside = (e) => {
-            if (!e.target.closest(`#cell-additional-${row._id}`)) {
-              if (isEditing) setEditingCell(null);
-            }
-          };
-          document.addEventListener("mousedown", handleClickOutside);
-          return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-        }, [isEditing]);
-
-        return (
-          <div
-            id={`cell-additional-${row._id}`}
-            className="flex flex-col w-full"
-          >
-            <textarea
-              rows="3"
-              className="border border-gray-300 rounded-md px-2 py-1 text-xs w-full"
-              value={tempValue}
-              onChange={(e) => setTempValue(e.target.value)}
-              onFocus={() =>
-                setEditingCell({ rowId: row._id, field: "internalNotes" })
+      selector: (row) => row?.internalNotes,
+      cell: (row) => (
+        <div
+          className="flex items-center text-dark font-normal text-xs max-w-[150px]"
+          title={row.internalNotes}
+        >
+          <span className="truncate">
+            {row.internalNotes.length > 30
+              ? row.internalNotes.slice(0, 30) + "..."
+              : row.internalNotes}
+          </span>
+          {row.internalNotes && (
+            <button
+              onClick={() =>
+                handleShowMore("Internal Notes", row.internalNotes)
               }
-            />
-            {isEditing && (
-              <div className="flex gap-2 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleClaimsUpdate(row._id, "internalNotes", tempValue);
-                    setEditingCell(null);
-                  }}
-                >
-                  <HiOutlineCheck fill="#22C55E" size={20} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTempValue(row.additionalInfo || "");
-                    setEditingCell(null);
-                  }}
-                >
-                  <HiOutlineXMark fill="#EF4444" size={20} />
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      },
+              className="ml-1 text-blue-500 hover:underline shrink-0"
+            >
+              View
+            </button>
+          )}
+        </div>
+      ),
       grow: 2,
       minWidth: "200px",
     });
@@ -424,6 +367,25 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
             user={chatUser}
             forInvoice={false}
           />
+        )}
+      </div>
+      <div>
+        {infoModal && (
+          <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-50">
+            <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+              <button
+                onClick={() => setInfoModal(null)}
+                className="absolute top-3 right-3 text-gray-700 hover:text-gray-500"
+              >
+                <MdClose className="text-2xl" />
+              </button>
+
+              <div className="flex flex-col gap-2 text-center">
+                <h3 className="font-semibold mb-2">{infoModalTitle}</h3>
+                <p className="text-sm text-gray-700">{infoModal}</p>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
