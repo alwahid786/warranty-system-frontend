@@ -17,7 +17,7 @@ import {
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
-// Custom Status Dropdown styled as button===========
+// Custom Status Dropdown styled as button=======
 const StatusDropdown = ({ status, onChange }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
