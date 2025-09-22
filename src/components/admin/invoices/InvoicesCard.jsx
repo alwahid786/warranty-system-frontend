@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import { HiOutlinePencilSquare, HiOutlineLockClosed } from "react-icons/hi2";
 import { saveAs } from "file-saver";
+import { getRelativeTime } from "../../../utils/getDate";
 
 const statusColor = {
   draft: "bg-[#007AFF] text-white text-[14px] font-medium",
@@ -203,6 +204,16 @@ export default function InvoiceCard({
             <p className="font-bold">Final Total:</p>
             <p className="font-bold text-primary">${invoice?.finalTotal}</p>
           </div>
+          {invoice?.lastSent && (
+            <div className="flex justify-between items-center ">
+              <p className="font-inter font-medium text-dark-text">
+                Last Sent:
+              </p>
+              <p className="font-normal text-primary">
+                {getRelativeTime(invoice?.lastSent)}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-between space-x-[14px]">
@@ -260,11 +271,14 @@ export default function InvoiceCard({
             />
           ) : (
             <Button
-              text="Send Invoice"
+              text={
+                invoice?.sentCount === 0 ? "Send Invoice" : "Resend Invoice"
+              }
               bg="bg-[#B1B1B1]"
               color="text-white"
               cn=" !px-6 !py-2 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
               onClick={() => handleSendInvoice(invoice)}
+              badge={invoice?.sentCount}
             />
           )}
         </div>

@@ -3,8 +3,7 @@ import { MdClose } from "react-icons/md";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
     password: "",
@@ -14,8 +13,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
   useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
+        name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
         password: "",
@@ -35,7 +33,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-96 p-6 relative">
         {/* Close Button */}
         <button
@@ -49,23 +47,11 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* First Name */}
           <div>
-            <label className="block text-sm font-medium">First Name</label>
+            <label className="block text-sm font-medium">Name</label>
             <input
               type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
-            />
-          </div>
-
-          {/* Last Name */}
-          <div>
-            <label className="block text-sm font-medium">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
             />

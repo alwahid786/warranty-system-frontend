@@ -1,21 +1,23 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import {
   HiChatBubbleLeftRight,
   HiChevronDown,
-  HiOutlineCheck,
-  HiOutlineXMark,
+  HiOutlinePencil,
+  HiOutlineTrash,
 } from "react-icons/hi2";
-
+import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
-
 import ChatModal from "../../shared/small/ChatModal";
 import {
   useUpdateClaimsMutation,
   useUpdateClaimsAdditionalDataMutation,
+  useDeleteClaimMutation,
 } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import EditClaimsModal from "./EditClaimsModal";
+import ConfirmationModal from "../../../utils/ConfirmationModal";
 
 // Custom Status Dropdown styled as button=
 const StatusDropdown = ({ status, onChange }) => {
@@ -113,6 +115,13 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const { user } = useSelector((state) => state.auth);
   const [infoModal, setInfoModal] = useState(null);
   const [infoModalTitle, setInfoModalTitle] = useState(null);
+  const [toggleActionsMenu, setToggleActionsMenu] = useState(null);
+  const menuRef = useRef(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editClaim, setEditClaim] = useState(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteClaimId, setDeleteClaimId] = useState(null);
+  const [deleteClaim] = useDeleteClaimMutation();
 
   const handleShowMore = (title, text) => {
     setInfoModal(text);
@@ -139,15 +148,32 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
     }
   };
 
-  const handleClaimsUpdate = async (rowId, claimField, claimValue) => {
-    const claimData = {
-      claimField: claimField,
-      claimValue: claimValue,
-    };
+  const handleEdit = (row) => {
+    setIsEditModalOpen(true);
+    setEditClaim(row);
+  };
+
+  const handleDelete = (row) => {
+    setIsDeleteOpen(true);
+    setDeleteClaimId(row._id);
+  };
+
+  const handleDeleteClaim = async (id) => {
+    try {
+      const res = await deleteClaim(id).unwrap();
+      toast.success(res.message, { duration: 3000 });
+    } catch (err) {
+      toast.error(err.data.message, { duration: 3000 });
+    }
+  };
+
+  const handleOnSubmit = async (updatedClaim) => {
+    console.log("updated claim", updatedClaim);
+
     try {
       const res = await updateClaimsAdditionalData({
-        id: rowId,
-        claimData: claimData,
+        id: updatedClaim._id,
+        claimData: updatedClaim,
       }).unwrap();
       toast.success(res.message, { duration: 3000 });
     } catch (err) {
@@ -157,6 +183,16 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
 
   const handleChatClose = () => {
     setShowChat(null);
+  };
+
+  const handleEditClose = () => {
+    setIsEditModalOpen(false);
+    setEditClaim(null);
+  };
+
+  const handleDeleteClose = () => {
+    setIsDeleteOpen(false);
+    setDeleteClaimId(null);
   };
 
   const handleClose = () => {
@@ -169,6 +205,16 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   React.useEffect(() => {
     setTableData(data);
   }, [data]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setToggleActionsMenu(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Table columns--------
   const columns = [
@@ -256,7 +302,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 3,
-      minWidth: "250px",
+      minWidth: "200px",
     },
     {
       name: "Additional Information",
@@ -284,7 +330,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 2,
-      minWidth: "200px",
+      minWidth: "170px",
     },
   ];
 
@@ -323,16 +369,66 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   columns.push({
     name: "Actions",
     cell: (row) => (
-      <button className="text-primary">
-        <HiChatBubbleLeftRight
-          fill="#043655"
-          onClick={() => {
-            setChatUser(row);
-            setShowChat(true);
-          }}
-          size={30}
-        />
-      </button>
+      <div className="relative">
+        <button
+          className="p-2 rounded-full hover:bg-gray-100"
+          onClick={() =>
+            setToggleActionsMenu(
+              toggleActionsMenu?._id === row._id ? null : row
+            )
+          }
+        >
+          <HiOutlineDotsVertical className="text-gray-600" size={20} />
+        </button>
+
+        {toggleActionsMenu?._id === row._id && (
+          <div
+            ref={menuRef}
+            className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-20"
+          >
+            <button
+              onClick={() => {
+                handleEdit(row);
+                setToggleActionsMenu(null);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100"
+            >
+              <HiOutlinePencil
+                size={20}
+                className="mr-2 inline-block text-yellow-600"
+              />
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                handleDelete(row);
+                setToggleActionsMenu(null);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100 text-red-500"
+            >
+              <HiOutlineTrash
+                size={20}
+                className="mr-2 inline-block text-red-600"
+              />
+              Delete
+            </button>
+            <button
+              onClick={() => {
+                setChatUser(row);
+                setShowChat(true);
+                setToggleActionsMenu(null);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100"
+            >
+              <HiChatBubbleLeftRight
+                size={20}
+                className="mr-2 inline-block text-primary"
+              />
+              Chat
+            </button>
+          </div>
+        )}
+      </div>
     ),
     right: true,
     width: "100px",
@@ -364,7 +460,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
             animateIn={animateIn}
             isOpen={!!showChat}
             onClose={handleClose}
-            user={chatUser}
+            row={chatUser}
             forInvoice={false}
           />
         )}
@@ -388,6 +484,24 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           </div>
         )}
       </div>
+      {isEditModalOpen && (
+        <EditClaimsModal
+          isOpen={isEditModalOpen}
+          onClose={handleEditClose}
+          claim={editClaim}
+          isAdmin={user.role === "admin" ? true : false}
+          onSubmit={handleOnSubmit}
+        />
+      )}
+      {isDeleteOpen && (
+        <ConfirmationModal
+          isOpen={isDeleteOpen}
+          onClose={handleDeleteClose}
+          onSave={handleDeleteClaim}
+          data="Are you sure you want to delete this claim?"
+          id={deleteClaimId}
+        />
+      )}
     </div>
   );
 };

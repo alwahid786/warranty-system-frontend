@@ -4,22 +4,28 @@ import { MdCancel } from "react-icons/md";
 import { useGetChatQuery } from "../../../redux/apis/chatApis";
 import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+
 export default function ChatModal({
   setAnimateIn,
   animateIn,
   isOpen,
   onClose,
-  user,
+  row,
   forInvoice = false,
 }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState(null);
   const [sendMessageMutation] = useSendMessageMutation();
-  const { data } = useGetChatQuery(forInvoice ? user?.Id : user?._id);
+  const { data } = useGetChatQuery(row?._id, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (data) {
@@ -52,13 +58,18 @@ export default function ChatModal({
     setFile(selectedFile);
   };
 
+  console.log("messages", messages);
+
+  console.log("current id", user?._id);
+
   const sendMessage = async () => {
     if (!newMessage.trim() && !file) return;
 
     const formData = new FormData();
     if (newMessage.trim()) formData.append("message", newMessage);
     if (file) formData.append("file", file);
-    formData.append("claimId", forInvoice ? user?.Id : user?._id);
+    formData.append("claimId", forInvoice ? row?.Id : row?._id);
+    if (user?._id) formData.append("senderId", user?._id);
     try {
       const res = await sendMessageMutation(formData).unwrap();
       toast.success(res.message, { duration: 3000 });
@@ -86,14 +97,10 @@ export default function ChatModal({
         <div className="flex items-center justify-between border-b p-4">
           <div className="flex items-center gap-3">
             <img src="/profile-pic.png" className="w-[48px]" alt="" />
-            <div>
-              <h2 className="text-lg font-semibold">{user?.userName}</h2>
-              <p className="text-sm text-green-600">{user?.claimId}</p>
-            </div>
           </div>
           <div>
             <p className="text-lg text-green-700">
-              RO#: {user?.roNumber} - {user?.roSuffix}
+              RO#: {row?.roNumber} - {row?.roSuffix}
             </p>
           </div>
           <button onClick={onClose}>
@@ -107,12 +114,14 @@ export default function ChatModal({
             <div
               key={msg._id || idx}
               className={`flex ${
-                msg.senderId === user?.owner ? "justify-end" : "justify-start"
+                msg.senderId.toString() == user?._id.toString()
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`p-3 rounded-lg max-w-xs ${
-                  msg.senderId === user?._id
+                  msg.senderId.toString() == user?._id.toString()
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-900"
                 }`}

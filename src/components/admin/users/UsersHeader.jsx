@@ -8,8 +8,7 @@ import toast from "react-hot-toast";
 const UsersHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setformData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
     password: "",
@@ -28,8 +27,7 @@ const UsersHeader = () => {
         setIsOpen(false);
         await getUsersStatRefetch();
         setformData({
-          firstName: "",
-          lastName: "",
+          name: "",
           email: "",
           phone: "",
           password: "",
@@ -59,24 +57,12 @@ const UsersHeader = () => {
       <AddUserModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-xl font-semibold mb-4">Add New User</h2>
         <form className="space-y-4" onSubmit={handleAddUser}>
-          <label>First Name</label>
+          <label>Name</label>
           <input
             type="text"
-            value={formData.firstName}
-            onChange={(e) =>
-              setformData({ ...formData, firstName: e.target.value })
-            }
+            value={formData.name}
+            onChange={(e) => setformData({ ...formData, name: e.target.value })}
             placeholder="First Name"
-            className="w-full border px-3 py-2 rounded"
-          />
-          <label>Last Name</label>
-          <input
-            type="text"
-            value={formData.lastName}
-            onChange={(e) =>
-              setformData({ ...formData, lastName: e.target.value })
-            }
-            placeholder="Last Name"
             className="w-full border px-3 py-2 rounded"
           />
           <label>Email</label>

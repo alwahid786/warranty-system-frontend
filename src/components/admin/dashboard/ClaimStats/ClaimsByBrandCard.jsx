@@ -18,7 +18,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
   return (
     <div className="bg-white rounded-xl border shadow flex-1 pb-6">
       <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
-        Claims by Car Brand
+        Claims by Warranty Company
       </h2>
 
       {brands.length === 0 ? (
@@ -31,7 +31,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
             <thead className="bg-[#F9FAFB] border">
               <tr className="text-gray-500">
                 <th className="text-left py-2 px-2 font-semibold text-[10px] leading-5 text-secondary ">
-                  CAR BRAND
+                  COMPANY
                 </th>
                 <th className="text-right py-2 px-2 font-semibold text-[10px] leading-5 text-secondary ">
                   TOTAL CLAIMS

@@ -68,6 +68,15 @@ const claimsApis = createApi({
       invalidatesTags: ["Claims"],
     }),
 
+    // Delete Claim
+    deleteClaim: builder.mutation({
+      query: (id) => ({
+        url: `/deleteClaim/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Claims"],
+    }),
+
     // get Archieve Claims
     getArchieveClaims: builder.query({
       query: () => ({
@@ -129,6 +138,7 @@ export const {
   useGetInvoicesStatQuery,
   useGetClaimsStatQuery,
   useUpdateClaimsAdditionalDataMutation,
+  useDeleteClaimMutation,
 } = claimsApis;
 
 export default claimsApis;

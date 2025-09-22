@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Loader from "./components/shared/small/Loader";
 import { useGetMyProfileQuery } from "./redux/apis/authApis";
@@ -36,6 +36,9 @@ const Clients = lazy(() => import("./pages/admin/clients/Clients"));
 const AdminLogin = lazy(() => import("./pages/admin/adminLogin/AdminLogin"));
 const AdminResetPassword = lazy(() =>
   import("./pages/admin/adminLogin/AdminResetPassword")
+);
+const CompaniesResponseTime = lazy(() =>
+  import("./pages/admin/Companies-Avg-Response/companies-response-time")
 );
 
 function App() {
@@ -117,16 +120,71 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
+            <Route
+              index
+              element={
+                user?.role === "admin" ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/actions" replace />
+                )
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute
+                  user={user}
+                  redirect="/login"
+                  allowedRoles={["admin"]}
+                >
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="actions" element={<Actions />} />
-            <Route path="invoices" element={<Invoices />} />
+            <Route
+              path="invoices"
+              element={
+                <ProtectedRoute
+                  user={user}
+                  redirect="/login"
+                  allowedRoles={["admin"]}
+                >
+                  <Invoices />
+                </ProtectedRoute>
+              }
+            />
             <Route path="notification" element={<Notification />} />
             <Route path="users" element={<Users />} />
             <Route path="users/:pageId" element={<Users />} />
             <Route path="archieved" element={<Archieved />} />
             <Route path="archieved/actions" element={<ArchievedActions />} />
-            <Route path="archieved/invoices" element={<ArchievedInvoices />} />
+            <Route
+              path="archieved/invoices"
+              element={
+                <ProtectedRoute
+                  user={user}
+                  redirect="/login"
+                  allowedRoles={["admin"]}
+                >
+                  <ArchievedInvoices />
+                </ProtectedRoute>
+              }
+            />
             <Route path="settings" element={<Settings />} />
+            <Route
+              path="companies-response-time"
+              element={
+                <ProtectedRoute
+                  user={user}
+                  redirect="/login"
+                  allowedRoles={["admin"]}
+                >
+                  <CompaniesResponseTime />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="clients"
               element={

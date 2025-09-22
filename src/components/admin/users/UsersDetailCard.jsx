@@ -24,7 +24,7 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
         <div className="flex flex-col items-center gap-3">
           {user.image && (
             <img
-              src={user.image}
+              src={user?.image}
               alt="User"
               className="w-12 h-12 rounded-full object-cover"
             />
@@ -37,7 +37,7 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
 
           <div>
             <p className="font-medium font-inter text-dark-text text-sm">
-              {user.firstName}
+              {user?.name}
             </p>
             <p className="font-inter font-normal text-dark-text text-xs">
               ID #{user._id}

@@ -1,31 +1,38 @@
 import React, { useState, useMemo } from "react";
 import Dropdown from "../../../shared/small/Dropdown";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 6;
 
 const TotalClaimsCard = ({ data }) => {
   const [page, setPage] = useState(1);
 
-  // ✅ Transform object into array of { metric, value }
   const tableData = useMemo(() => {
     if (!data) return [];
 
     const metrics = [
-      { metric: "Approved Claims", value: data.approvedClaims ?? 0 },
-      { metric: "Rejected Claims", value: data.rejectedClaims ?? 0 },
-      { metric: "Appealed Claims", value: data.appealedClaims ?? 0 },
-      { metric: "Pending Credit Claims", value: data.pendingCreditClaims ?? 0 },
       {
         metric: "Pending Correction Claims",
-        value: data.pendingCorrectionClaims ?? 0,
+        value: data.pendingCorrection ?? 0,
+      },
+      {
+        metric: "Pending Order Claims",
+        value: data.pendingOrder ?? 0,
       },
       {
         metric: "Pending Question Claims",
-        value: data.pendingQuestionClaims ?? 0,
+        value: data.pendingQuestion ?? 0,
+      },
+      {
+        metric: "Pending Review Claims",
+        value: data.pendingReview ?? 0,
       },
       {
         metric: "Pending Analysis Claims",
-        value: data.pendingAnalysisClaims ?? 0,
+        value: data.pendingAnalysis ?? 0,
+      },
+      {
+        metric: "Credit Ready Claims",
+        value: data.creditReady ?? 0,
       },
     ];
 
@@ -53,19 +60,8 @@ const TotalClaimsCard = ({ data }) => {
     <div className="bg-white rounded-xl border shadow flex-1">
       <div className="flex items-center justify-between mb-4 px-4 mt-4">
         <h2 className="font-medium text-[14px] leading-5 text-primary">
-          Total Claims
+          Total Claims By Statuses
         </h2>
-        <Dropdown
-          className="h-8 !px-2 !py-1 gap-2 !p-0"
-          title=""
-          options={[
-            { id: 1, name: "Claims" },
-            { id: 2, name: "Statuses" },
-          ]}
-          defaultValue={{ id: 1, name: "Claims" }}
-          onChange={() => {}}
-          width="text-center px-2"
-        />
       </div>
       <table className="w-full text-sm">
         <thead className="bg-[#F9FAFB] border w-full">
@@ -91,35 +87,6 @@ const TotalClaimsCard = ({ data }) => {
           ))}
         </tbody>
       </table>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-center">
-        <div className="flex justify-end items-center mt-4 text-sm gap-3">
-          {page > 1 && (
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
-            >
-              &lt; Previous
-            </button>
-          )}
-          <div className="space-x-2">
-            <p className="text-sm text-gray-600">
-              {start}–{end} of {tableData.length}
-            </p>
-          </div>
-          {page < totalPages && (
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-              className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
-            >
-              Next &gt;
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 };

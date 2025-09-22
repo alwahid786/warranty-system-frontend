@@ -34,7 +34,9 @@ const Clients = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [clientsData, setclientsData] = useState(null);
 
-  const { data, refetch: refetchClients } = useGetClientsQuery();
+  const { data, refetch: refetchClients } = useGetClientsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const clients = Array.isArray(clientsData)
     ? clientsData

@@ -6,7 +6,7 @@ const COLORS = ["#0C6189", "#073C5B", "#60A5FA", "#38BDF8", "#BAE6FD"];
 const TopClaimBrandsChart = ({ data = [] }) => {
   return (
     <div className="bg-white border rounded-xl shadow p-4 flex-1">
-      <h2 className="font-semibold mb-4">Top Claim Brands</h2>
+      <h2 className="font-semibold mb-4">Top Claim Companies</h2>
       <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie

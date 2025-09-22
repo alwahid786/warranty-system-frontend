@@ -32,40 +32,6 @@ const Aside = () => {
 
   const { user } = useSelector((state) => state.auth);
 
-  // useEffect(() => {
-  //   let timeoutId;
-
-  //   const checkTokenExpiryAndSetTimeout = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (token) {
-  //       try {
-  //         const decodedToken = jwtDecode(token);
-  //         setEmail(decodedToken?.email);
-  //         setFirstName(decodedToken?.first_name);
-  //         setAvatar(decodedToken?.avatar);
-  //         const currentTime = Date.now() / 1000;
-  //         if (decodedToken.exp && decodedToken.exp < currentTime) {
-  //           setIsTokenExpired(true);
-  //         } else if (decodedToken.exp) {
-  //           const timeLeft = decodedToken.exp * 1000 - Date.now() - 60 * 1000; // 1 minute before expiration
-  //           timeoutId = setTimeout(checkTokenExpiryAndSetTimeout, timeLeft); // Set the next check
-  //         }
-  //       } catch (error) {
-  //         console.error("Invalid token");
-  //       }
-  //     }
-  //   };
-
-  //   checkTokenExpiryAndSetTimeout();
-
-  //   // Cleanup timeout on unmount or when dependencies change
-  //   return () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //   };
-  // }, [navigate]);
-
   const pages = [
     {
       id: 1,
@@ -133,8 +99,10 @@ const Aside = () => {
     },
   ];
 
+  const adminOnlyPages = ["Clients", "Dashboard", "Invoices"];
+
   const filteredPages = pages.filter((page) => {
-    if (page.title === "Clients" && user?.role !== "admin") {
+    if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {
       return false;
     }
     return true;

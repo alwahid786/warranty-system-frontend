@@ -28,9 +28,30 @@ const chatApis = createApi({
       }),
       invalidatesTags: ["chat"],
     }),
+
+    // Get Companies Avg Response Time
+    getCompaniesAvgResponseTime: builder.query({
+      query: () => ({
+        url: "/companies/avg-response-time",
+        method: "GET",
+      }),
+    }),
+
+    // Get Companies Avg Response Time All
+    getCompaniesAvgResponseTimeAll: builder.query({
+      query: ({ page, limit }) => ({
+        url: `/companies/avg-response-time/all?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetChatQuery, useSendMessageMutation } = chatApis;
+export const {
+  useGetChatQuery,
+  useSendMessageMutation,
+  useGetCompaniesAvgResponseTimeQuery,
+  useGetCompaniesAvgResponseTimeAllQuery,
+} = chatApis;
 
 export default chatApis;

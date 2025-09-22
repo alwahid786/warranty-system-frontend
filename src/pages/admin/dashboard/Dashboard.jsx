@@ -5,9 +5,11 @@ import TotalClaimsCard from "../../../components/admin/dashboard/ClaimStats/Tota
 import ClaimsByBrandCard from "../../../components/admin/dashboard/ClaimStats/ClaimsByBrandCard";
 import TopClaimBrandsChart from "../../../components/admin/dashboard/ClaimStats/TopClaimBrandsChart";
 import { ClaimsTable } from "../../../components/admin/dashboard/ClaimsTable.jsx";
+import CompaniesResponseTimeCard from "../../../components/admin/dashboard/ClaimStats/chatKPI";
 import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 import { useGetInvoicesStatQuery } from "../../../redux/apis/claimsApis";
 import { useGetClaimsStatQuery } from "../../../redux/apis/claimsApis";
+import { useGetCompaniesAvgResponseTimeQuery } from "../../../redux/apis/chatApis";
 
 const Dashboard = () => {
   const { data: invoicesData } = useGetInvoicesStatQuery(undefined, {
@@ -22,6 +24,11 @@ const Dashboard = () => {
     refetchOnMountOrArgChange: true,
   });
 
+  const { data: companiesAvgResponseTime } =
+    useGetCompaniesAvgResponseTimeQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
+
   return (
     <>
       <TopCard usersData={usersStatsData} invoiceData={invoicesData} />
@@ -31,8 +38,8 @@ const Dashboard = () => {
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <TotalClaimsCard data={claimsStat?.data} />
-          <ClaimsByBrandCard brands={claimsStat?.claimsByBrand} />
-          <TopClaimBrandsChart data={claimsStat?.claimsByBrand} />
+          <ClaimsByBrandCard brands={claimsStat?.claimsByCompany} />
+          <CompaniesResponseTimeCard data={companiesAvgResponseTime} />
         </div>
         <div className="">
           <ClaimsTable data={recentClaims} />

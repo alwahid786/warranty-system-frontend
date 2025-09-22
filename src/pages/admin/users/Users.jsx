@@ -83,7 +83,7 @@ const Users = () => {
       JSON.stringify(id);
       const res = await deleteUser(id).unwrap();
       if (res.success) {
-        toast.success(res.message, { duration: 3000 });
+        toast.success(res.message || "User deleted", { duration: 3000 });
         await getUsersStatRefetch();
       }
     } catch (err) {
@@ -99,7 +99,7 @@ const Users = () => {
   const handleSaveUser = async (updatedData) => {
     try {
       const res = await updateUser({ id: editingUser._id, ...updatedData });
-      toast.success(res?.message, { duration: 3000 });
+      toast.success(res?.message || "User updated", { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
