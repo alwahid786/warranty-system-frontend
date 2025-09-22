@@ -7,7 +7,7 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside---------
+  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
