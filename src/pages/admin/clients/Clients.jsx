@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import {
   useDeleteClientMutation,
   useGetClientsQuery,
+  useGetClientsStatByFiltersQuery,
+  useGetClientsActivityStatsQuery,
 } from "../../../redux/apis/clientsApis";
 import { useUpdateClientMutation } from "../../../redux/apis/clientsApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
@@ -21,12 +23,12 @@ import EditClientsModal from "../../../components/admin/clients/EditClientsModal
 
 const Clients = () => {
   const [filters, setFilters] = useState({
-    searchType: "id",
+    searchType: "dealerId",
     searchValue: "",
+    searchType2: "companyName",
+    searchValue2: "",
     fromDate: "",
     toDate: "",
-    selectedBrand: null,
-    status: "",
   });
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
@@ -37,6 +39,16 @@ const Clients = () => {
   const { data, refetch: refetchClients } = useGetClientsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
+
+  const { data: clientsStatsByFilters, refetch: refetchClientsStatByFilters } =
+    useGetClientsStatByFiltersQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
+
+  const { data: clientsActivityStats, refetch: refetchClientsActivity } =
+    useGetClientsActivityStatsQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
 
   const clients = Array.isArray(clientsData)
     ? clientsData
@@ -55,6 +67,7 @@ const Clients = () => {
     }
   }, [data]);
 
+  // Clients Handlers
   const handleOnDeleteConfirmation = (id) => {
     setIsDeleteOpen(true);
     setDeleteId(id);
@@ -66,6 +79,8 @@ const Clients = () => {
       const res = await deleteClient(id).unwrap();
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
+        await refetchClientsStatByFilters();
+        await refetchClientsActivity();
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -92,6 +107,7 @@ const Clients = () => {
       toast.error(err.data.message, { duration: 3000 });
     }
   };
+  //--------------------->
 
   const { pageId } = useParams();
   const navigate = useNavigate();
@@ -103,28 +119,87 @@ const Clients = () => {
   const startIndex = (currentPage - 1) * clientsPerPage;
   const currentClients = clients.slice(startIndex, startIndex + clientsPerPage);
 
+  // filters handers ----------->
   const filteredData = currentClients.filter((row) => {
-    // Search
+    // Search 1
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
       if (
-        filters.searchType === "id" &&
-        !row.id.toString().toLowerCase().includes(val)
+        filters.searchType === "dealerId" &&
+        !row.dealerId?.toString().toLowerCase().includes(val)
       )
         return false;
       if (
         filters.searchType === "name" &&
-        !row.name.toLowerCase().includes(val)
+        !row.name?.toLowerCase().includes(val)
       )
         return false;
+      if (
+        filters.searchType === "email" &&
+        !row.email?.toLowerCase().includes(val)
+      )
+        return false;
+      if (
+        filters.searchType === "phone" &&
+        !row.phone?.toLowerCase().includes(val)
+      )
+        return false;
+    }
+
+    // Search 2
+    if (filters.searchValue2) {
+      const val2 = filters.searchValue2.toLowerCase();
+      if (
+        filters.searchType2 === "companyName" &&
+        !(
+          row.companyName?.toLowerCase().includes(val2) ||
+          row.storeName?.toLowerCase().includes(val2)
+        )
+      )
+        return false;
+      if (
+        filters.searchType2 === "accountOwner" &&
+        !row.accountOwner?.toLowerCase().includes(val2)
+      )
+        return false;
+      if (
+        filters.searchType2 === "businessOwner" &&
+        !row.businessOwner?.toLowerCase().includes(val2)
+      )
+        return false;
+    }
+
+    // Date range
+    if (filters.fromDate) {
+      const from = new Date(filters.fromDate);
+      const rowDate = new Date(row.createdAt);
+      if (rowDate < from) return false;
+    }
+
+    if (filters.toDate) {
+      const to = new Date(filters.toDate);
+      const rowDate = new Date(row.createdAt);
+      if (rowDate > to) return false;
     }
 
     return true;
   });
 
+  const handleResetFilters = () => {
+    setFilters({
+      searchType: "dealerId",
+      searchValue: "",
+      searchType2: "companyName",
+      searchValue2: "",
+      fromDate: "",
+      toDate: "",
+    });
+  };
+
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
+  //---------------------->
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -132,58 +207,16 @@ const Clients = () => {
     }
   };
 
-  //   const clientSummary = {
-  //     total: selectedClient?.length,
-  //     change: "+2.7% from last month",
-  //     overview: [
-  //       { label: "Active", value: ClientCount?.activeClients, color: "green" },
-  //       { label: "Inactive", value: ClientCount?.inactiveClients, color: "red" },
-  //     ],
-  //   };
-
-  //   const attendanceData = [
-  //     {
-  //       month: "Jan",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //     {
-  //       month: "Feb",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //     {
-  //       month: "Mar",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //     {
-  //       month: "Apr",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //     {
-  //       month: "May",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //     {
-  //       month: "Jun",
-  //       Active: ClientCount?.activeClients,
-  //       Inactive: ClientCount?.inactiveClients,
-  //     },
-  //   ];
-
   return (
     <div className="p-1 bg-gray-50 min-h-screen">
       <ClientsHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">
-          <TotalClientsCard />
+          <TotalClientsCard clientsStats={clientsStatsByFilters?.data} />
           {/* <TotalClientsCard /> */}
-          <StatusOverviewCard />
+          <StatusOverviewCard clientCount={clientsData?.clientCount} />
         </div>
-        <AttendanceChart />
+        <AttendanceChart data={clientsActivityStats?.data} />
       </div>
 
       <div className="bg-white py-6 px-5 rounded-[10px] shadow-sm mt-5">
@@ -193,7 +226,9 @@ const Clients = () => {
         <ClientsFilterBar
           filters={filters}
           onFilterChange={handleFilterChange}
+          onReset={handleResetFilters}
         />
+
         <div className="mt-5 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredData.map((client) => (

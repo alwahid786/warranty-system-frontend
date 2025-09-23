@@ -72,6 +72,22 @@ const clientApis = createApi({
         method: "GET",
       }),
     }),
+
+    // Get Clients Stats By Filters Today, Week, Month
+    getClientsStatByFilters: builder.query({
+      query: () => ({
+        url: "/getClientsStatsByFilters",
+        method: "GET",
+      }),
+    }),
+
+    // Get Clients Activity Stats
+    getClientsActivityStats: builder.query({
+      query: () => ({
+        url: "/getClientsActivityStats",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -83,6 +99,8 @@ export const {
   useDeleteClientMutation,
   useGetActiveInactiveCountQuery,
   useGetClientsStatQuery,
+  useGetClientsStatByFiltersQuery,
+  useGetClientsActivityStatsQuery,
 } = clientApis;
 
 export default clientApis;

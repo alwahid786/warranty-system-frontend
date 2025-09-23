@@ -19,15 +19,6 @@ const claimsApis = createApi({
       providesTags: ["Claims"],
     }),
 
-    // Get Invoices
-    getInvoices: builder.query({
-      query: () => ({
-        url: "/getInvoices",
-        method: "GET",
-      }),
-      providesTags: ["Claims"],
-    }),
-
     // Add new Claims
     addClaims: builder.mutation({
       query: (data) => ({

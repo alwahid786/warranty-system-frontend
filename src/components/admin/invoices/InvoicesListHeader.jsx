@@ -42,7 +42,6 @@ const InvoicesListHeader = ({
   };
 
   const handleOutGoingData = async (value) => {
-    console.log("outgoing data", value);
     try {
       const res = await addInvoice(value).unwrap();
       toast.success(res.message, { duration: 3000 });

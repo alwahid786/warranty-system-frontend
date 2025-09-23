@@ -11,6 +11,7 @@ import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis"
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
+import { useSelector } from "react-redux";
 
 const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
   const fileInputRef = useRef(null);
@@ -18,6 +19,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
   const [addArchieveClaims] = useAddArchieveClaimsMutation();
   const [removeArchieveClaims] = useRemoveArchieveClaimsMutation();
   const [getExportClaims] = useLazyExportClaimsQuery();
+  const { user } = useSelector((state) => state.auth);
 
   const handleAddArchieveClaims = async (e) => {
     e.preventDefault();
@@ -85,19 +87,24 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
 
         {/* Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-end">
-          <Button
-            icon={<ArchievedIcon className="text-xs sm:text-sm" />}
-            text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
-            bg="bg-[#04365599] hover:bg-slate-600"
-            color="text-white"
-            disabled={selectedClaims?.length === 0}
-            style={{
-              cursor: selectedClaims?.length === 0 ? "not-allowed" : "pointer",
-              opacity: selectedClaims?.length === 0 ? 0.6 : 1,
-            }}
-            onClick={handleAddArchieveClaims}
-            cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
-          />
+          {user?.role === "admin" && (
+            <Button
+              icon={<ArchievedIcon className="text-xs sm:text-sm" />}
+              text={
+                showImportExport ? "Move To Archive" : "Move Out of Archive"
+              }
+              bg="bg-[#04365599] hover:bg-slate-600"
+              color="text-white"
+              disabled={selectedClaims?.length === 0}
+              style={{
+                cursor:
+                  selectedClaims?.length === 0 ? "not-allowed" : "pointer",
+                opacity: selectedClaims?.length === 0 ? 0.6 : 1,
+              }}
+              onClick={handleAddArchieveClaims}
+              cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
+            />
+          )}
 
           {showImportExport && (
             <>

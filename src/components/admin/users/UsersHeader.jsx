@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import AddUserModal from "./AddUserModal";
 import { Phone } from "lucide-react";
-import { useAddUserMutation } from "../../../redux/apis/userApis";
+import {
+  useAddUserMutation,
+  useGetTotalUsersCountQuery,
+  useGetAttendanceChartDataQuery,
+} from "../../../redux/apis/userApis";
 import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 import toast from "react-hot-toast";
 
@@ -17,6 +21,11 @@ const UsersHeader = () => {
     useGetUsersStatQuery();
   const [addUser, { isLoading }] = useAddUserMutation();
 
+  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery();
+
+  const { refetch: getAttendanceChartDataRefetch } =
+    useGetAttendanceChartDataQuery();
+
   const handleAddUser = async (e) => {
     e.preventDefault();
 
@@ -25,7 +34,8 @@ const UsersHeader = () => {
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
         setIsOpen(false);
-        await getUsersStatRefetch();
+        await getTotalUsersCountRefetch();
+        await getAttendanceChartDataRefetch();
         setformData({
           name: "",
           email: "",

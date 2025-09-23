@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
+import { HiPencil, HiTrash } from "react-icons/hi2";
 
 const UsersDetailCard = ({ user, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,36 +20,48 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 relative">
+    <div className="bg-white rounded-2xl shadow-md p-5 relative hover:shadow-lg transition-shadow">
+      {/* Header Section */}
       <div className="flex justify-between items-start">
-        <div className="flex flex-col items-center gap-3">
-          {user.image && (
+        <div className="flex items-center gap-4">
+          {/* User Avatar */}
+          {user?.image ? (
             <img
               src={user?.image}
               alt="User"
-              className="w-12 h-12 rounded-full object-cover"
+              className="w-14 h-14 rounded-full object-cover border border-gray-200"
             />
-          )}
-          {!user.image && (
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <FaUserCircle className="text-gray-500" />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
+              <FaUserCircle className="text-gray-400 text-3xl" />
             </div>
           )}
 
+          {/* User Info */}
           <div>
-            <p className="font-medium font-inter text-dark-text text-sm">
-              {user?.name}
-            </p>
-            <p className="font-inter font-normal text-dark-text text-xs">
-              ID #{user._id}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-gray-900 text-base">
+                {user?.name}
+              </p>
+              {/* Status Badge */}
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  user?.activeStatus
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {user?.activeStatus ? "Active" : "Inactive"}
+              </span>
+            </div>
+            <p className="text-gray-500 text-xs">ID #{user?._id}</p>
           </div>
         </div>
 
         {/* 3-dot menu */}
         <div ref={menuRef} className="relative">
           <button
-            className="text-black text-xl font-bold cursor-pointer"
+            className="p-2 rounded-full hover:bg-gray-100 transition"
             onClick={() => setMenuOpen((prev) => !prev)}
           >
             <svg
@@ -64,26 +77,25 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
             </svg>
           </button>
 
-          {/* Dropdown */}
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-28 bg-white border rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   onEdit(user);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                className="flex items-center font-bold gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
               >
-                ✏️ Edit
+                <HiPencil className="text-gray-600" /> Edit
               </button>
               <button
                 onClick={() => {
                   setMenuOpen(false);
-                  onDelete(user._id);
+                  onDelete(user?._id);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+                className="flex items-center font-bold gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-red-600"
               >
-                🗑️ Delete
+                <HiTrash /> Delete
               </button>
             </div>
           )}
@@ -91,22 +103,16 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
       </div>
 
       {/* Card Details */}
-      <div className="bg-[#F2F7FF] p-4 rounded-xl mt-4 text-sm space-y-1">
+      <div className="bg-gray-100 p-4 rounded-xl mt-5 text-sm space-y-3">
         <div className="flex justify-between">
           <div>
-            <p className="font-inter font-semibold text-dark-text">
-              Claims Rate
-            </p>
-            <p className="font-medium text-[12px] text-dark-text">
-              {user.claimsRate}
-            </p>
+            <p className="font-semibold text-gray-800">Claims Rate</p>
+            <p className="text-xs text-gray-600">{user?.claimsRate}</p>
           </div>
           <div className="text-right">
-            <p className="font-inter font-semibold text-dark-text">
-              Joining Date
-            </p>
-            <p className="font-medium text-[12px] text-dark-text text-start">
-              {new Date(user.createdAt).toLocaleDateString("en-US", {
+            <p className="font-semibold text-gray-800">Joining Date</p>
+            <p className="text-xs text-gray-600">
+              {new Date(user?.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
@@ -114,13 +120,13 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center space-x-1 text-gray-800 mt-3">
-          <MdEmail />
-          <span>{user.email}</span>
+        <div className="flex items-center gap-2 text-gray-700">
+          <MdEmail className="text-gray-500" />
+          <span className="truncate">{user?.email}</span>
         </div>
-        <div className="flex items-center space-x-1 text-gray-800">
-          <PiPhoneCallFill />
-          <span>{user.phone}</span>
+        <div className="flex items-center gap-2 text-gray-700">
+          <PiPhoneCallFill className="text-gray-500" />
+          <span>{user?.phone}</span>
         </div>
       </div>
     </div>

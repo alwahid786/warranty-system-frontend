@@ -23,7 +23,11 @@ import EditUserModal from "../../../utils/EditUserModal";
 import { useUpdateUserMutation } from "../../../redux/apis/userApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import toast from "react-hot-toast";
-import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
+import {
+  useGetUsersStatQuery,
+  useGetTotalUsersCountQuery,
+  useGetAttendanceChartDataQuery,
+} from "../../../redux/apis/userApis";
 
 const Users = () => {
   const { userCount } = useSelector((state) => state.user);
@@ -33,9 +37,9 @@ const Users = () => {
     searchValue: "",
     fromDate: "",
     toDate: "",
-    selectedBrand: null,
     status: "",
   });
+
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -64,6 +68,16 @@ const Users = () => {
   const { data: usersStats, refetch: getUsersStatRefetch } =
     useGetUsersStatQuery();
 
+  const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
+    useGetTotalUsersCountQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
+
+  const { data: attendanceChartData, refetch: getAttendanceChartDataRefetch } =
+    useGetAttendanceChartDataQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
+
   useEffect(() => {
     if (isSuccess && data?.success) {
       dispatch(setSelectedUser(data?.data));
@@ -84,7 +98,8 @@ const Users = () => {
       const res = await deleteUser(id).unwrap();
       if (res.success) {
         toast.success(res.message || "User deleted", { duration: 3000 });
-        await getUsersStatRefetch();
+        await getTotalUsersCountRefetch();
+        await getAttendanceChartDataRefetch();
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -118,20 +133,36 @@ const Users = () => {
   const startIndex = (currentPage - 1) * usersPerPage;
   const currentUsers = users.slice(startIndex, startIndex + usersPerPage);
 
+  // Filters --------->
   const filteredData = currentUsers.filter((row) => {
-    // Search
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
       if (
-        filters.searchType === "id" &&
-        !row.id.toString().toLowerCase().includes(val)
+        filters.searchType === "name" &&
+        !row.name?.toLowerCase().includes(val)
       )
         return false;
       if (
-        filters.searchType === "name" &&
-        !row.name.toLowerCase().includes(val)
+        filters.searchType === "email" &&
+        !row.email?.toLowerCase().includes(val)
       )
         return false;
+      if (
+        filters.searchType === "phone" &&
+        !row.phone?.toLowerCase().includes(val)
+      )
+        return false;
+    }
+
+    if (filters.fromDate) {
+      const from = new Date(filters.fromDate);
+      const userDate = new Date(row.createdAt);
+      if (userDate < from) return false;
+    }
+    if (filters.toDate) {
+      const to = new Date(filters.toDate);
+      const userDate = new Date(row.createdAt);
+      if (userDate > to) return false;
     }
 
     return true;
@@ -141,6 +172,14 @@ const Users = () => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
+  const handleResetFilters = () =>
+    setFilters({
+      searchType: "id",
+      searchValue: "",
+      fromDate: "",
+      toDate: "",
+      status: "",
+    });
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       navigate(`/users/${page}`);
@@ -156,56 +195,28 @@ const Users = () => {
     ],
   };
 
-  const attendanceData = [
-    {
-      month: "Jan",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-    {
-      month: "Feb",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-    {
-      month: "Mar",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-    {
-      month: "Apr",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-    {
-      month: "May",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-    {
-      month: "Jun",
-      Active: userCount?.activeUsers,
-      Inactive: userCount?.inactiveUsers,
-    },
-  ];
-
   return (
     <div className="p-1 bg-gray-50 min-h-screen">
       <UsersHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">
-          <TotalUsersCard />
+          <TotalUsersCard stats={totalUsersCount?.data} />
           {/* <TotalUsersCard /> */}
           <StatusOverviewCard stats={userSummary.overview} />
         </div>
-        <AttendanceChart data={attendanceData} />
+        <AttendanceChart data={attendanceChartData?.data} />
       </div>
 
       <div className="bg-white py-6 px-5 rounded-[10px] shadow-sm mt-5">
         <p className="font-inter font-medium text-[22px] text-dark-text">
           Users List
         </p>
-        <UsersFilterBar filters={filters} onFilterChange={handleFilterChange} />
+        <UsersFilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onReset={handleResetFilters}
+        />
+
         <div className="mt-5 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredData.map((user) => (

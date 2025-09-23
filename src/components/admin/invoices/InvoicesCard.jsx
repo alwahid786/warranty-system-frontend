@@ -13,7 +13,12 @@ import {
 } from "../../../redux/apis/invoiceApis";
 import toast from "react-hot-toast";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
-import { HiOutlinePencilSquare, HiOutlineLockClosed } from "react-icons/hi2";
+import {
+  HiOutlinePencilSquare,
+  HiOutlineLockClosed,
+  HiPencil,
+  HiTrash,
+} from "react-icons/hi2";
 import { saveAs } from "file-saver";
 import { getRelativeTime } from "../../../utils/getDate";
 
@@ -64,7 +69,6 @@ export default function InvoiceCard({
   };
 
   const handleEditDataSubmit = async (data) => {
-    console.log(data.id);
     try {
       const res = await updateInvoice({
         id: data?.id,
@@ -229,27 +233,25 @@ export default function InvoiceCard({
               ></Button>
 
               {menuOpen && (
-                <div className="absolute right--10 mt-2 w-22 border rounded-md shadow-lg z-20 flex flex-col">
-                  <Button
+                <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
+                  <button
                     onClick={() => {
                       onEdit(invoice);
                       setMenuOpen(false);
                     }}
-                    text="Edit"
-                    bg="bg-gray-600"
-                    color="text-white"
-                    cn=" text-[12px] !py-2 !font-small rounded-md truncate"
-                  ></Button>
-                  <Button
+                    className="flex items-center gap-2 w-full text-left font-bold px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                  >
+                    <HiPencil className="text-gray-600" /> Edit
+                  </button>
+                  <button
                     onClick={() => {
                       onDelete(invoice);
                       setMenuOpen(false);
                     }}
-                    text="Delete"
-                    bg="bg-red-600"
-                    color="text-white"
-                    cn="text-[12px] !py-2 !font-small rounded-md truncate"
-                  ></Button>
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-50 text-red-600"
+                  >
+                    <HiTrash className="text-red-600" /> Delete
+                  </button>
                 </div>
               )}
             </div>

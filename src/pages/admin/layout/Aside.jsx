@@ -99,7 +99,7 @@ const Aside = () => {
     },
   ];
 
-  const adminOnlyPages = ["Clients", "Dashboard", "Invoices"];
+  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archieved"];
 
   const filteredPages = pages.filter((page) => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {

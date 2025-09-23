@@ -58,10 +58,6 @@ export default function ChatModal({
     setFile(selectedFile);
   };
 
-  console.log("messages", messages);
-
-  console.log("current id", user?._id);
-
   const sendMessage = async () => {
     if (!newMessage.trim() && !file) return;
 

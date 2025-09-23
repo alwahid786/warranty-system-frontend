@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import AddClientModal from "./AddClientModal";
 import { Phone } from "lucide-react";
-import { useAddClientMutation } from "../../../redux/apis/clientsApis";
+import {
+  useAddClientMutation,
+  useGetClientsStatByFiltersQuery,
+  useGetClientsActivityStatsQuery,
+} from "../../../redux/apis/clientsApis";
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
 
@@ -62,6 +66,12 @@ const ClientsHeader = () => {
 
   const [addClient, { isLoading }] = useAddClientMutation();
 
+  const { data: clientsStats, refetch: getClientsStatRefetch } =
+    useGetClientsStatByFiltersQuery();
+
+  const { refetch: getClientsActivityStatRefetch } =
+    useGetClientsActivityStatsQuery();
+
   const handleAddClient = async (e) => {
     e.preventDefault();
 
@@ -93,6 +103,8 @@ const ClientsHeader = () => {
           businessOwnerView: false,
           percentage: "",
         });
+        await getClientsStatRefetch();
+        await getClientsActivityStatRefetch();
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });

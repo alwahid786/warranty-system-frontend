@@ -13,11 +13,8 @@ import {
   FaRegBuilding,
   FaEnvelope,
 } from "react-icons/fa6";
-import {
-  HiOutlineBuildingStorefront,
-  HiOutlineUserGroup,
-} from "react-icons/hi2";
 import { MdLocationOn } from "react-icons/md";
+import { HiPencil, HiTrash } from "react-icons/hi2";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,57 +32,67 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 relative">
+    <div className="bg-white rounded-xl shadow-sm p-5 relative hover:shadow-md transition-shadow">
       {/* Top Section */}
       <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3">
+        {/* Avatar + Info */}
+        <div className="flex items-center gap-4">
           {client?.image ? (
             <img
-              src={client.image}
+              src={client?.image}
               alt="client"
-              className="w-12 h-12 rounded-full object-cover"
+              className="w-14 h-14 rounded-full object-cover border border-gray-200"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <FaUserCircle className="text-gray-500 text-3xl" />
+            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
+              <FaUserCircle className="text-gray-400 text-3xl" />
             </div>
           )}
-
           <div>
-            <p className="font-semibold text-dark-text text-sm">
+            <p className="font-semibold text-gray-900 text-sm md:text-base">
               {client.name}
             </p>
-            <p className="text-xs text-gray-500">ID #{client._id}</p>
+            <p className="text-xs text-gray-500">ID #{client?._id}</p>
           </div>
         </div>
 
         {/* Menu */}
         <div ref={menuRef} className="relative">
           <button
-            className="text-black text-xl font-bold cursor-pointer"
+            className="p-2 rounded-full hover:bg-gray-100 transition"
             onClick={() => setMenuOpen((prev) => !prev)}
           >
-            ⋮
+            <svg
+              width="16"
+              height="4"
+              viewBox="0 0 16 4"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="4" height="4" rx="2" fill="#1A1A1A" />
+              <rect x="6" width="4" height="4" rx="2" fill="#1A1A1A" />
+              <rect x="12" width="4" height="4" rx="2" fill="#1A1A1A" />
+            </svg>
           </button>
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-28 bg-white border rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   onEdit(client);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                className="flex items-center gap-2 w-full text-left font-bold px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
               >
-                ✏️ Edit
+                <HiPencil className="text-gray-600" /> Edit
               </button>
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   onDelete(client._id);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-50 text-red-600"
               >
-                🗑️ Delete
+                <HiTrash className="text-red-600" /> Delete
               </button>
             </div>
           )}
@@ -93,17 +100,17 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
       </div>
 
       {/* Info Section */}
-      <div className="bg-[#F2F7FF] p-4 rounded-xl mt-4 text-sm space-y-3">
-        {/* Row 1 */}
-        <div className="flex justify-between">
+      <div className="bg-gray-100 p-4 rounded-lg mt-5 text-sm space-y-4">
+        {/* Store & Joined */}
+        <div className="flex justify-between items-start">
           <div>
-            <p className="font-semibold text-gray-700">{client.storeName}</p>
+            <p className="font-semibold text-gray-800">{client.storeName}</p>
             <p className="text-xs text-gray-500">
               Dealer ID: {client.dealerId}
             </p>
           </div>
           <div className="text-right">
-            <p className="font-semibold text-gray-700">Joined</p>
+            <p className="font-medium text-gray-700">Joined</p>
             <p className="text-xs text-gray-500">
               {new Date(client.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -114,55 +121,53 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
           </div>
         </div>
 
-        {/* Row 2 */}
-        <div className="flex justify-between">
-          <p className="text-xs text-gray-600 flex items-center gap-2">
+        {/* Store Phone + Share */}
+        <div className="flex justify-between text-xs text-gray-600">
+          <span className="flex items-center gap-1">
             <FaPhone className="text-gray-500" /> {client.storePhone}
-          </p>
-          <p className="text-xs text-gray-600 flex items-center gap-2">
+          </span>
+          <span className="flex items-center gap-1">
             <FaShareNodes className="text-gray-500" /> {client.percentage}%
             Share
-          </p>
+          </span>
         </div>
 
         {/* Contact */}
-        <div className="flex items-center gap-2 text-gray-800">
-          <MdEmail className="text-lg" />
-          <span>{client.email}</span>
-        </div>
-        <div className="flex items-center gap-2 text-gray-800">
-          <PiPhoneCallFill className="text-lg" />
-          <span>{client.phone}</span>
+        <div className="space-y-1 text-sm">
+          <p className="flex items-center gap-2 text-gray-700">
+            <MdEmail className="text-gray-500" /> {client.email}
+          </p>
+          <p className="flex items-center gap-2 text-gray-700">
+            <PiPhoneCallFill className="text-gray-500" /> {client.phone}
+          </p>
         </div>
 
         {/* Address */}
         {client.address && (
-          <div className="flex items-center gap-1 text-xs text-gray-600">
-            <MdLocationOn className="text-gray-500 text-lg" />
-            <span className="leading-4">
-              {[
-                client.address.store,
-                client.address.street,
-                client.address.area,
-                client.address.city,
-                client.address.state,
-                client.address.country,
-                client.address.zip,
-              ]
-                .filter(Boolean)
-                .join(", ")}
-            </span>
-          </div>
+          <p className="flex items-center gap-2 text-xs text-gray-600 leading-4">
+            <MdLocationOn className="text-gray-500 text-base" />
+            {[
+              client.address.store,
+              client.address.street,
+              client.address.area,
+              client.address.city,
+              client.address.state,
+              client.address.country,
+              client.address.zip,
+            ]
+              .filter(Boolean)
+              .join(", ")}
+          </p>
         )}
 
         {/* Owners */}
-        <div className="flex justify-between items-center text-xs text-gray-700">
-          <p className="text-xs text-gray-600 flex items-center gap-2">
+        <div className="flex justify-between items-center text-xs text-gray-700 border-t pt-3">
+          <span className="flex items-center gap-2">
             <FaUser className="text-gray-500" /> Account Owner:{" "}
             {client.accountOwner}
-          </p>
+          </span>
           <span className="flex items-center gap-1">
-            <FaUserTie className="text-gray-500" /> {client.businessOwner}{" "}
+            <FaUserTie className="text-gray-500" /> {client.businessOwner}
             {client.businessOwnerView ? (
               <FaRegEye className="text-green-500" />
             ) : (
@@ -173,16 +178,15 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
 
         {/* Notifications */}
         {client.emails?.length > 0 && (
-          <div className="mt-2">
-            <p className="flex items-center gap-1 font-semibold text-xs text-gray-700 mb-1">
-              <FaBell className="text-gray-500" />
-              <span>Notifications</span>
+          <div className="pt-2 border-t">
+            <p className="flex items-center gap-2 font-medium text-xs text-gray-700 mb-2">
+              <FaBell className="text-gray-500" /> Notifications
             </p>
             <div className="flex flex-wrap gap-2">
               {client.emails.map((em, i) => (
                 <span
                   key={i}
-                  className="bg-white border text-gray-600 text-xs px-2 py-1 rounded-full"
+                  className="bg-white border text-gray-600 text-xs px-2 py-1 rounded-full shadow-sm"
                 >
                   {em}
                 </span>

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Loader from "./components/shared/small/Loader";
+import GlobalAPILoader from "./components/shared/small/GlobalLoaderApi";
 import { useGetMyProfileQuery } from "./redux/apis/authApis";
 import { useGetNotificationsQuery } from "./redux/apis/notificationsApis";
 import { userExist, userNotExist } from "./redux/slices/authSlice";
@@ -73,7 +74,6 @@ function App() {
 
     const handleNotification = (data) => {
       toast.success(data?.message || "New Notification", { duration: 5000 });
-      console.log("data in sockets in app", data);
       dispatch(addNotification(data));
     };
 
@@ -93,114 +93,140 @@ function App() {
   if (isLoading) return <Loader />;
 
   return (
-    <BrowserRouter>
-      <Toaster position="top-right" reverseOrder={false} />
-      <Suspense fallback={<Loader />}>
-        <Routes>
-          {/* Public routes */}
-          <Route
-            path="/login"
-            element={
-              <ProtectedRoute user={!user} redirect="/">
-                <AdminLogin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reset-password/:token"
-            element={<AdminResetPassword />}
-          />
+    <>
+      <BrowserRouter>
+        <Toaster position="top-right" reverseOrder={false} />
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            {/* Public routes */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute user={!user} redirect="/">
+                  <AdminLogin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={<AdminResetPassword />}
+            />
 
-          {/* Protected Admin Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute user={user} redirect="/login">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          >
+            {/* Protected Admin Routes */}
             <Route
-              index
+              path="/"
               element={
-                user?.role === "admin" ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <Navigate to="/actions" replace />
-                )
-              }
-            />
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute
-                  user={user}
-                  redirect="/login"
-                  allowedRoles={["admin"]}
-                >
-                  <Dashboard />
+                <ProtectedRoute user={user} redirect="/login">
+                  <AdminDashboard />
                 </ProtectedRoute>
               }
-            />
-            <Route path="actions" element={<Actions />} />
-            <Route
-              path="invoices"
-              element={
-                <ProtectedRoute
-                  user={user}
-                  redirect="/login"
-                  allowedRoles={["admin"]}
-                >
-                  <Invoices />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="notification" element={<Notification />} />
-            <Route path="users" element={<Users />} />
-            <Route path="users/:pageId" element={<Users />} />
-            <Route path="archieved" element={<Archieved />} />
-            <Route path="archieved/actions" element={<ArchievedActions />} />
-            <Route
-              path="archieved/invoices"
-              element={
-                <ProtectedRoute
-                  user={user}
-                  redirect="/login"
-                  allowedRoles={["admin"]}
-                >
-                  <ArchievedInvoices />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="settings" element={<Settings />} />
-            <Route
-              path="companies-response-time"
-              element={
-                <ProtectedRoute
-                  user={user}
-                  redirect="/login"
-                  allowedRoles={["admin"]}
-                >
-                  <CompaniesResponseTime />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="clients"
-              element={
-                <ProtectedRoute
-                  user={user}
-                  redirect="/login"
-                  allowedRoles={["admin"]}
-                >
-                  <Clients />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+            >
+              <Route
+                index
+                element={
+                  user?.role === "admin" ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <Navigate to="/actions" replace />
+                  )
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="actions" element={<Actions />} />
+              <Route
+                path="invoices"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <Invoices />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="notification" element={<Notification />} />
+              <Route path="users" element={<Users />} />
+              <Route path="users/:pageId" element={<Users />} />
+              <Route
+                path="archieved"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <Archieved />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="archieved/actions"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <ArchievedActions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="archieved/invoices"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <ArchievedInvoices />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="settings" element={<Settings />} />
+              <Route
+                path="companies-response-time"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <CompaniesResponseTime />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="clients"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/login"
+                    allowedRoles={["admin"]}
+                  >
+                    <Clients />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+      <GlobalAPILoader />
+    </>
   );
 }
 

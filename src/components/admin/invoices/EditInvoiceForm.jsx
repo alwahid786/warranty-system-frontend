@@ -10,13 +10,14 @@ const EditInvoiceForm = ({
 }) => {
   if (!isOpen) return null;
 
-  const clients = clientsData?.data.map((client) => ({
-    id: client._id,
-    name: client.name,
-    companyName: client.companyName,
+  // normalize clients safely
+  const clients = (clientsData?.data || []).map((c) => ({
+    id: String(c._id),
+    name: c.name || "",
+    companyName: c.companyName || c.storeName || "",
   }));
 
-  // Preload state with invoiceData
+  // main form state
   const [formData, setFormData] = useState({
     clientId: "",
     client: "",
@@ -31,120 +32,183 @@ const EditInvoiceForm = ({
     explanation: "",
   });
 
-  const [files, setFiles] = useState([]); // new uploads
-  const [existingFiles, setExistingFiles] = useState([]); // previously uploaded files
+  // files
+  const [files, setFiles] = useState([]);
+  const [existingFiles, setExistingFiles] = useState([]);
 
-  // Hydrate with invoiceData
+  // whether user changed fields that should trigger recalculation
+  const [manualEdit, setManualEdit] = useState(false);
+
+  // Hydrate with backend invoice data when it arrives
   useEffect(() => {
-    if (invoiceData) {
-      setFormData({
-        clientId: invoiceData.clientId || "",
-        client: invoiceData.clientName || "",
-        company: invoiceData.warrantyCompany || "",
-        statementType: invoiceData.statementType || "",
-        statementNumber: invoiceData.statementNumber || "",
-        statementTotal: invoiceData.statementTotal || "",
-        adjustments: invoiceData.adjustments?.length
+    if (!invoiceData) return;
+
+    setFormData({
+      clientId: invoiceData.clientId || "",
+      client: invoiceData.clientName || "",
+      company: invoiceData.warrantyCompany || "",
+      statementType: invoiceData.statementType || "",
+      statementNumber: invoiceData.statementNumber || "",
+      statementTotal: invoiceData.statementTotal ?? "",
+      adjustments:
+        Array.isArray(invoiceData.adjustments) && invoiceData.adjustments.length
           ? invoiceData.adjustments
           : [{ type: "Charge", amount: "", reason: "" }],
-        assignedPercentage: invoiceData.assignedPercentage || "",
-        finalTotal: invoiceData.finalTotal || "",
-        bypass: invoiceData.bypassPercentage || false,
-        explanation: invoiceData.freeTextExplanation || "",
-      });
-      setExistingFiles(invoiceData.attachedReports || []);
-    }
+      assignedPercentage: invoiceData.assignedPercentage ?? "",
+      finalTotal:
+        invoiceData.finalTotal !== undefined && invoiceData.finalTotal !== null
+          ? Number(invoiceData.finalTotal).toFixed(2)
+          : "",
+      bypass: !!invoiceData.bypassPercentage || !!invoiceData.bypass,
+      explanation: invoiceData.freeTextExplanation || "",
+    });
+
+    setExistingFiles(invoiceData.attachedReports || []);
+    setManualEdit(false); // start with backend finalTotal trusted
   }, [invoiceData]);
 
-  // Dealer Change
-  const onDealerChange = (e) => {
-    const selectedClient = clients.find((c) => c.id === e.target.value);
-    setFormData({
-      ...formData,
-      clientId: selectedClient?.id || "",
-      client: selectedClient?.name || "",
-      company: "",
+  // If clients data arrives later, ensure name/company fields match clientId (help default selection)
+  useEffect(() => {
+    if (!formData.clientId || !clients.length) return;
+
+    const selected = clients.find((c) => c.id === String(formData.clientId));
+    if (!selected) return;
+
+    setFormData((prev) => {
+      // avoid unnecessary updates
+      if (
+        prev.client === selected.name &&
+        prev.company === selected.companyName
+      ) {
+        return prev;
+      }
+      return { ...prev, client: selected.name, company: selected.companyName };
     });
+    // don't flip manualEdit here (this is just sync)
+  }, [clients, formData.clientId]);
+
+  // Dealer Change (select client by id)
+  const onDealerChange = (e) => {
+    const clientId = e.target.value;
+    const selectedClient = clients.find((c) => c.id === clientId);
+
+    setFormData((prev) => ({
+      ...prev,
+      clientId: clientId || "",
+      client: selectedClient?.name || "",
+      company: selectedClient?.companyName || "",
+    }));
+
+    setManualEdit(true);
   };
 
-  // Company Change
-  const onCompanyChange = (e) => {
-    setFormData({ ...formData, company: e.target.value });
-  };
-
-  // Adjustments handler
+  // Adjustments handlers (use functional updates)
   const handleAdjustmentChange = (index, field, value) => {
     setFormData((prev) => {
       const newAdjustments = prev.adjustments.map((adj, i) =>
         i === index ? { ...adj, [field]: value } : adj
       );
-
       return { ...prev, adjustments: newAdjustments };
     });
+    setManualEdit(true);
   };
 
   const addAdjustmentRow = () => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       adjustments: [
-        ...formData.adjustments,
+        ...prev.adjustments,
         { type: "Charge", amount: "", reason: "" },
       ],
-    });
+    }));
+    setManualEdit(true);
   };
 
   const removeAdjustmentRow = (index) => {
-    const newAdjustments = [...formData.adjustments];
-    newAdjustments.splice(index, 1);
-    setFormData({ ...formData, adjustments: newAdjustments });
+    setFormData((prev) => {
+      const newAdjustments = [...prev.adjustments];
+      newAdjustments.splice(index, 1);
+      return { ...prev, adjustments: newAdjustments };
+    });
+    setManualEdit(true);
   };
 
-  // File Upload Handler
+  // File Upload Handler (include existingFiles in limit)
   const handleFileUpload = (e) => {
-    const uploaded = Array.from(e.target.files);
-    if (files.length + uploaded.length > 5) {
-      toast.error("Maximum 5 files allowed");
+    const uploaded = Array.from(e.target.files || []);
+    if (files.length + uploaded.length + existingFiles.length > 5) {
+      toast.error("Maximum 5 files allowed (including existing attachments)");
+      e.target.value = null;
       return;
     }
-    setFiles([...files, ...uploaded]);
+    setFiles((prev) => [...prev, ...uploaded]);
+    e.target.value = null;
   };
 
   const removeFile = (index) => {
-    setFiles(files.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeExistingFile = (index) => {
-    setExistingFiles(existingFiles.filter((_, i) => i !== index));
+    setExistingFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Auto calculation
+  // Auto calculation of finalTotal
   useEffect(() => {
+    // if backend provided finalTotal and user didn't edit relevant fields, keep backend value
+    if (
+      !manualEdit &&
+      invoiceData &&
+      invoiceData.finalTotal !== undefined &&
+      invoiceData.finalTotal !== null
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        finalTotal: Number(invoiceData.finalTotal).toFixed(2),
+      }));
+      return;
+    }
+
+    // otherwise compute
     let total = Number(formData.statementTotal) || 0;
 
-    formData.adjustments.forEach((adj) => {
+    (formData.adjustments || []).forEach((adj) => {
       const amt = Number(adj.amount) || 0;
-      total += adj.type === "Charge" ? amt : -amt;
+      const type = String(adj.type || "").toLowerCase();
+      // accept multiple possible type values from backend (add, charge, deduction, etc.)
+      const isCharge = /charge|add|plus|credit|increase/i.test(type);
+      total += isCharge ? amt : -amt;
     });
 
+    // If bypass is false -> apply assigned percentage.
+    // NOTE: if your business rule is different (e.g. subtract percentage), update accordingly.
     if (!formData.bypass) {
       const perc = Number(formData.assignedPercentage) || 0;
+      // apply percent as proportion of total
       total = total * (perc / 100);
     }
 
     setFormData((prev) => ({
       ...prev,
-      finalTotal: total.toFixed(2),
+      finalTotal: Number(total || 0).toFixed(2),
     }));
   }, [
     formData.statementTotal,
     formData.adjustments,
     formData.assignedPercentage,
     formData.bypass,
+    manualEdit,
+    invoiceData?.finalTotal,
   ]);
 
   // Save Handler
   const handleSave = async (finalize = false) => {
-    if (!formData.client || !formData.company || !formData.statementTotal) {
+    if (
+      !formData.clientId ||
+      !formData.company ||
+      !formData.statementTotal ||
+      !formData.finalTotal
+    ) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -152,28 +216,30 @@ const EditInvoiceForm = ({
     const payload = {
       ...formData,
       status: finalize ? "finalized" : "draft",
-      // keep track of files that remain vs removed
       existingFiles,
     };
 
     const formDataObj = new FormData();
 
     Object.keys(payload).forEach((key) => {
-      if (Array.isArray(payload[key])) {
-        formDataObj.append(key, JSON.stringify(payload[key]));
+      const value = payload[key];
+      if (Array.isArray(value) || typeof value === "object") {
+        formDataObj.append(key, JSON.stringify(value));
       } else {
-        formDataObj.append(key, payload[key]);
+        formDataObj.append(
+          key,
+          value === undefined || value === null ? "" : String(value)
+        );
       }
     });
 
-    files.forEach((file) => {
-      formDataObj.append("files", file);
-    });
+    files.forEach((file) => formDataObj.append("files", file));
 
+    // pass back
     onSubmit({
-      id: invoiceData._id,
+      id: invoiceData?._id,
       data: formDataObj,
-    }); // pass back
+    });
 
     toast.success(
       finalize ? "Invoice updated & finalized" : "Invoice draft updated"
@@ -181,10 +247,14 @@ const EditInvoiceForm = ({
     onClose();
   };
 
+  // helper: find selected client for company rendering
+  const selectedClient = clients.find(
+    (c) => c.id === String(formData.clientId)
+  );
+
   return (
     <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
       <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 space-y-6">
-        {/* Close */}
         <button
           onClick={onClose}
           className="absolute text-2xl top-3 right-3 text-gray-500 hover:text-black"
@@ -194,17 +264,15 @@ const EditInvoiceForm = ({
 
         <h2 className="text-xl font-bold">Edit Invoice</h2>
 
-        {/* Header Section */}
+        {/* Basic Info */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="client" className="font-semibold">
-                Client
-              </label>
+              <label className="font-semibold">Client</label>
               <select
                 className="border rounded p-2"
-                value={formData.clientId}
+                value={formData.clientId || ""}
                 onChange={onDealerChange}
               >
                 <option value="">Choose Client</option>
@@ -215,35 +283,32 @@ const EditInvoiceForm = ({
                 ))}
               </select>
             </div>
+
             <div className="flex flex-col gap-2">
-              <label htmlFor="company" className="font-semibold">
-                Warranty Company
-              </label>
-              <select
-                className="border rounded p-2"
-                value={formData.company}
-                onChange={onCompanyChange}
+              <label className="font-semibold">Warranty Company</label>
+              <div
+                className={`p-2 rounded-lg border text-center font-medium 
+      ${
+        selectedClient
+          ? "bg-blue-50 text-blue-800 border-blue-300"
+          : "bg-gray-100 text-gray-500 border-gray-300"
+      }
+    `}
               >
-                <option value="">Choose Company</option>
-                {clients
-                  .filter((c) => c.name === formData.client)
-                  .map((c) => (
-                    <option key={c.id} value={c.companyName}>
-                      {c.companyName}
-                    </option>
-                  ))}
-              </select>
+                {selectedClient
+                  ? selectedClient.companyName
+                  : "Choose client name"}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Statement Section */}
+        {/* Statement */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Statement</h2>
+
           <div className="flex flex-col gap-2">
-            <label htmlFor="statementType" className="font-semibold">
-              Statement Type
-            </label>
+            <label className="font-semibold">Statement Type</label>
             <div className="space-x-4">
               {["Weekly", "Monthly", "Custom"].map((type) => (
                 <label key={type}>
@@ -252,12 +317,13 @@ const EditInvoiceForm = ({
                     name="statementType"
                     value={type}
                     checked={formData.statementType === type}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
                         statementType: e.target.value,
-                      })
-                    }
+                      }));
+                      setManualEdit(true);
+                    }}
                   />{" "}
                   {type}
                 </label>
@@ -267,31 +333,35 @@ const EditInvoiceForm = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="statementNumber" className="font-semibold">
-                Statement Number
-              </label>
+              <label className="font-semibold">Statement Number</label>
               <input
                 type="text"
                 placeholder="Statement Number"
                 className="border rounded p-2"
                 value={formData.statementNumber}
                 onChange={(e) =>
-                  setFormData({ ...formData, statementNumber: e.target.value })
+                  setFormData((prev) => ({
+                    ...prev,
+                    statementNumber: e.target.value,
+                  }))
                 }
               />
             </div>
+
             <div className="flex flex-col gap-2">
-              <label htmlFor="statementTotal" className="font-semibold">
-                Statement Total
-              </label>
+              <label className="font-semibold">Statement Total</label>
               <input
                 type="number"
                 placeholder="Statement Total"
                 className="border rounded p-2"
                 value={formData.statementTotal}
-                onChange={(e) =>
-                  setFormData({ ...formData, statementTotal: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    statementTotal: e.target.value,
+                  }));
+                  setManualEdit(true);
+                }}
               />
             </div>
           </div>
@@ -300,6 +370,7 @@ const EditInvoiceForm = ({
         {/* Adjustments */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Adjustments</h2>
+
           {formData.adjustments.map((adj, idx) => (
             <div
               key={idx}
@@ -312,9 +383,10 @@ const EditInvoiceForm = ({
                   handleAdjustmentChange(idx, "type", e.target.value)
                 }
               >
-                <option>Charge</option>
-                <option>Deduction</option>
+                <option value="Charge">Charge</option>
+                <option value="Deduction">Deduction</option>
               </select>
+
               <input
                 type="number"
                 placeholder="Amount"
@@ -324,6 +396,7 @@ const EditInvoiceForm = ({
                   handleAdjustmentChange(idx, "amount", e.target.value)
                 }
               />
+
               <input
                 type="text"
                 placeholder="Reason"
@@ -333,6 +406,7 @@ const EditInvoiceForm = ({
                   handleAdjustmentChange(idx, "reason", e.target.value)
                 }
               />
+
               {formData.adjustments.length > 1 && (
                 <button
                   type="button"
@@ -344,6 +418,7 @@ const EditInvoiceForm = ({
               )}
             </div>
           ))}
+
           <button
             type="button"
             onClick={addAdjustmentRow}
@@ -356,11 +431,10 @@ const EditInvoiceForm = ({
         {/* Calculation */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Calculation</h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="percentage" className="font-semibold">
-                Percentage
-              </label>
+              <label className="font-semibold">Percentage</label>
               <input
                 type="number"
                 placeholder="Assigned Percentage"
@@ -369,25 +443,32 @@ const EditInvoiceForm = ({
                 }`}
                 disabled={formData.bypass}
                 value={formData.assignedPercentage}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
                     assignedPercentage: e.target.value,
-                  })
-                }
+                  }));
+                  setManualEdit(true);
+                }}
               />
             </div>
+
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={formData.bypass}
-                onChange={(e) =>
-                  setFormData({ ...formData, bypass: e.target.checked })
-                }
+                checked={!!formData.bypass}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    bypass: e.target.checked,
+                  }));
+                  setManualEdit(true);
+                }}
               />{" "}
               <span>Bypass Percentage</span>
             </label>
           </div>
+
           <div className="text-xl font-bold text-blue-700">
             Final Total: ${formData.finalTotal || "0.00"}
           </div>
@@ -406,6 +487,7 @@ const EditInvoiceForm = ({
               onChange={handleFileUpload}
             />
           </label>
+
           <div className="flex flex-wrap gap-3 mt-5">
             {existingFiles.map((file, idx) => (
               <div
@@ -418,7 +500,7 @@ const EditInvoiceForm = ({
                   rel="noreferrer"
                   className="text-sm text-blue-600 underline"
                 >
-                  {file.public_id}
+                  {file.public_id || file.name || `file-${idx + 1}`}
                 </a>
                 <button
                   type="button"
@@ -450,9 +532,7 @@ const EditInvoiceForm = ({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="explanation" className="font-semibold">
-              Explanation(optional)
-            </label>
+            <label className="font-semibold">Explanation (optional)</label>
             <textarea
               cols="30"
               rows="4"
@@ -460,7 +540,10 @@ const EditInvoiceForm = ({
               className="border rounded p-2 w-full"
               value={formData.explanation}
               onChange={(e) =>
-                setFormData({ ...formData, explanation: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  explanation: e.target.value,
+                }))
               }
             />
           </div>

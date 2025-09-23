@@ -134,8 +134,6 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       formDataObj.append("files", file);
     });
 
-    console.log("Sending to backend:", payload);
-
     outgoingData(formDataObj);
 
     toast.success(finalize ? "Invoice finalized" : "Draft saved");
@@ -181,7 +179,6 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                   </option>
                 ))}
             </select>
-            <input type="file" className="border rounded p-2" />
           </div>
         </div>
 

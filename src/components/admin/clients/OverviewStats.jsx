@@ -1,19 +1,14 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-
-const StatusOverviewCard = (userData) => {
-  const { userCount } = useSelector((state) => state.user);
-
+const StatusOverviewCard = (clientCount) => {
   const data = [
     {
       label: "Active",
-      count: userCount?.activeUsers,
+      count: clientCount?.clientCount?.activeClients,
       color: "text-green-500",
       dotColor: "bg-green-500",
     },
     {
       label: "Inactive",
-      count: userCount?.inactiveUsers,
+      count: clientCount?.clientCount?.inactiveClients,
       color: "text-red-500",
       dotColor: "bg-red-500",
     },

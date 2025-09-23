@@ -135,7 +135,6 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         idx === rowIdx ? { ...row, status: newStatus } : row
       )
     );
-    console.log("new status", newStatus);
     try {
       const res = await updateClaims({
         id: row._id,
@@ -168,8 +167,6 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   };
 
   const handleOnSubmit = async (updatedClaim) => {
-    console.log("updated claim", updatedClaim);
-
     try {
       const res = await updateClaimsAdditionalData({
         id: updatedClaim._id,
@@ -236,7 +233,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       ),
       sortable: false,
       grow: 2,
-      minWidth: "150px",
+      width: "210px",
     },
     {
       name: "Job #",
@@ -245,7 +242,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.jobNumber}</span>
       ),
       sortable: true,
-      width: "90px",
+      width: "100px",
     },
     {
       name: "Quoted",
@@ -254,7 +251,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.quoted}</span>
       ),
       sortable: true,
-      width: "110px",
+      width: "115px",
     },
     {
       name: "Status",
@@ -265,7 +262,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         />
       ),
       sortable: false,
-      width: "100px",
+      width: "110px",
     },
     {
       name: "Entry Date",
@@ -274,7 +271,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.entryDate}</span>
       ),
       sortable: false,
-      width: "130px",
+      width: "140px",
     },
     {
       name: "Error Description",
@@ -302,7 +299,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 3,
-      minWidth: "200px",
+      width: "250px",
     },
     {
       name: "Additional Information",
@@ -330,7 +327,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 2,
-      minWidth: "170px",
+      width: "240px",
     },
   ];
 
@@ -362,14 +359,14 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 2,
-      minWidth: "200px",
+      width: "240px",
     });
   }
 
   columns.push({
     name: "Actions",
     cell: (row) => (
-      <div className="relative">
+      <div className="relative flex justify-end w-full">
         <button
           className="p-2 rounded-full hover:bg-gray-100"
           onClick={() =>
@@ -384,7 +381,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         {toggleActionsMenu?._id === row._id && (
           <div
             ref={menuRef}
-            className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-20"
+            className="absolute bottom-0 right-7 mt-2 w-32 bg-white border rounded-lg shadow-lg z-20"
           >
             <button
               onClick={() => {
@@ -430,7 +427,6 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         )}
       </div>
     ),
-    right: true,
     width: "100px",
   });
 

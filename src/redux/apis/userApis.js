@@ -72,6 +72,22 @@ const userApis = createApi({
         method: "GET",
       }),
     }),
+
+    // Get Total Users Count Today, This week and this month
+    getTotalUsersCount: builder.query({
+      query: () => ({
+        url: "/getUserStatsByFilters",
+        method: "GET",
+      }),
+    }),
+
+    // Get Attendance Chart Data
+    getAttendanceChartData: builder.query({
+      query: () => ({
+        url: "/getUserActivityStats",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -83,6 +99,8 @@ export const {
   useDeleteUserMutation,
   useGetActiveInactiveCountQuery,
   useGetUsersStatQuery,
+  useGetTotalUsersCountQuery,
+  useGetAttendanceChartDataQuery,
 } = userApis;
 
 export default userApis;

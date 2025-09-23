@@ -163,13 +163,6 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
         <div className="col-span-12 md:col-span-3 mt-5">
           <div className="grid grid-cols-2 gap-2">
             <Button
-              text="Search"
-              bg="bg-primary"
-              color="text-white"
-              icon={<LuSearch className="text-sm" />}
-              cn={"!text-sm !py-3 !h-[40px]"}
-            />
-            <Button
               text="Reset Filter"
               bg="bg-[#043655C4]"
               color="text-white"
