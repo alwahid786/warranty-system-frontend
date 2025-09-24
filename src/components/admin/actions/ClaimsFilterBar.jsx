@@ -3,6 +3,7 @@ import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
 import { LuSearch } from "react-icons/lu";
 import { MdFilterAltOff } from "react-icons/md";
+import { createPortal } from "react-dom";
 
 const searchTypes = [
   { key: "roNumber", label: "RO Number" },
@@ -34,6 +35,8 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
   const handleReset = () => {
     onFilterChange(defaultFilters);
   };
+
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <div className="w-full rounded-md mt-4 flex flex-col gap-4">
@@ -126,19 +129,30 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
         </div>
 
         {/* Status Dropdown */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary ">
-            Order Statuses
-          </label>
-          <Dropdown
-            title=""
-            options={orderStatuses}
-            defaultValue={orderStatuses.find(
-              (opt) => opt.name.toLowerCase() === filters.status?.toLowerCase()
-            )}
-            onChange={(val) => onFilterChange({ status: val?.name || "" })}
-            width="w-full"
-          />
+        <div className="relative w-full">
+          <div className="absolute w-full bottom-10">
+            <div className="flex flex-col gap-1 md:col-span-3 relative w-full">
+              <label className="text-xs font-medium text-secondary">
+                Order Statuses
+              </label>
+
+              <div className="absolute top-full left-0 z-50 mt-1 w-full">
+                <Dropdown
+                  title=""
+                  options={orderStatuses}
+                  defaultValue={orderStatuses.find(
+                    (opt) =>
+                      opt.name.toLowerCase() === filters.status?.toLowerCase()
+                  )}
+                  onChange={(val) => {
+                    onFilterChange({ status: val?.name || "" });
+                    setIsOpen(false); // close after selecting
+                  }}
+                  width="w-full"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Buttons */}

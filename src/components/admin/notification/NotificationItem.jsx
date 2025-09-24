@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   useDeleteNotificationMutation,
   useReadNotificationMutation,
+  useGetNotificationsQuery,
 } from "../../../redux/apis/notificationsApis";
 import { Trash2, CheckCheck } from "lucide-react";
 import toast from "react-hot-toast";
@@ -9,11 +10,13 @@ import toast from "react-hot-toast";
 const NotificationItem = ({ id, title, message, time, isRead }) => {
   const [deleteNotification] = useDeleteNotificationMutation();
   const [readNotification] = useReadNotificationMutation();
+  const { refetch: notificationsRefetch } = useGetNotificationsQuery();
 
   const handleDelete = async () => {
     try {
       const res = await deleteNotification(id).unwrap();
       toast.success(res.message || "Notification deleted", { duration: 3000 });
+      await notificationsRefetch();
     } catch (err) {
       toast.error(err?.data?.message || "Failed to delete", { duration: 3000 });
     }
@@ -24,6 +27,7 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
       try {
         const res = await readNotification(id).unwrap();
         toast.success(res.message || "Marked as read", { duration: 3000 });
+        await notificationsRefetch();
       } catch (err) {
         toast.error(err?.data?.message || "Failed to mark read", {
           duration: 3000,

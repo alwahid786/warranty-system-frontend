@@ -3,15 +3,12 @@ import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { FaLocationDot } from "react-icons/fa6";
 import {
   FaPhone,
   FaUserTie,
   FaUser,
   FaShareNodes,
   FaBell,
-  FaRegBuilding,
-  FaEnvelope,
 } from "react-icons/fa6";
 import { MdLocationOn } from "react-icons/md";
 import { HiPencil, HiTrash } from "react-icons/hi2";
@@ -52,7 +49,15 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
             <p className="font-semibold text-gray-900 text-sm md:text-base">
               {client.name}
             </p>
-            <p className="text-xs text-gray-500">ID #{client?._id}</p>
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                client?.activeStatus
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {client?.activeStatus ? "Active" : "Inactive"}
+            </span>
           </div>
         </div>
 

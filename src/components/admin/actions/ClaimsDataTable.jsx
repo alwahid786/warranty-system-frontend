@@ -18,55 +18,80 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import EditClaimsModal from "./EditClaimsModal";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
+import { createPortal } from "react-dom";
 
 // Custom Status Dropdown styled as button=
 const StatusDropdown = ({ status, onChange }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
+  const dropdownRef = useRef();
   const options = ["PC", "PO", "PQ", "PR", "PA", "CR"];
 
-  // Color logic for button
+  // Button color logic
   let btnColor = "bg-[#FFCC00] text-white";
-
-  if (status === "PC") btnColor = "bg-[#3B82F6] text-white"; // Blue
-  else if (status === "PO") btnColor = "bg-[#22C55E] text-white"; // Green
-  else if (status === "PQ") btnColor = "bg-[#F97316] text-white"; // Orange
-  else if (status === "PR") btnColor = "bg-[#A855F7] text-white"; // Purple
+  if (status === "PC") btnColor = "bg-[#3B82F6] text-white";
+  else if (status === "PO") btnColor = "bg-[#22C55E] text-white";
+  else if (status === "PQ") btnColor = "bg-[#F97316] text-white";
+  else if (status === "PR") btnColor = "bg-[#A855F7] text-white";
   else if (status === "PA") btnColor = "bg-[#EAB308] text-black";
-  // Yellow (better contrast with black text)
-  else if (status === "CR") btnColor = "bg-[#EF4444] text-white"; // Red
+  else if (status === "CR") btnColor = "bg-[#EF4444] text-white";
 
-  // Close dropdown on outside click
-  React.useEffect(() => {
+  // Close on outside click
+  useEffect(() => {
     const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (
+        ref.current &&
+        !ref.current.contains(e.target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Positioning
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  useEffect(() => {
+    if (open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setCoords({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [open]);
+
   return (
     <div className="w-full relative inline-block" ref={ref}>
       <button
         type="button"
-        className={`flex items-center gap- ${btnColor} font-semibold rounded-lg px-2 py-2 text-sm w-full justify-between focus:outline-none shadow`}
+        className={`flex items-center ${btnColor} font-semibold rounded-lg px-2 py-2 text-sm w-full justify-between focus:outline-none shadow`}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className="text-xs text-nowrap truncate max-w-fit">{status}</span>
+        <span className="text-xs truncate">{status}</span>
         <HiChevronDown className="text-sm" />
       </button>
-      {open && (
-        <div className="absolute left-0 z-10 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200">
-          {options.map((opt) => {
-            let optColor = "";
-            if (opt === "Rejected") optColor = "bg-red-500 text-white";
-            else if (opt === "Appealed") optColor = "bg-blue-500 text-white";
-            else if (opt === status) optColor = "bg-[#FFCC00] text-white";
-            return (
+
+      {open &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            className="absolute z-[9999] bg-white rounded-lg shadow-lg border border-gray-200"
+            style={{
+              top: coords.top,
+              left: coords.left,
+              width: coords.width,
+            }}
+          >
+            {options.map((opt) => (
               <div
                 key={opt}
-                className={`px-4 py-2 text-xs cursor-pointer hover:bg-[#FFCC00]  hover:text-white rounded-lg ${
-                  opt === status ? optColor : "text-gray-800"
+                className={`px-4 py-2 text-xs cursor-pointer hover:bg-[#FFCC00] hover:text-white ${
+                  opt === status ? "bg-gray-100 font-semibold" : "text-gray-800"
                 }`}
                 onClick={() => {
                   setOpen(false);
@@ -75,10 +100,10 @@ const StatusDropdown = ({ status, onChange }) => {
               >
                 {opt}
               </div>
-            );
-          })}
-        </div>
-      )}
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
@@ -431,7 +456,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   });
 
   return (
-    <div className="p-2 overflow-auto w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">
+    <div className="p-2 overflow-visible w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Claims
       </h2>
@@ -443,7 +468,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           pagination
           highlightOnHover
           customStyles={customStyles}
-          className="border- p-1 bg-white"
+          className="border- p-1 bg-white relative z-10"
           onSelectedRowsChange={({ selectedRows }) => {
             onSelectionChange(selectedRows);
           }}

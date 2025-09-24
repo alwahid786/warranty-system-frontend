@@ -67,14 +67,16 @@ const InvoicesListHeader = ({
 
         {/* Buttons */}
         <div className="flex items-center gap-2 justify-end">
-          <Button
-            icon={<LuPlus className="text-xs sm:text-sm" />}
-            text="Create New Invoice"
-            bg="bg-[#04365599] hover:bg-slate-600"
-            color="text-white"
-            cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
-            onClick={() => setIsOpen(true)}
-          />
+          {showImportExport && (
+            <Button
+              icon={<LuPlus className="text-xs sm:text-sm" />}
+              text="Create New Invoice"
+              bg="bg-[#04365599] hover:bg-slate-600"
+              color="text-white"
+              cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
+              onClick={() => setIsOpen(true)}
+            />
+          )}
           <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
             text={showImportExport ? "Move To Archive" : "Move Out of Archive"}

@@ -136,7 +136,7 @@ export default function ChatModal({
                       />
                     ) : (
                       <>
-                        <p>{msg.fileData.name}</p>
+                        <p>{msg.fileData.filename}</p>
                         <a
                           href={msg.fileData.url}
                           download

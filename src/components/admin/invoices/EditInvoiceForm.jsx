@@ -500,7 +500,7 @@ const EditInvoiceForm = ({
                   rel="noreferrer"
                   className="text-sm text-blue-600 underline"
                 >
-                  {file.public_id || file.name || `file-${idx + 1}`}
+                  {file.filename || file.public_id || `file-${idx + 1}`}
                 </a>
                 <button
                   type="button"

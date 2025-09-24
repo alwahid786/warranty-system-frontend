@@ -1,34 +1,34 @@
 /* eslint-disable react/prop-types */
 import { FaDiamond } from "react-icons/fa6";
 
+const SectionHeader = ({ children }) => (
+  <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
+    <FaDiamond size={8} /> {children}
+  </p>
+);
+
+const InfoRow = ({ label, value }) => (
+  <div className="flex justify-between text-[10px] py-0.5">
+    <span className="font-semibold">{label}:</span>
+    <span>{value ?? "-"}</span>
+  </div>
+);
+
 const InvoiceBill = ({ invoice, isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  // Customer Info
-  const customerTable = [
-    { key: "Client Name", value: invoice.clientName },
-    { key: "Warranty Co.", value: invoice.warrantyCompany },
-  ];
-
-  // Statement Info
-  const statementTable = [
-    { key: "Type", value: invoice.statementType },
-    { key: "Number", value: invoice.statementNumber },
-    { key: "Total", value: `$${invoice.statementTotal?.toFixed(2)}` },
-  ];
-
-  // Adjustments
-  const adjustmentTable = invoice.adjustments?.map((adj, idx) => ({
-    key: `${adj.type === "add" ? "Addition" : "Deduction"} ${idx + 1}`,
-    value: `$${adj.amount.toFixed(2)} (${adj.reason})`,
-  }));
-
-  // Reports
-  const reports = invoice.attachedReports || [];
+  const adjustments = invoice.adjustments || [];
+  const totalAdd = adjustments
+    .filter((a) => a.type === "add")
+    .reduce((sum, a) => sum + Number(a.amount), 0);
+  const totalDeduct = adjustments
+    .filter((a) => a.type === "deduction")
+    .reduce((sum, a) => sum + Number(a.amount), 0);
+  const netAdjustments = totalAdd - totalDeduct;
 
   return (
     <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
-      <div className="relative flex flex-col gap-10 p-6 bg-white rounded-xl shadow-lg">
+      <div className="relative w-full max-w-3xl flex flex-col gap-6 p-6 bg-white rounded-xl shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -36,141 +36,93 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
         >
           ✖
         </button>
+
         {/* Header */}
-        <div className="flex flex-col mt-6 sm:flex-row items-center gap-4 justify-between">
-          <div className="w-full sm:w-fit flex gap-4 items-center">
+        <div className="flex flex-col mt-6 sm:flex-row items-center gap-4 justify-between border-b pb-3">
+          <div className="flex gap-4 items-center">
             <img src="/Vector.png" alt="logo" className="w-10 h-10" />
             <div className="flex flex-col">
               <p className="text-sm font-extrabold text-primary">
-                National Warranty System
+                {invoice?.owner?.companyName || "National Warranty System"}
               </p>
               <span className="text-[10px]">Warranty Claim Invoice</span>
             </div>
           </div>
-          <p className="text-xs font-semibold text-right">
-            4825 Willow <br className="hidden sm:block" /> Drive, San Jose,{" "}
-            <br className="hidden sm:block" /> CA 95129, USA
-          </p>
         </div>
 
         {/* Invoice Info */}
-        <div className="flex flex-col gap-5 pb-3 border-b-2 border-primary">
-          <div className="flex flex-col sm:flex-row gap-5 justify-between">
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex flex-col gap-0.5">
-                <p className="flex items-center gap-1 text-[11px] font-medium text-primary">
-                  <FaDiamond size={8} /> Date of issue
-                </p>
-                <span className="text-[10px] font-semibold">
-                  {new Date(invoice.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <p className="flex items-center gap-1 text-[11px] font-medium text-primary">
-                  <FaDiamond size={8} /> Invoice number
-                </p>
-                <span className="text-[10px] font-semibold">
-                  {invoice.invoiceNumber}
-                </span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <p className="flex items-center gap-1 text-[11px] font-medium text-primary">
-                  <FaDiamond size={8} /> Statement Type
-                </p>
-                <span className="text-[10px] font-semibold">
-                  {invoice.statementType}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <p className="flex items-center gap-1 text-[11px] font-medium text-primary">
-                <FaDiamond size={8} /> Final Total (USD)
-              </p>
-              <span className="text-xl font-extrabold">
-                ${invoice.finalTotal?.toFixed(2)}
-              </span>
-            </div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3">
+          <div className="flex flex-wrap gap-6">
+            <InfoRow
+              label="Date of Issue"
+              value={new Date(invoice.createdAt).toLocaleDateString()}
+            />
+            <InfoRow label="Invoice Number" value={invoice.invoiceNumber} />
+            <InfoRow label="Statement Type" value={invoice.statementType} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] font-medium text-primary flex items-center gap-1">
+              <FaDiamond size={8} /> Final Total (USD)
+            </span>
+            <span className="text-xl font-extrabold text-primary">
+              ${invoice.finalTotal?.toFixed(2)}
+            </span>
           </div>
         </div>
 
         {/* Customer + Statement Info */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <table>
-              <thead>
-                <tr>
-                  <td
-                    className="text-[11px] flex items-center gap-1 font-medium text-primary"
-                    colSpan={2}
-                  >
-                    <FaDiamond size={8} /> Customer Information
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {customerTable.map((item) => (
-                  <tr key={item.key} className="flex gap-3">
-                    <td className="w-[90px] text-[10px] font-semibold">
-                      {item.key}:
-                    </td>
-                    <td className="text-[10px]">{item.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <SectionHeader>Customer Information</SectionHeader>
+            <InfoRow label="Client Name" value={invoice.clientName} />
+            <InfoRow label="Warranty Co." value={invoice.warrantyCompany} />
+            <InfoRow label="Client Email" value={invoice?.clientId?.email} />
+            <InfoRow label="Phone" value={invoice?.clientId?.phone} />
           </div>
 
           <div>
-            <table>
-              <thead>
-                <tr>
-                  <td
-                    className="text-[11px] flex items-center gap-1 font-medium text-primary"
-                    colSpan={2}
-                  >
-                    <FaDiamond size={8} /> Statement Information
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {statementTable.map((item) => (
-                  <tr key={item.key} className="flex gap-3">
-                    <td className="w-[90px] text-[10px] font-semibold">
-                      {item.key}:
-                    </td>
-                    <td className="text-[10px]">{item.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <SectionHeader>Statement Information</SectionHeader>
+            <InfoRow label="Type" value={invoice.statementType} />
+            <InfoRow label="Number" value={invoice.statementNumber} />
+            <InfoRow
+              label="Total"
+              value={`$${invoice.statementTotal?.toFixed(2)}`}
+            />
+            <InfoRow
+              label="Assigned %"
+              value={`${invoice.assignedPercentage || 0}%`}
+            />
+            <InfoRow
+              label="Bypass"
+              value={invoice.bypassPercentage ? "Yes" : "No"}
+            />
           </div>
         </div>
 
         {/* Adjustments */}
-        {adjustmentTable?.length > 0 && (
-          <div className="border-t-2 pt-3">
-            <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
-              <FaDiamond size={8} /> Adjustments
-            </p>
-            <ul className="text-[10px] space-y-1">
-              {adjustmentTable.map((adj) => (
-                <li key={adj.key} className="flex justify-between">
-                  <span className="font-semibold">{adj.key}:</span>
-                  <span>{adj.value}</span>
-                </li>
-              ))}
-            </ul>
+        {adjustments.length > 0 && (
+          <div className="border-t pt-3">
+            <SectionHeader>Adjustments</SectionHeader>
+            {adjustments.map((adj, idx) => (
+              <InfoRow
+                key={idx}
+                label={adj.type === "add" ? "Charge" : "Deduction"}
+                value={`$${adj.amount.toFixed(2)} (${adj.reason || "N/A"})`}
+              />
+            ))}
+            <div className="mt-2 text-[10px] font-bold">
+              Total Additions: ${totalAdd.toFixed(2)} | Total Deductions: $
+              {totalDeduct.toFixed(2)} | Net: ${netAdjustments.toFixed(2)}
+            </div>
           </div>
         )}
 
         {/* Reports */}
-        {reports.length > 0 && (
-          <div className="border-t-2 pt-3">
-            <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
-              <FaDiamond size={8} /> Attached Reports
-            </p>
+        {invoice.attachedReports?.length > 0 && (
+          <div className="border-t pt-3">
+            <SectionHeader>Attached Reports</SectionHeader>
             <ul className="text-[10px] space-y-1">
-              {reports.map((r) => (
+              {invoice.attachedReports.map((r) => (
                 <li key={r._id}>
                   <a
                     href={r.url}
@@ -178,7 +130,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
                     rel="noreferrer"
                     className="text-blue-500 underline"
                   >
-                    {r.public_id.split("/").pop()}
+                    {r?.filename || r?.public_id?.split("/").pop()}
                   </a>
                 </li>
               ))}
@@ -187,15 +139,21 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
         )}
 
         {/* Explanation & Status */}
-        <div className="border-t-2 pt-3 text-[10px]">
-          <p>
-            <span className="font-bold">Explanation:</span>{" "}
-            {invoice.freeTextExplanation || "N/A"}
-          </p>
-          <p className="mt-1">
-            <span className="font-bold">Status:</span>{" "}
-            {invoice.status.toUpperCase()}
-          </p>
+        <div className="border-t pt-3 text-[10px]">
+          <InfoRow
+            label="Explanation"
+            value={invoice.freeTextExplanation || "N/A"}
+          />
+          <InfoRow label="Status" value={invoice.status?.toUpperCase()} />
+          <InfoRow label="Sent Count" value={invoice.sentCount} />
+          <InfoRow
+            label="Last Sent"
+            value={
+              invoice.lastSent
+                ? new Date(invoice.lastSent).toLocaleDateString()
+                : "Never"
+            }
+          />
         </div>
       </div>
     </div>

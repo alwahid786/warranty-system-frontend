@@ -111,9 +111,9 @@ export default function InvoiceCard({
         id: invoice?._id,
       }).unwrap();
       saveAs(blob, `invoice-${invoice?.invoiceNumber}.pdf`);
-      toast.success(res.message || "Invoice sent", { duration: 3000 });
+      toast.success(res?.message || "Invoice sent", { duration: 3000 });
     } catch (err) {
-      toast.error(err.data.message || "Failed to send", { duration: 3000 });
+      toast.error(err?.data?.message || "Failed to send", { duration: 3000 });
     }
   };
 
@@ -233,7 +233,7 @@ export default function InvoiceCard({
               ></Button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
+                <div className="absolute left-13 bottom-8 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
                   <button
                     onClick={() => {
                       onEdit(invoice);
