@@ -44,12 +44,12 @@ function AdminLogin() {
         dispatch(resetNotifications());
         await refetch();
         await notificationsRefetch();
-        toast.success(res.message, { duration: 3000 });
+        toast.success(res?.message || "Login successful", { duration: 3000 });
         dispatch(userExist(res?.data));
         return navigate("/");
       }
     } catch (err) {
-      toast.error(err.data.message, { duration: 3000 });
+      toast.error(err?.data?.message || "Login failed", { duration: 3000 });
     }
   };
   const handleReset = async (e) => {
