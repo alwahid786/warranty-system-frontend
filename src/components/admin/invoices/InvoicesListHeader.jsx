@@ -56,13 +56,13 @@ const InvoicesListHeader = ({
         {/* Title & Description */}
         <div className="">
           <h2 className="text-2xl font-medium font-inter text-primary">
-            Claims List
+            Invoices List
           </h2>
           <p className="text-sm font-inter font-medium text-secondary">
-            Review, update, and organize user-submitted warranty claims. Use
-            filters to sort by status, date, or brand.
+            Review, update, and organize the invoices. Use filters to sort by
+            status, date, or brand.
           </p>
-          {/* ClaimsFilterBar below the title/description */}
+          {/* invoicessFilterBar below the title/description */}
         </div>
 
         {/* Buttons */}
