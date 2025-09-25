@@ -151,7 +151,6 @@ const Profile = ({ menuRef }) => {
         dispatch(userNotExist());
         dispatch(setNotifications([]));
         toast.success(res.message, { duration: 3000 });
-        window.location.reload();
         return navigate("/login");
       }
     } catch (err) {
