@@ -68,15 +68,8 @@ function App() {
 
   useEffect(() => {
     if (!user?._id) return;
-    const timer = setTimeout(() => {
-      SOCKET.auth = { userId: user?._id };
-      SOCKET.connect();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [user?._id]);
-
-  useEffect(() => {
+    SOCKET.auth = { userId: user?._id };
+    SOCKET.connect();
     const handleNotification = (data) => {
       toast.success(data?.message || "New Notification", { duration: 5000 });
       dispatch(addNotification(data));
