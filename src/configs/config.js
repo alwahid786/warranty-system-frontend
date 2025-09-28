@@ -1,5 +1,5 @@
 const config = Object.freeze({
-  SERVER_URL: import.meta.env.VITE_SERVER_URL || "http://localhost:5000",
+  SERVER_URL: import.meta.env.VITE_SERVER_URL || "http://localhost:5001",
 });
 
 const getEnv = (key) => {

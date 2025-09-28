@@ -47,7 +47,7 @@ function App() {
   const { user } = useSelector((state) => state.auth);
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
   const { data: notifications } = useGetNotificationsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    skip: !isSuccess,
   });
 
   useEffect(() => {
@@ -68,10 +68,15 @@ function App() {
 
   useEffect(() => {
     if (!user?._id) return;
+    const timer = setTimeout(() => {
+      SOCKET.auth = { userId: user?._id };
+      SOCKET.connect();
+    }, 1000);
 
-    SOCKET.auth = { userId: user?._id };
-    SOCKET.connect();
+    return () => clearTimeout(timer);
+  }, [user?._id]);
 
+  useEffect(() => {
     const handleNotification = (data) => {
       toast.success(data?.message || "New Notification", { duration: 5000 });
       dispatch(addNotification(data));
@@ -90,7 +95,7 @@ function App() {
     };
   }, [user?._id, dispatch]);
 
-  if (isLoading) return <Loader />;
+  if (!user && isLoading) return <Loader />;
 
   return (
     <>
