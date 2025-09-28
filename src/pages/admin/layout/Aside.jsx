@@ -18,6 +18,11 @@ import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useLogoutMutation } from "../../../redux/apis/authApis";
+import { userNotExist } from "../../../redux/slices/authSlice";
+import { setNotifications } from "../../../redux/slices/notificationsSlice";
+import toast from "react-hot-toast";
 
 const Aside = () => {
   const { pathname } = useLocation();
@@ -27,6 +32,8 @@ const Aside = () => {
   const [email, setEmail] = useState(null);
   const [firstName, setFirstName] = useState(null);
   const [avatar, setAvatar] = useState(null);
+  const [logout, { data, isLoading, error }] = useLogoutMutation();
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -108,6 +115,22 @@ const Aside = () => {
     return true;
   });
 
+  // handle logout
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout().unwrap();
+      if (res.success) {
+        dispatch(userNotExist());
+        dispatch(setNotifications([]));
+        toast.success(res.message, { duration: 3000 });
+        return navigate("/login");
+      }
+    } catch (err) {
+      toast.error(err?.data?.message || "Logout failed", { duration: 3000 });
+    }
+  };
+
   return (
     <aside
       style={{ background: 'url("/Sidebar.png")' }}
@@ -167,7 +190,8 @@ const Aside = () => {
           } `}
         >
           {React.cloneElement(<IoLogOutOutline fontSize={18} />)}
-          <span
+          <button
+            onClick={handleLogout}
             className={`transition-all duration-100 text-nowrap ${
               isMenuOpen
                 ? "opacity-0 scale-x-0 w-0 h-0"
@@ -175,7 +199,7 @@ const Aside = () => {
             }`}
           >
             Logout
-          </span>
+          </button>
         </div>
       </div>
     </aside>
