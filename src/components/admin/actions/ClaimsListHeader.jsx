@@ -86,7 +86,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-1 sm:gap-2 justify-end">
+        <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
           {user?.role === "admin" && (
             <Button
               icon={<ArchievedIcon className="text-xs sm:text-sm" />}

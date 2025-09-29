@@ -66,7 +66,7 @@ const InvoicesListHeader = ({
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex flex-wrap-reverse items-center gap-2 justify-end">
           {showImportExport && (
             <Button
               icon={<LuPlus className="text-xs sm:text-sm" />}

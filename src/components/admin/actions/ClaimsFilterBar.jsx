@@ -40,8 +40,8 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
 
   return (
     <div className="w-full rounded-md mt-4 flex flex-col gap-4">
+      {/* ✅ SEARCH */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end ">
-        {/* Search input and toggle */}
         <div className="flex flex-col gap-1 md:col-span-6">
           <label className="text-xs font-medium text-secondary">
             ADVANCED SEARCH
@@ -49,12 +49,14 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
           <div className="relative w-full">
             <input
               type="text"
-              className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full pr-36"
+              className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full pr-36 md:pr-36"
               placeholder={`Search by ${filters.searchType}`}
               value={filters.searchValue}
               onChange={(e) => onFilterChange({ searchValue: e.target.value })}
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+
+            {/* ✅ Desktop buttons */}
+            <div className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 gap-1">
               {searchTypes.map((type) => (
                 <button
                   key={type.key}
@@ -70,6 +72,22 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
                   {type.label}
                 </button>
               ))}
+            </div>
+
+            {/* ✅ Mobile dropdown */}
+            <div className="mt-2 md:hidden">
+              <Dropdown
+                title="Select Search Type"
+                options={searchTypes.map((s) => ({ id: s.key, name: s.label }))}
+                defaultValue={{
+                  id: filters.searchType,
+                  name:
+                    searchTypes.find((s) => s.key === filters.searchType)
+                      ?.label || "Select",
+                }}
+                onChange={(val) => onFilterChange({ searchType: val?.id })}
+                width="w-full"
+              />
             </div>
           </div>
         </div>
@@ -129,7 +147,7 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
         </div>
 
         {/* Status Dropdown */}
-        <div className="relative w-full">
+        <div className="flex flex-col gap-1 md:col-span-3 col-span-12 mt-17 relative w-full">
           <div className="absolute w-full bottom-10">
             <div className="flex flex-col gap-1 md:col-span-3 relative w-full">
               <label className="text-xs font-medium text-secondary">

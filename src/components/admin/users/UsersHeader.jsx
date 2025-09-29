@@ -50,18 +50,20 @@ const UsersHeader = () => {
 
   return (
     <div className="flex justify-between items-center mb-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Users List</h1>
-        <p className="text-sm text-gray-500">Manage all your Users</p>
-      </div>
+      <div className="flex-direction-column flex-wrap-reverse flex justify-between items-center w-full">
+        <div>
+          <h1 className="text-2xl font-semibold">Users List</h1>
+          <p className="text-sm text-gray-500">Manage all your Users</p>
+        </div>
 
-      {/* Button to open modal */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="py-2 bg-primary text-base text-white px-4 rounded-sm"
-      >
-        + Add New Users
-      </button>
+        {/* Button to open modal */}
+        <button
+          onClick={() => setIsOpen(true)}
+          className="py-2 bg-primary text-base text-white px-4 rounded-sm mb-5"
+        >
+          + Add New Users
+        </button>
+      </div>
 
       {/* Modal */}
       <AddUserModal isOpen={isOpen} onClose={() => setIsOpen(false)}>

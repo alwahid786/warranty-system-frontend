@@ -36,7 +36,30 @@ export default function UsersFilterBar({
               value={filters.searchValue}
               onChange={(e) => onFilterChange({ searchValue: e.target.value })}
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+
+            {/* Mobile Dropdown */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 w-28 md:hidden">
+              <Dropdown
+                title=""
+                options={searchTypes.map((t) => ({
+                  id: t.key,
+                  name: t.label,
+                }))}
+                defaultValue={{
+                  id: filters.searchType,
+                  name:
+                    searchTypes.find((t) => t.key === filters.searchType)
+                      ?.label || searchTypes[0].label,
+                }}
+                onChange={(val) =>
+                  onFilterChange({ searchType: val?.id || "name" })
+                }
+                width="w-full"
+              />
+            </div>
+
+            {/* Desktop Buttons */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 hidden md:flex gap-1">
               {searchTypes.map((type) => (
                 <button
                   key={type.key}

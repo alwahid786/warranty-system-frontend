@@ -42,6 +42,7 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
       {/* Row 1: Search + Dates */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
         {/* Search input and toggle */}
+
         <div className="flex flex-col gap-1 md:col-span-6">
           <label className="text-xs font-medium text-secondary">
             ADVANCED SEARCH
@@ -54,7 +55,24 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
               value={filters.searchValue}
               onChange={(e) => onFilterChange({ searchValue: e.target.value })}
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+
+            {/* Mobile: Dropdown */}
+            <div className="absolute right-7 top-1/2 -translate-y-1/2 md:hidden">
+              <select
+                className="bg-[#04365530] text-gray-600 text-xs px-2 py-1.5 rounded border"
+                value={filters.searchType}
+                onChange={(e) => onFilterChange({ searchType: e.target.value })}
+              >
+                {searchTypes.map((type) => (
+                  <option key={type.key} value={type.key}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Desktop: Button group */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 hidden md:flex gap-1">
               {searchTypes.map((type) => (
                 <button
                   key={type.key}
