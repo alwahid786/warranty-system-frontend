@@ -140,7 +140,7 @@ const Aside = () => {
     >
       {/* Arrow icon */}
       <div
-        className={`bg-white rounded-full p-1 absolute top-[37px] -right-[10px] cursor-pointer z-50 transition-all duration-300 hidden xl:block ${
+        className={`bg-white rounded-full p-1 absolute top-[37px] -right-[10px] cursor-pointer z-60 transition-all duration-300 hidden xl:block ${
           isMenuOpen ? "rotate-0" : "rotate-180"
         }`}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -151,55 +151,57 @@ const Aside = () => {
         className="w-full h-full rounded-lg px-[11px] py-5 overflow-y-auto overflow-x-hidden scroll-0 flex flex-col justify-between gap-6 relative"
         style={{ boxShadow: "0px 4px 14px 0px #3582E729" }}
       >
-        <div>
-          <div className="flex items-center justify-center gap-1">
-            {/* <img
+        <div className="absolute z-60">
+          <div>
+            <div className="flex items-center justify-center gap-1">
+              {/* <img
               src={isMenuOpen ? logo : "Logo"}
               // alt="logo"
               className="mx-auto"
             /> */}
-            {!isMenuOpen && (
-              <h3 className="text-white font-semibold text-lg">
-                National Warranty
-              </h3>
-            )}
-          </div>
-          <div className="mt-7 lg:mt-10">
-            <h4
-              className={`text-xs text-white font-medium ${
-                isMenuOpen ? "text-center" : "pl-2"
-              }`}
-            >
-              MENU
-            </h4>
-            <div className="mt-3 flex flex-col gap-[6px]">
-              {filteredPages.map((page, i) => (
-                <LinkItem
-                  key={i}
-                  page={page}
-                  pathname={pathname}
-                  isMenuOpen={isMenuOpen}
-                />
-              ))}
+              {!isMenuOpen && (
+                <h3 className="text-white font-semibold text-lg">
+                  National Warranty
+                </h3>
+              )}
+            </div>
+            <div className="mt-7 lg:mt-10">
+              <h4
+                className={`text-xs text-white font-medium ${
+                  isMenuOpen ? "text-center" : "pl-2"
+                }`}
+              >
+                MENU
+              </h4>
+              <div className="mt-3 flex flex-col gap-[6px]">
+                {filteredPages.map((page, i) => (
+                  <LinkItem
+                    key={i}
+                    page={page}
+                    pathname={pathname}
+                    isMenuOpen={isMenuOpen}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          className={`cursor-pointer md:hidden flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] bg-none hover:bg-white ${
-            isMenuOpen ? "gap-0 justify-center" : "gap-2"
-          } `}
-        >
-          {React.cloneElement(<IoLogOutOutline fontSize={18} />)}
-          <button
-            onClick={handleLogout}
-            className={`transition-all duration-100 text-nowrap ${
-              isMenuOpen
-                ? "opacity-0 scale-x-0 w-0 h-0"
-                : "opacity-100 scale-x-100 h-auto w-auto"
-            }`}
+          <div
+            className={`cursor-pointer md:hidden flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] bg-none hover:bg-white ${
+              isMenuOpen ? "gap-0 justify-center" : "gap-2"
+            } `}
           >
-            Logout
-          </button>
+            {React.cloneElement(<IoLogOutOutline fontSize={18} />)}
+            <button
+              onClick={handleLogout}
+              className={`transition-all duration-100 text-nowrap ${
+                isMenuOpen
+                  ? "opacity-0 scale-x-0 w-0 h-0"
+                  : "opacity-100 scale-x-100 h-auto w-auto"
+              }`}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </aside>

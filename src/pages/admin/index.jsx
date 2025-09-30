@@ -1,9 +1,9 @@
-import { Outlet, useNavigate } from 'react-router-dom';
-import Aside from './layout/Aside';
-import Header from './layout/Header';
-import { useEffect, useState } from 'react';
+import { Outlet, useNavigate } from "react-router-dom";
+import Aside from "./layout/Aside";
+import Header from "./layout/Header";
+import { useEffect, useState } from "react";
 // import { jwtDecode } from "jwt-decode";
-import SessionExpiredModal from '../../components/shared/small/SessionExpiredModal';
+import SessionExpiredModal from "../../components/shared/small/SessionExpiredModal";
 
 const AdminDashboard = () => {
   const [istokenexpired, setIsTokenExpired] = useState(false);
@@ -59,7 +59,9 @@ const AdminDashboard = () => {
       </section>
 
       {/* Session Expired Modal */}
-      {istokenexpired && <SessionExpiredModal onConfirm={handleSessionExpired} />}
+      {istokenexpired && (
+        <SessionExpiredModal onConfirm={handleSessionExpired} />
+      )}
     </section>
   );
 };

@@ -120,34 +120,38 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
-        {/* From Entry date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary">
-            FROM Entry Date
-          </label>
-          <input
-            type="date"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
-            value={filters.entryFromDate || ""}
-            onChange={(e) => onFilterChange({ entryFromDate: e.target.value })}
-          />
-        </div>
+        <div className="mt-1 flex flex-col gap-3 md:col-span-6">
+          {/* From Entry date */}
+          <div className="flex flex-col gap-1 md:col-span-3">
+            <label className="text-xs font-medium text-secondary">
+              FROM Entry Date
+            </label>
+            <input
+              type="date"
+              className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
+              value={filters.entryFromDate || ""}
+              onChange={(e) =>
+                onFilterChange({ entryFromDate: e.target.value })
+              }
+            />
+          </div>
 
-        {/* To Entry date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary ">
-            TO Entry Date
-          </label>
-          <input
-            type="date"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
-            value={filters.entryToDate || ""}
-            onChange={(e) => onFilterChange({ entryToDate: e.target.value })}
-          />
+          {/* To Entry date */}
+          <div className="flex flex-col gap-1 md:col-span-3">
+            <label className="text-xs font-medium text-secondary ">
+              TO Entry Date
+            </label>
+            <input
+              type="date"
+              className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
+              value={filters.entryToDate || ""}
+              onChange={(e) => onFilterChange({ entryToDate: e.target.value })}
+            />
+          </div>
         </div>
 
         {/* Status Dropdown */}
-        <div className="flex flex-col gap-1 md:col-span-3 col-span-12 mt-17 relative w-full">
+        <div className="flex flex-col gap-1 md:col-span-3 col-span-12 mt-17 relative w-ful">
           <div className="absolute w-full bottom-10">
             <div className="flex flex-col gap-1 md:col-span-3 relative w-full">
               <label className="text-xs font-medium text-secondary">
