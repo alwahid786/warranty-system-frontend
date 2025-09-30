@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import getEnv from "../../../configs/config.js";
 import {
   DashboardIcon,
   ActionsIcon,
@@ -154,11 +155,13 @@ const Aside = () => {
         <div className="">
           <div>
             <div className="flex items-center justify-center gap-1">
-              {/* <img
-                src={isMenuOpen ? logo : "Logo"}
-                // alt="logo"
-                className="mx-auto"
-              /> */}
+              {isMenuOpen && (
+                <img
+                  src={getEnv("LOGO_URL_WITHOUT_BACKGROUND")}
+                  alt="warranty-system-logo"
+                  className="mx-auto"
+                />
+              )}
               {!isMenuOpen && (
                 <h3 className="text-white font-semibold text-lg">
                   National Warranty
