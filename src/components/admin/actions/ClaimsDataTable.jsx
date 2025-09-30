@@ -468,7 +468,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           pagination
           highlightOnHover
           customStyles={customStyles}
-          className="border- p-1 bg-white relative z-10"
+          className="border- p-1 bg-white relative z-5"
           onSelectedRowsChange={({ selectedRows }) => {
             onSelectionChange(selectedRows);
           }}

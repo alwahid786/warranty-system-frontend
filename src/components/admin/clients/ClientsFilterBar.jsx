@@ -129,10 +129,10 @@ export default function ClientsFilterBar({
       </div>
 
       {/* Row 2: Date range + buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-        <div className="flex flex-wrap gap-1 md:col-span-6">
+      <div className="flex flex-col items-end md:flex-row gap-4">
+        <div className="flex flex-wrap gap-1 md:col-span-8">
           {/* From date */}
-          <div className="flex flex-col gap-1 md:col-span-3">
+          <div className="flex flex-col gap-1 md:col-span-4">
             <label className="text-xs font-medium text-secondary">FROM</label>
             <input
               type="date"
@@ -143,7 +143,7 @@ export default function ClientsFilterBar({
           </div>
 
           {/* To date */}
-          <div className="flex flex-col gap-1 md:col-span-3">
+          <div className="flex flex-col gap-1 md:col-span-4">
             <label className="text-xs font-medium text-secondary">TO</label>
             <input
               type="date"
@@ -155,7 +155,7 @@ export default function ClientsFilterBar({
         </div>
 
         {/* Buttons */}
-        <div className="col-span-12 md:col-span-6 flex gap-2">
+        <div className="">
           <Button
             text="Reset Filters"
             bg="bg-[#043655C4]"

@@ -151,14 +151,14 @@ const Aside = () => {
         className="w-full h-full rounded-lg px-[11px] py-5 overflow-y-auto overflow-x-hidden scroll-0 flex flex-col justify-between gap-6 relative"
         style={{ boxShadow: "0px 4px 14px 0px #3582E729" }}
       >
-        <div className="absolute z-60">
+        <div className="">
           <div>
             <div className="flex items-center justify-center gap-1">
               {/* <img
-              src={isMenuOpen ? logo : "Logo"}
-              // alt="logo"
-              className="mx-auto"
-            /> */}
+                src={isMenuOpen ? logo : "Logo"}
+                // alt="logo"
+                className="mx-auto"
+              /> */}
               {!isMenuOpen && (
                 <h3 className="text-white font-semibold text-lg">
                   National Warranty

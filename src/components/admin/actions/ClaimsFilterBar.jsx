@@ -41,8 +41,9 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
   return (
     <div className="w-full rounded-md mt-4 flex flex-col gap-4">
       {/* ✅ SEARCH */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end ">
-        <div className="flex flex-col gap-1 md:col-span-6">
+      <div className="flex flex-wrap md:flex-nowrap gap-2 items-end">
+        {/* Advanced Search */}
+        <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
           <label className="text-xs font-medium text-secondary">
             ADVANCED SEARCH
           </label>
@@ -92,8 +93,27 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
           </div>
         </div>
 
+        {/* Status Dropdown */}
+        <div className="flex flex-col gap-1 w-40">
+          <label className="text-xs font-medium text-secondary">
+            Order Statuses
+          </label>
+          <Dropdown
+            title=""
+            options={orderStatuses}
+            defaultValue={orderStatuses.find(
+              (opt) => opt.name.toLowerCase() === filters.status?.toLowerCase()
+            )}
+            onChange={(val) => {
+              onFilterChange({ status: val?.name || "" });
+              setIsOpen(false);
+            }}
+            width="w-full"
+          />
+        </div>
+
         {/* From RO date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
+        <div className="flex flex-col gap-1 min-w-[140px]">
           <label className="text-xs font-medium text-secondary">
             FROM RO Date
           </label>
@@ -106,8 +126,8 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
         </div>
 
         {/* To RO date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary ">
+        <div className="flex flex-col gap-1 min-w-[140px]">
+          <label className="text-xs font-medium text-secondary">
             TO RO Date
           </label>
           <input
@@ -119,8 +139,8 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
-        <div className="mt-1 flex flex-col gap-3 md:col-span-6">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="mt-1 flex flex-wrap gap-3 md:col-span-12">
           {/* From Entry date */}
           <div className="flex flex-col gap-1 md:col-span-3">
             <label className="text-xs font-medium text-secondary">
@@ -147,33 +167,6 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
               value={filters.entryToDate || ""}
               onChange={(e) => onFilterChange({ entryToDate: e.target.value })}
             />
-          </div>
-        </div>
-
-        {/* Status Dropdown */}
-        <div className="flex flex-col gap-1 md:col-span-3 col-span-12 mt-17 relative w-ful">
-          <div className="absolute w-full bottom-10">
-            <div className="flex flex-col gap-1 md:col-span-3 relative w-full">
-              <label className="text-xs font-medium text-secondary">
-                Order Statuses
-              </label>
-
-              <div className="absolute top-full left-0 z-50 mt-1 w-full">
-                <Dropdown
-                  title=""
-                  options={orderStatuses}
-                  defaultValue={orderStatuses.find(
-                    (opt) =>
-                      opt.name.toLowerCase() === filters.status?.toLowerCase()
-                  )}
-                  onChange={(val) => {
-                    onFilterChange({ status: val?.name || "" });
-                    setIsOpen(false); // close after selecting
-                  }}
-                  width="w-full"
-                />
-              </div>
-            </div>
           </div>
         </div>
 

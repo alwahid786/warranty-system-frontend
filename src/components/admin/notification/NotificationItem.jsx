@@ -12,6 +12,8 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
   const [readNotification] = useReadNotificationMutation();
   const { refetch: notificationsRefetch } = useGetNotificationsQuery();
 
+  const [showActions, setShowActions] = useState(false);
+
   const handleDelete = async () => {
     try {
       const res = await deleteNotification(id).unwrap();
@@ -41,6 +43,7 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
       className={`group flex justify-between items-start gap-2 py-3 border-t first:border-none px-2 rounded-lg transition-colors ${
         isRead ? "bg-gray-100" : "bg-white hover:bg-gray-50"
       }`}
+      onClick={() => setShowActions((prev) => !prev)}
     >
       {/* Left side */}
       <div className="flex items-start gap-3">
@@ -68,12 +71,19 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
           })}
         </span>
 
-        {/* Hover actions */}
-        <div className="hidden group-hover:flex items-center gap-2">
+        {/* Actions */}
+        <div
+          className={`items-center gap-2 ${
+            showActions ? "flex" : "hidden group-hover:flex"
+          }`}
+        >
           {/* Read Icon */}
           {!isRead && (
             <button
-              onClick={handleRead}
+              onClick={(e) => {
+                e.stopPropagation(); // prevent closing actions on click
+                handleRead();
+              }}
               className="p-1 rounded-full hover:bg-green-100 text-green-600"
               title="Mark as read"
             >
@@ -82,7 +92,10 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
           )}
           {/* Delete Icon */}
           <button
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
             className="p-1 rounded-full hover:bg-red-100 text-red-600"
             title="Delete"
           >
