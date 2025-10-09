@@ -51,7 +51,7 @@ const CompaniesResponseTimeCard = (data) => {
           {/* View All Button */}
           <div className="flex justify-center mt-4">
             <button
-              onClick={() => navigate("/companies-response-time")}
+              onClick={() => navigate("companies-response-time")}
               className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer"
             >
               View All

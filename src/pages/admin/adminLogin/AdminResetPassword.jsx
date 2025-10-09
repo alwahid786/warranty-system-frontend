@@ -90,11 +90,19 @@ function AdminResetPassword() {
             </p>
             <p className="text-center">
               By continuing, you agree to our{" "}
-              <a href="#" className="text-[#00235A]">
+              <a
+                href="/terms-and-conditions"
+                target="_blank"
+                className="text-[#00235A]"
+              >
                 Terms
               </a>{" "}
               and{" "}
-              <a href="#" className="text-[#00235A]">
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                className="text-[#00235A]"
+              >
                 Privacy Policy
               </a>
               .

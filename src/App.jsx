@@ -41,6 +41,23 @@ const AdminResetPassword = lazy(() =>
 const CompaniesResponseTime = lazy(() =>
   import("./pages/admin/Companies-Avg-Response/companies-response-time")
 );
+const LandingPage = lazy(() => import("./pages/public/landing/Landing"));
+const BecomeMember = lazy(() =>
+  import("./pages/public/become-member/Become-Member")
+);
+const DonateUs = lazy(() => import("./pages/public/donate-us/Donate-us"));
+const TermsAndConditions = lazy(() =>
+  import("./pages/public/terms-and-policy/termsAndConditions")
+);
+const PrivacyPolicy = lazy(() =>
+  import("./pages/public/terms-and-policy/Privacy-Policy")
+);
+const ThankYouPage = lazy(() =>
+  import("./pages/public/terms-and-policy/thank-you")
+);
+const DonateUsDashboard = lazy(() =>
+  import("./pages/admin/donate-us/Donate-Us")
+);
 
 function App() {
   const dispatch = useDispatch();
@@ -96,58 +113,46 @@ function App() {
         <Toaster position="top-right" reverseOrder={false} />
         <Suspense fallback={<Loader />}>
           <Routes>
-            {/* Public routes */}
+            {/*  Public Routes */}
+            <Route
+              path="/"
+              element={
+                user ? <Navigate to="/dashboard" replace /> : <LandingPage />
+              }
+            />
+
             <Route
               path="/login"
               element={
-                <ProtectedRoute user={!user} redirect="/">
+                <ProtectedRoute user={!user} redirect="/dashboard">
                   <AdminLogin />
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/reset-password/:token"
               element={<AdminResetPassword />}
             />
 
-            {/* Protected Admin Routes */}
+            {/* Protected Admin Layout */}
             <Route
-              path="/"
+              path="/dashboard"
               element={
-                <ProtectedRoute user={user} redirect="/login">
+                <ProtectedRoute user={user} redirect="/">
                   <AdminDashboard />
                 </ProtectedRoute>
               }
             >
-              <Route
-                index
-                element={
-                  user?.role === "admin" ? (
-                    <Navigate to="/dashboard" replace />
-                  ) : (
-                    <Navigate to="/actions" replace />
-                  )
-                }
-              />
-              <Route
-                path="dashboard"
-                element={
-                  <ProtectedRoute
-                    user={user}
-                    redirect="/login"
-                    allowedRoles={["admin"]}
-                  >
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
+              {/*  Nested Pages */}
+              <Route index element={<Dashboard />} />
               <Route path="actions" element={<Actions />} />
               <Route
                 path="invoices"
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <Invoices />
@@ -162,20 +167,19 @@ function App() {
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <Archieved />
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="archieved/actions"
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <ArchievedActions />
@@ -187,7 +191,7 @@ function App() {
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <ArchievedInvoices />
@@ -200,7 +204,7 @@ function App() {
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <CompaniesResponseTime />
@@ -212,14 +216,36 @@ function App() {
                 element={
                   <ProtectedRoute
                     user={user}
-                    redirect="/login"
+                    redirect="/"
                     allowedRoles={["admin"]}
                   >
                     <Clients />
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="donate-us"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <DonateUsDashboard />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
+
+            {/*public pages */}
+            <Route path="/become-member" element={<BecomeMember />} />
+            <Route path="/donate-us" element={<DonateUs />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

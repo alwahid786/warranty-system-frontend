@@ -11,6 +11,7 @@ import {
   NotifictionIcon,
   InvoicesIcon,
   UsersIcon,
+  DonationIcon,
 } from "../../../assets/icons/icons";
 // import { BsThreeDots } from "react-icons/bs";
 // import Modal from "../../../components/shared/small/Modal";
@@ -50,44 +51,44 @@ const Aside = () => {
     {
       id: 2,
       title: "Actions",
-      link: ["/actions"],
+      link: ["/dashboard/actions"],
       icon: <ActionsIcon />,
     },
     {
       id: 3,
       title: "Invoices",
-      link: ["/invoices"],
+      link: ["/dashboard/invoices"],
       icon: <InvoicesIcon />,
     },
     {
       id: 4,
       title: "Notification",
-      link: ["/notification"],
+      link: ["/dashboard/notification"],
       icon: <NotifictionIcon />,
       showBadge: true,
     },
     {
       id: 4,
       title: "Users",
-      link: ["/users"],
+      link: ["/dashboard/users"],
       icon: <UsersIcon />,
     },
     {
       id: 5,
       title: "Archieved",
-      link: ["/archieved"],
+      link: ["/dashboard/archieved"],
       icon: <ArchievedIcon />,
       children: [
         {
           id: 1,
           title: "Actions",
-          link: "/archieved/actions",
+          link: "/dashboard/archieved/actions",
           icon: <ActionSubLink />,
         },
         {
           id: 2,
           title: "Invoices",
-          link: "/archieved/invoices",
+          link: "/dashboard/archieved/invoices",
           icon: <InvoicesSubLink />,
         },
       ],
@@ -96,18 +97,30 @@ const Aside = () => {
     {
       id: 6,
       title: "Settings",
-      link: ["/settings"],
+      link: ["/dashboard/settings"],
       icon: <SettingsIcon />,
     },
     {
       id: 7,
       title: "Clients",
-      link: ["/clients"],
+      link: ["/dashboard/clients"],
       icon: <UsersIcon />,
+    },
+    {
+      id: 8,
+      title: "Donate Us",
+      link: ["/dashboard/donate-us"],
+      icon: <DonationIcon />,
     },
   ];
 
-  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archieved"];
+  const adminOnlyPages = [
+    "Clients",
+    "Dashboard",
+    "Invoices",
+    "Archieved",
+    "Donate Us",
+  ];
 
   const filteredPages = pages.filter((page) => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {

@@ -5,6 +5,7 @@ import NotifictionIcon from "./aside/NotifictionIcon";
 import InvoicesIcon from "./aside/InvoicesIcon";
 import ArchievedIcon from "./aside/ArchievedIcon";
 import UsersIcon from "./aside/UsersIcon";
+import DonationIcon from "./aside/DonationIcon";
 
 export {
   DashboardIcon,
@@ -14,4 +15,5 @@ export {
   NotifictionIcon,
   InvoicesIcon,
   UsersIcon,
+  DonationIcon,
 };
