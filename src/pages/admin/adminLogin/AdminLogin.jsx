@@ -47,7 +47,7 @@ function AdminLogin() {
         await notificationsRefetch();
         toast.success(res?.message, { duration: 3000 });
         dispatch(userExist(res?.data));
-        return navigate("/dashboard");
+        return navigate("/");
       }
     } catch (err) {
       toast.error(err?.data?.message, { duration: 3000 });
