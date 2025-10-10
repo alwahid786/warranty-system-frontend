@@ -79,6 +79,7 @@ const NO_LOADER_ENDPOINTS = new Set([
   "getUsersStat",
   "getTotalUsersCount",
   "getAttendanceChartData",
+  "sendMessage",
 ]);
 
 const GlobalAPILoader = () => {
