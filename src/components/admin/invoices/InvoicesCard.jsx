@@ -113,7 +113,7 @@ export default function InvoiceCard({
       saveAs(blob, `invoice-${invoice?.invoiceNumber}.pdf`);
       toast.success(res?.message || "Invoice sent", { duration: 3000 });
     } catch (err) {
-      toast.error(err?.data?.message || "Failed to send", { duration: 3000 });
+      console.log(err);
     }
   };
 

@@ -10,6 +10,8 @@ import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 import { useGetInvoicesStatQuery } from "../../../redux/apis/claimsApis";
 import { useGetClaimsStatQuery } from "../../../redux/apis/claimsApis";
 import { useGetCompaniesAvgResponseTimeQuery } from "../../../redux/apis/chatApis";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const { data: invoicesData } = useGetInvoicesStatQuery(undefined, {
@@ -28,6 +30,12 @@ const Dashboard = () => {
     useGetCompaniesAvgResponseTimeQuery(undefined, {
       refetchOnMountOrArgChange: true,
     });
+
+  const user = useSelector((state) => state.auth.user);
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/dashboard/actions" replace />;
+  }
 
   return (
     <>
