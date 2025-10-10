@@ -54,27 +54,61 @@ const apiMessages = {
   getAttendanceChartData: "Fetching attendance chart data...",
 };
 
+const NO_LOADER_ENDPOINTS = new Set([
+  "login",
+  "forgetPassword",
+  "resetPassword",
+  "getMyProfile",
+  "getChat",
+  "sendMessage",
+  "getCompaniesAvgResponseTime",
+  "getCompaniesAvgResponseTimeAll",
+  "getClaims",
+  "getArchieveClaims",
+  "getInvoicesStat",
+  "getClaimsStat",
+  "getClients",
+  "getActiveInactiveCount",
+  "getClientsStat",
+  "getClientsStatByFilters",
+  "getClientsActivityStats",
+  "getInvoices",
+  "getArchieveInvoices",
+  "getNotifications",
+  "getUsers",
+  "getUsersStat",
+  "getTotalUsersCount",
+  "getAttendanceChartData",
+]);
+
 const GlobalAPILoader = () => {
   const pendingTasks = useSelector((state) => {
     let tasks = [];
 
     Object.values(state).forEach((slice) => {
-      if (slice?.queries) {
-        Object.entries(slice.queries).forEach(([key, q]) => {
-          if (q?.status === "pending") {
-            const endpoint = key.split("(")[0]; // get name before arguments
-            tasks.push(apiMessages[endpoint] || `Loading ${endpoint}...`);
-          }
-        });
-      }
-      if (slice?.mutations) {
-        Object.entries(slice.mutations).forEach(([key, q]) => {
+      if (!slice?.queries && !slice?.mutations) return;
+
+      // get the api instance from the store if available
+      const apiInstance = Object.values(state).find(
+        (s) => s?.reducerPath && s?.config
+      );
+
+      // process queries + mutations
+      ["queries", "mutations"].forEach((type) => {
+        const collection = slice?.[type];
+        if (!collection) return;
+
+        Object.entries(collection).forEach(([key, q]) => {
           if (q?.status === "pending") {
             const endpoint = key.split("(")[0];
+
+            // Skip endpoints that should not show loader
+            if (NO_LOADER_ENDPOINTS.has(endpoint)) return;
+
             tasks.push(apiMessages[endpoint] || `Processing ${endpoint}...`);
           }
         });
-      }
+      });
     });
 
     return tasks;
@@ -89,11 +123,6 @@ const GlobalAPILoader = () => {
           <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           <span className="font-semibold text-gray-700">In Progress</span>
         </div>
-        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-          {pendingTasks.map((task, idx) => (
-            <li key={idx}>{task}</li>
-          ))}
-        </ul>
       </div>
     </div>
   );
