@@ -117,7 +117,15 @@ function App() {
             <Route
               path="/"
               element={
-                user ? <Navigate to="/dashboard" replace /> : <LandingPage />
+                user ? (
+                  user.role === "admin" ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <Navigate to="/dashboard/actions" replace />
+                  )
+                ) : (
+                  <LandingPage />
+                )
               }
             />
 
