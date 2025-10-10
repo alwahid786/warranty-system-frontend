@@ -50,7 +50,7 @@ function AdminLogin() {
         return navigate("/");
       }
     } catch (err) {
-      toast.error(err?.data?.message, { duration: 3000 });
+      console.log(err);
     }
   };
   const handleReset = async (e) => {
