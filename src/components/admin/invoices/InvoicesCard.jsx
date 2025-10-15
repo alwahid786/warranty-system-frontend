@@ -107,13 +107,22 @@ export default function InvoiceCard({
   // send invoice on clients email address
   const handleSendInvoice = async (invoice) => {
     try {
-      const blob = await sendInvoice({
-        id: invoice?._id,
-      }).unwrap();
-      saveAs(blob, `invoice-${invoice?.invoiceNumber}.pdf`);
-      toast.success(res?.message || "Invoice sent", { duration: 3000 });
+      const response = await sendInvoice({ id: invoice?._id }).unwrap();
+
+      if (response instanceof Blob) {
+        saveAs(response, `invoice-${invoice?.invoiceNumber}.pdf`);
+        toast.success("Invoice sent successfully", { duration: 3000 });
+      } else {
+        toast.success(response?.message || "Invoice sent successfully", {
+          duration: 3000,
+        });
+      }
     } catch (err) {
-      console.log(err);
+      console.error("Send Invoice Error:", err);
+      toast.error(
+        err?.data?.message || err?.message || "Failed to send invoice",
+        { duration: 3000 }
+      );
     }
   };
 
