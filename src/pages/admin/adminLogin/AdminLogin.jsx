@@ -40,19 +40,32 @@ function AdminLogin() {
     e.preventDefault();
     try {
       const res = await login(formData).unwrap();
-      if (res?.success) {
+
+      if (res?.success || res?.data) {
         dispatch(notificationsApis.util.resetApiState());
         dispatch(resetNotifications());
-        await refetch();
-        await notificationsRefetch();
-        toast.success(res?.message, { duration: 3000 });
+
+        try {
+          await refetch();
+        } catch (e) {}
+        try {
+          await notificationsRefetch();
+        } catch (e) {}
+
+        toast.success(res?.message || "Login successful", { duration: 3000 });
         dispatch(userExist(res?.data));
-        return navigate("/");
+        navigate("/");
+      } else {
+        throw new Error("Unexpected response format");
       }
     } catch (err) {
-      toast.error(err?.data?.message || "Login failed", { duration: 3000 });
+      console.error("Login error:", err);
+      toast.error(err?.data?.message || err?.message || "Login failed", {
+        duration: 3000,
+      });
     }
   };
+
   const handleReset = async (e) => {
     try {
       const res = await forgetPassword(formData).unwrap();
