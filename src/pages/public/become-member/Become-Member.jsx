@@ -157,7 +157,11 @@ export default function BecomeMember() {
   };
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
   const cardHoverVariants = {
     rest: {
@@ -183,8 +187,6 @@ export default function BecomeMember() {
           initial="hidden"
           animate="visible"
         >
-        
-
           <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-8">
             <Motion.div
               variants={itemVariants}
@@ -365,11 +367,12 @@ export default function BecomeMember() {
                     </Button>
                     <Button
                       type="submit"
-                      className={`w-full sm:w-auto px-8 py-4 font-bold rounded-xl transition-all duration-200 ${
-                        email && validateEmail(email) && terms && privacyPolicy
-                          ? "bg-[#0b5c83] hover:bg-[#0b5c83]/90 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      }`}
+                      className={`w-full sm:w-auto px-8 py-4 font-bold rounded-xl transition-all duration-200
+                     ${
+                       email && validateEmail(email) && terms && privacyPolicy
+                         ? "bg-[#0b5c83] text-white shadow-lg hover:bg-[#0b5c83]/90 hover:shadow-xl hover:-translate-y-0.5"
+                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                     }`}
                       disabled={
                         !(
                           email &&
