@@ -138,7 +138,7 @@ const Aside = () => {
         dispatch(userNotExist());
         dispatch(setNotifications([]));
         toast.success(res.message, { duration: 3000 });
-        return navigate("/login");
+        return navigate("/");
       }
     } catch (err) {
       toast.error(err?.data?.message || "Logout failed", { duration: 3000 });

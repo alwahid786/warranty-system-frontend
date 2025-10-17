@@ -114,7 +114,7 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             {/*  Public Routes */}
-            <Route
+            {/* <Route
               path="/"
               element={
                 user ? (
@@ -127,16 +127,31 @@ function App() {
                   <LandingPage />
                 )
               }
-            />
+            /> */}
 
             <Route
+              path="/"
+              element={
+                user ? (
+                  user.role === "admin" ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <Navigate to="/dashboard/actions" replace />
+                  )
+                ) : (
+                  <AdminLogin />
+                )
+              }
+            />
+
+            {/* <Route
               path="/login"
               element={
                 <ProtectedRoute user={!user} redirect="/dashboard">
                   <AdminLogin />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
             <Route
               path="/reset-password/:token"

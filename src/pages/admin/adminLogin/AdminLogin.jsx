@@ -54,7 +54,7 @@ function AdminLogin() {
 
         toast.success(res?.message || "Login successful", { duration: 3000 });
         dispatch(userExist(res?.data));
-        navigate("/");
+        navigate("/dashboard");
       } else {
         throw new Error("Unexpected response format");
       }
@@ -80,7 +80,7 @@ function AdminLogin() {
 
   return (
     <>
-      <LandingHeader />
+      {/* <LandingHeader /> */}
       <section className="grid grid-cols-12 h-screen">
         <div className="bg-gradient h-[100vh] col-span-5 hidden lg:block">
           <img

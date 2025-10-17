@@ -21,7 +21,6 @@ const paymentApis = createApi({
   }),
 });
 
-export const { useCreatePaymentIntentMutation, useCheckMembershipMutation } =
-  paymentApis;
+export const { useCreatePaymentIntentMutation } = paymentApis;
 
 export default paymentApis;
