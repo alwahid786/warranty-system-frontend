@@ -23,7 +23,7 @@ function AdminResetPassword() {
       const res = await resetPassword({ ...formData, token }).unwrap();
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
-        navigate("/login");
+        navigate("/");
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
