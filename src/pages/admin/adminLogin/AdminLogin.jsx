@@ -68,6 +68,7 @@ function AdminLogin() {
 
   const handleReset = async (e) => {
     e.preventDefault();
+    // console.log(formData);
     try {
       const res = await forgetPassword(formData).unwrap();
       dispatch(userExist(res.data));
