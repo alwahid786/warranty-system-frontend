@@ -182,35 +182,6 @@ function AdminLogin() {
                 />
               </form>
             </div>
-            <div className="flex flex-col gap-4">
-              {forgotPassword || resetPassword ? (
-                <p className="text-center">
-                  No Account? {""}
-                  <a href="/become-member" className="text-[#00235A]">
-                    Create One
-                  </a>
-                </p>
-              ) : null}
-              <p className="text-center">
-                By continuing, you agree to our{" "}
-                <a
-                  href="/terms-and-conditions"
-                  target="_blank"
-                  className="text-[#00235A]"
-                >
-                  Terms
-                </a>{" "}
-                and{" "}
-                <a
-                  href="/privacy-policy"
-                  target="_blank"
-                  className="text-[#00235A]"
-                >
-                  Privacy Policy
-                </a>
-                .
-              </p>
-            </div>
           </div>
         </div>
       </section>
