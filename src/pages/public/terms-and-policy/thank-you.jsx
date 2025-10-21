@@ -30,7 +30,7 @@ function ThankYouPage() {
       </div>
 
       <footer className="mt-10 text-gray-500 text-sm">
-        © {new Date().getFullYear()} National Warranty System. All rights
+        © {new Date().getFullYear()} Precision Warranty Services. All rights
         reserved.
       </footer>
     </div>

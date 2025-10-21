@@ -62,7 +62,7 @@ const LandingPage = () => {
               Simplify Your Claims Management
             </h2>
             <p className="text-gray-600 text-lg">
-              National Warranty System helps clients file claims and receive
+              Precision Warranty Services helps clients file claims and receive
               approvals faster. Admins can manage claims, send invoices, and
               monitor performance—all in one place.
             </p>
@@ -83,7 +83,7 @@ const LandingPage = () => {
             What We Offer
           </h3>
           <p className="text-gray-600">
-            Explore how National Warranty System simplifies the workflow for
+            Explore how Precision Warranty Services simplifies the workflow for
             clients and admins.
           </p>
         </div>
@@ -114,7 +114,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="bg-[rgb(11,92,131)] text-white text-center py-4 text-sm">
-        © {new Date().getFullYear()} National Warranty System. All Rights
+        © {new Date().getFullYear()} Precision Warranty Services. All Rights
         Reserved.
       </footer>
     </div>

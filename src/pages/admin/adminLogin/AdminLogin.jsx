@@ -17,6 +17,7 @@ import {
   setNotifications,
 } from "../../../redux/slices/notificationsSlice";
 import notificationsApis from "../../../redux/apis/notificationsApis";
+import getEnv from "../../../configs/config";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -83,17 +84,23 @@ function AdminLogin() {
     <>
       {/* <LandingHeader /> */}
       <section className="grid grid-cols-12 h-screen">
-        <div className="bg-gradient h-[100vh] col-span-5 hidden lg:block">
+        <div className="relative bg-gradient h-[100vh] col-span-5 hidden lg:block">
           <img
             className="h-full w-full object-cover"
             src="/Frame 2085666744.png"
-            alt=""
+            alt="Background"
+          />
+          <img
+            src={getEnv("LOGO_URL_WITHOUT_BACKGROUND")}
+            alt="Precision Warranty Logo"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-auto"
           />
         </div>
+
         <div className="col-span-12 lg:col-span-7 flex items-center justify-center">
           <div className="flex w-full px-5 md:w-[60%] lg:w-full lg:px-[120px] flex-col gap-[35px] md:gap-[38px]">
             {forgotPassword ? null : resetPassword ? null : (
-              <h1 className="text-[34px] text-center">National Warranty</h1>
+              <h1 className="text-[34px] text-center">Precision Warranty</h1>
             )}
             <div className="flex flex-col gap-[24px]">
               <p className="text-2xl font-semibold">
@@ -101,7 +108,7 @@ function AdminLogin() {
                   ? "Forgot Password"
                   : resetPassword
                   ? "Reset Your Password"
-                  : "Welcome to National Warranty"}
+                  : "Welcome to Precision Warranty"}
               </p>
               <form action="" className="flex flex-col gap-10">
                 <div className="flex flex-col gap-2">

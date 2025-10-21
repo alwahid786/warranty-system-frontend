@@ -44,7 +44,7 @@ function AdminResetPassword() {
       {/* Right Form Section */}
       <div className="col-span-12 lg:col-span-7 flex items-center justify-center">
         <div className="flex w-full px-5 md:w-[60%] lg:w-full lg:px-[120px] flex-col gap-[35px] md:gap-[38px]">
-          <h1 className="text-[34px] text-center">National Warranty</h1>
+          <h1 className="text-[34px] text-center">Precision Warranty</h1>
           <div className="flex flex-col gap-[24px]">
             <p className="text-2xl font-semibold">Reset Your Password</p>
             <form

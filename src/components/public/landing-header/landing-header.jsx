@@ -29,14 +29,14 @@ export default function LandingHeader() {
           className="h-10 w-10 rounded-full object-cover"
         />
         <h1 className="text-xl md:text-2xl font-bold tracking-wide">
-          National Warranty System
+          Precision Warranty Services
         </h1>
       </div>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-3">
         <Button
-          onClick={() => handleNavigate("/login")}
+          onClick={() => handleNavigate("/")}
           className="
             bg-transparent 
             border border-white 
@@ -47,34 +47,6 @@ export default function LandingHeader() {
           "
         >
           Login
-        </Button>
-
-        <Button
-          onClick={() => handleNavigate("/become-member")}
-          className="
-            bg-transparent 
-            border border-white 
-            text-white 
-            hover:bg-white hover:text-[rgb(11,92,131)] 
-            transition-colors duration-300 
-            rounded-md px-5 py-2 font-semibold
-          "
-        >
-          Become Member
-        </Button>
-
-        <Button
-          onClick={() => handleNavigate("/donate-us")}
-          className="
-            bg-transparent 
-            border border-white 
-            text-white 
-            hover:bg-white hover:text-[rgb(11,92,131)] 
-            transition-colors duration-300 
-            rounded-md px-5 py-2 font-semibold
-          "
-        >
-          Donate Us
         </Button>
       </div>
 

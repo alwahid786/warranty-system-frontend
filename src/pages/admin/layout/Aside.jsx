@@ -171,7 +171,7 @@ const Aside = () => {
               )}
               {!isMenuOpen && (
                 <h3 className="text-white font-semibold text-lg">
-                  National Warranty
+                  Precision Warranty
                 </h3>
               )}
             </div>

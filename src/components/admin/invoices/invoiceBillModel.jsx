@@ -48,7 +48,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
             />
             <div className="flex flex-col">
               <p className="text-lg font-extrabold text-primary">
-                {invoice?.owner?.companyName || "National Warranty System"}
+                {invoice?.owner?.companyName || "Precision Warranty Services"}
               </p>
               <span className="text-[10px]">Warranty Claim Invoice</span>
             </div>
