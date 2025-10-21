@@ -106,21 +106,15 @@ const Aside = () => {
       link: ["/dashboard/clients"],
       icon: <UsersIcon />,
     },
-    {
-      id: 8,
-      title: "Donate Us",
-      link: ["/dashboard/donate-us"],
-      icon: <DonationIcon />,
-    },
+    // {
+    //   id: 8,
+    //   title: "Donate Us",
+    //   link: ["/dashboard/donate-us"],
+    //   icon: <DonationIcon />,
+    // },
   ];
 
-  const adminOnlyPages = [
-    "Clients",
-    "Dashboard",
-    "Invoices",
-    "Archieved",
-    "Donate Us",
-  ];
+  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archieved"];
 
   const filteredPages = pages.filter((page) => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {

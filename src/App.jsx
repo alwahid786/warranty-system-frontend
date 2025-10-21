@@ -246,7 +246,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* <Route
                 path="donate-us"
                 element={
                   <ProtectedRoute
@@ -257,7 +257,7 @@ function App() {
                     <DonateUsDashboard />
                   </ProtectedRoute>
                 }
-              />
+              /> */}
             </Route>
 
             {/*public pages */}
