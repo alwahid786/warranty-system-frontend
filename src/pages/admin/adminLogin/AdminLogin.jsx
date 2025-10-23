@@ -18,6 +18,7 @@ import {
 } from "../../../redux/slices/notificationsSlice";
 import notificationsApis from "../../../redux/apis/notificationsApis";
 import getEnv from "../../../configs/config";
+import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -91,7 +92,7 @@ function AdminLogin() {
             alt="Background"
           />
           <img
-            src={getEnv("LOGO_URL_WITHOUT_BACKGROUND")}
+            src={logoWithOutBg}
             alt="Precision Warranty Logo"
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-auto"
           />

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { FaDiamond } from "react-icons/fa6";
 import getEnv from "../../../configs/config";
+import logoWithBackground from "../../../assets/logos/logo-with-bg.png";
 
 const SectionHeader = ({ children }) => (
   <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
@@ -42,7 +43,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
         <div className="flex flex-col mt-6 sm:flex-row items-center gap-4 justify-between border-b pb-3">
           <div className="flex gap-4 items-center">
             <img
-              src={getEnv("LOGO_URL_WITH_BACKGROUND")}
+              src={logoWithBackground}
               alt="warranty-system-logo"
               className="w-23 h-23"
             />

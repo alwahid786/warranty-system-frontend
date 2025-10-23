@@ -25,6 +25,7 @@ import { useLogoutMutation } from "../../../redux/apis/authApis";
 import { userNotExist } from "../../../redux/slices/authSlice";
 import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import toast from "react-hot-toast";
+import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 
 const Aside = () => {
   const { pathname } = useLocation();
@@ -164,7 +165,7 @@ const Aside = () => {
             <div className="flex items-center justify-center gap-1">
               {isMenuOpen && (
                 <img
-                  src={getEnv("LOGO_URL_WITHOUT_BACKGROUND")}
+                  src={logoWithOutBg}
                   alt="warranty-system-logo"
                   className="mx-auto"
                 />
