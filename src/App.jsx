@@ -105,7 +105,7 @@ function App() {
     };
   }, [user?._id, dispatch]);
 
-  if (!user && isLoading) return <Loader />;
+  if (isLoading || user === null) return <Loader />;
 
   return (
     <>
