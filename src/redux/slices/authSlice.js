@@ -2,13 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: { user: null },
+  initialState: { user: undefined },
   reducers: {
     userExist: (state, action) => {
       state.user = action.payload;
     },
     userNotExist: (state) => {
-      state.user = null;
+      state.user = undefined;
     },
   },
 });
