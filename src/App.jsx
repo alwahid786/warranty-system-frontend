@@ -62,26 +62,36 @@ const DonateUsDashboard = lazy(() =>
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
+  const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: false,
+    }
+  );
+
   const { data: notifications } = useGetNotificationsQuery(undefined, {
     skip: !isSuccess,
+    refetchOnMountOrArgChange: false,
   });
 
   useEffect(() => {
-    if (isSuccess && data?.data) {
-      dispatch(userExist(data?.data));
+    if (!isSuccess || !data?.data) return;
+    dispatch(userExist(data.data));
 
-      if (notifications?.data?.length > 0) {
-        dispatch(unReadNotifications(notifications?.unReadCount));
-        dispatch(setNotifications(notifications?.data));
-      } else {
-        dispatch(noUnReadNotifications());
-      }
-    } else if (isError) {
+    if (notifications?.data?.length > 0) {
+      dispatch(unReadNotifications(notifications.unReadCount));
+      dispatch(setNotifications(notifications.data));
+    } else {
+      dispatch(noUnReadNotifications());
+    }
+  }, [isSuccess, data?.data, notifications?.data]);
+
+  useEffect(() => {
+    if (isError) {
       dispatch(userNotExist());
       dispatch(noUnReadNotifications());
     }
-  }, [data, isSuccess, isError, notifications, dispatch]);
+  }, [isError]);
 
   useEffect(() => {
     if (!user?._id) return;
