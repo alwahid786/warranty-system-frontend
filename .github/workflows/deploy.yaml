@@ -23,6 +23,8 @@ jobs:
             cd /root/warranty/frontend
             git fetch --all
             git reset --hard origin/main
+            ls
+            npm -v
             npm ci
             npm run build
             # Copy output to web root
