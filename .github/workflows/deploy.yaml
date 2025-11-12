@@ -20,6 +20,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
+            export NVM_DIR="/root/.nvm"
+            source "$NVM_DIR/nvm.sh"
             cd /root/warranty/frontend
             git fetch --all
             git reset --hard origin/main
