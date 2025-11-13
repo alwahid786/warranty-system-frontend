@@ -130,7 +130,7 @@ function App() {
               element={
                 user ? (
                   user.role === "admin" ? (
-                    <Navigate to="/dashboard" replace />
+                    <Navigate to="dashboard" replace />
                   ) : (
                     <Navigate to="/dashboard/actions" replace />
                   )
