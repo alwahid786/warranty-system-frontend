@@ -2,10 +2,8 @@ import { useState } from "react";
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
 import { useDispatch } from "react-redux";
-import {
-  useGetMyProfileQuery,
-  useLoginMutation,
-} from "../../../redux/apis/authApis";
+import authApis from "../../../redux/apis/authApis";
+import { useLoginMutation } from "../../../redux/apis/authApis";
 import { useForgetPasswordMutation } from "../../../redux/apis/authApis";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
@@ -35,7 +33,20 @@ function AdminLogin() {
 
       if (res?.success || res?.data) {
         toast.success(res?.message || "Login successful");
+        // clear any existing user and set the freshly-logged-in user
+        dispatch(userNotExist());
         dispatch(userExist(res?.data));
+        // force-refresh server profile in RTK Query cache to avoid stale cached profiles
+        try {
+          dispatch(
+            authApis.endpoints.getMyProfile.initiate(undefined, {
+              forceRefetch: true,
+            })
+          );
+        } catch (e) {
+          // non-fatal
+          console.warn("Failed to force-refetch profile after login", e);
+        }
         navigate("/dashboard");
       }
     } catch (err) {

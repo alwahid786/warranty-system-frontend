@@ -65,6 +65,8 @@ function App() {
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery(
     undefined,
     {
+      // Skip fetching profile if we already have a user in the store
+      skip: !!user?._id,
       refetchOnMountOrArgChange: false,
     }
   );
@@ -76,7 +78,12 @@ function App() {
 
   useEffect(() => {
     if (!isSuccess || !data?.data) return;
-    dispatch(userExist(data.data));
+    // Only set the user from the profile query if the store doesn't already
+    // contain a user, or if the returned profile is different from the
+    // currently stored user.
+    if (!user?._id || data.data._id !== user._id) {
+      dispatch(userExist(data.data));
+    }
 
     if (notifications?.data?.length > 0) {
       dispatch(unReadNotifications(notifications.unReadCount));

@@ -30,13 +30,17 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const { data, isLoading } = useGetMyProfileQuery();
+  const { data, isLoading } = useGetMyProfileQuery(undefined, {
+    skip: !!user?._id,
+    refetchOnMountOrArgChange: false,
+  });
 
   useEffect(() => {
-    if (data?.data) {
+    if (!data?.data) return;
+    if (!user?._id || data.data._id !== user._id) {
       dispatch(userExist(data.data));
     }
-  }, [data, dispatch]);
+  }, [data, dispatch, user]);
 
   const profileOpenHandler = () => {
     setIsProfileOpen((prev) => !prev);

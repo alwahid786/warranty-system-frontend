@@ -22,16 +22,20 @@ const Settings = () => {
     data,
     isLoading: isLoadingForGetMyProfile,
     refetch: getMyProfileRefetch,
-  } = useGetMyProfileQuery();
+  } = useGetMyProfileQuery(undefined, {
+    skip: !!user?._id,
+    refetchOnMountOrArgChange: false,
+  });
   const [updateProfile, { isLoading }] = useUpdateMyProfileMutation();
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    if (data?.data) {
+    if (!data?.data) return;
+    if (!user?._id || data.data._id !== user._id) {
       dispatch(userExist(data.data));
     }
-  }, [data, dispatch]);
+  }, [data, dispatch, user]);
 
   const [formData, setFormData] = useState({
     name: "",
