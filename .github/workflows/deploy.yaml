@@ -47,7 +47,7 @@ jobs:
             git reset --hard origin/main
 
             echo "🔹 Install dependencies"
-            npm ci
+            npm install
 
             echo "🔹 Build frontend"
             npm run build
