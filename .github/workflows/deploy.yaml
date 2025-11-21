@@ -8,10 +8,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      # ---------------------------
+      # 1️⃣ Checkout code
+      # ---------------------------
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run remote deploy script
+      # ---------------------------
+      # 2️⃣ SSH to server & deploy
+      # ---------------------------
+      - name: Remote deploy via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -20,18 +26,38 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            export NVM_DIR="/root/.nvm"
-            source "$NVM_DIR/nvm.sh"
-            cd /root/warranty/frontend
+
+            echo "🔹 Load NVM and Node"
+            export NVM_DIR="/root/.nvm"   # replace with actual NVM path
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 22
+            nvm use 22
+
+            echo "🔹 Go to frontend folder"
+            cd /root/warranty/frontend     # replace with actual path
+
+            echo "🔹 Ensure .env exists"
+            if [ ! -f .env ]; then
+              echo "❌ .env file not found! Copying production version..."
+              cp .env.production .env     # adjust if your prod .env has a different name
+            fi
+
+            echo "🔹 Pull latest code"
             git fetch --all
             git reset --hard origin/main
-            ls
-            npm -v
+
+            echo "🔹 Install dependencies"
             npm ci
+
+            echo "🔹 Build frontend"
             npm run build
-            # Copy output to web root
+
+            echo "🔹 Deploy to Nginx"
             sudo rm -rf /var/www/warranty-frontend/*
             sudo mkdir -p /var/www/warranty-frontend
             sudo cp -r dist/* /var/www/warranty-frontend/
-            # Optional reload nginx
+
+            echo "🔹 Reload Nginx"
             sudo systemctl reload nginx
+
+            echo "✅ Frontend deployed successfully!"
