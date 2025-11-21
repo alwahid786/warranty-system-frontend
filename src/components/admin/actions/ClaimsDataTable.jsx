@@ -36,7 +36,7 @@ const StatusDropdown = ({ status, onChange }) => {
   else if (status === "PA") btnColor = "bg-[#EAB308] text-black";
   else if (status === "CR") btnColor = "bg-[#EF4444] text-white";
 
-  // Close on outside click
+  // Close on outside click --
   useEffect(() => {
     const handleClick = (e) => {
       if (
