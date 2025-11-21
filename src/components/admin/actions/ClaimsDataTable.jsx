@@ -136,7 +136,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const [animateIn, setAnimateIn] = useState(false);
   const [updateClaims] = useUpdateClaimsMutation();
   const [updateClaimsAdditionalData] = useUpdateClaimsAdditionalDataMutation();
-  const [editingCell, setEditingCell] = useState(null);
+  // const [editingCell, setEditingCell] = useState(null);
   const { user } = useSelector((state) => state.auth);
   const [infoModal, setInfoModal] = useState(null);
   const [infoModalTitle, setInfoModalTitle] = useState(null);
@@ -258,7 +258,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       ),
       sortable: false,
       grow: 2,
-      width: "160px",
+      width: "210px",
     },
     {
       name: "Job #",
@@ -267,7 +267,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.jobNumber}</span>
       ),
       sortable: true,
-      width: "90px",
+      width: "100px",
     },
     {
       name: "Quoted",
@@ -276,7 +276,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.quoted}</span>
       ),
       sortable: true,
-      width: "110px",
+      width: "115px",
     },
     {
       name: "Status",
@@ -287,7 +287,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         />
       ),
       sortable: false,
-      width: "100px",
+      width: "110px",
     },
     {
       name: "Entry Date",
@@ -296,7 +296,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         <span className="text-dark font-normal text-xs ">{row.entryDate}</span>
       ),
       sortable: false,
-      width: "120px",
+      width: "140px",
     },
     {
       name: "Error Description",
@@ -324,7 +324,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 3,
-      width: "180px",
+      width: "250px",
     },
     {
       name: "Additional Information",
@@ -352,7 +352,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 2,
-      width: "200px",
+      width: "240px",
     },
   ];
 
@@ -384,7 +384,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
         </div>
       ),
       grow: 2,
-      width: "130px",
+      width: "240px",
     });
   }
 
@@ -456,12 +456,11 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   });
 
   return (
-    // <div className="p-2 overflow-visible w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">
-    <div className="w-[91vw] p-2 mx-auto bg-white shadow  rounded-lg mb-10 mt-5">
+    <div className="p-2 overflow-visible w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Claims
       </h2>
-      <div className="w-full overflow-x-auto">
+      <div className="w-[100%]">
         <DataTable
           columns={columns}
           data={tableData}
