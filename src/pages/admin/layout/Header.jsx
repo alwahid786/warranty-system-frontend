@@ -6,7 +6,7 @@ import { Link, Router, useLocation } from "react-router-dom";
 import Aside from "./Aside";
 import { HiChevronDown } from "react-icons/hi";
 import { IoChevronForwardOutline, IoLogOutOutline } from "react-icons/io5";
-import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
+import authApis, { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { useSelector, useDispatch } from "react-redux";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
@@ -17,6 +17,7 @@ import {
   setNotifications,
 } from "../../../redux/slices/notificationsSlice";
 import notificationsApis from "../../../redux/apis/notificationsApis";
+import { clearSelectedUser } from "../../../redux/slices/userSlice";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -144,7 +145,8 @@ const Header = () => {
 export default Header;
 
 const Profile = ({ menuRef }) => {
-  const [logout, { data, isLoading, error }] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
+  const { refetch } = useGetMyProfileQuery();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -152,8 +154,11 @@ const Profile = ({ menuRef }) => {
     try {
       const res = await logout().unwrap();
       if (res.success) {
+        await refetch();
         dispatch(userNotExist());
+        dispatch(clearSelectedUser());
         dispatch(setNotifications([]));
+
         toast.success(res.message, { duration: 3000 });
         return navigate("/");
       }

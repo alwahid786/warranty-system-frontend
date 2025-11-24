@@ -62,14 +62,7 @@ const DonateUsDashboard = lazy(() =>
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery(
-    undefined,
-    {
-      // Skip fetching profile if we already have a user in the store
-      skip: !!user?._id,
-      refetchOnMountOrArgChange: false,
-    }
-  );
+  const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
 
   const { data: notifications } = useGetNotificationsQuery(undefined, {
     skip: !isSuccess,
@@ -81,24 +74,31 @@ function App() {
     // Only set the user from the profile query if the store doesn't already
     // contain a user, or if the returned profile is different from the
     // currently stored user.
-    if (!user?._id || data.data._id !== user._id) {
-      dispatch(userExist(data.data));
+    if (!user?._id || data?.data._id !== user?._id) {
+      dispatch(userExist(data?.data));
     }
 
     if (notifications?.data?.length > 0) {
-      dispatch(unReadNotifications(notifications.unReadCount));
-      dispatch(setNotifications(notifications.data));
+      dispatch(unReadNotifications(notifications?.unReadCount));
+      dispatch(setNotifications(notifications?.data));
     } else {
       dispatch(noUnReadNotifications());
     }
-  }, [isSuccess, data?.data, notifications?.data]);
+  }, [
+    isSuccess,
+    data?.data,
+    notifications?.data,
+    user?._id,
+    notifications?.unReadCount,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (isError) {
       dispatch(userNotExist());
       dispatch(noUnReadNotifications());
     }
-  }, [isError]);
+  }, [dispatch, isError]);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -129,10 +129,9 @@ function App() {
       <BrowserRouter>
         <Toaster position="top-right" reverseOrder={false} />
         <Suspense fallback={<Loader />}>
-          {isSuccess || isError ? (
-            <Routes>
-              {/*  Public Routes */}
-              {/* <Route
+          <Routes>
+            {/*  Public Routes */}
+            {/* <Route
               path="/"
               element={
                 user ? (
@@ -147,22 +146,22 @@ function App() {
               }
             /> */}
 
-              <Route
-                path="/"
-                element={
-                  user ? (
-                    user.role === "admin" ? (
-                      <Navigate to="/dashboard" replace />
-                    ) : (
-                      <Navigate to="/dashboard/actions" replace />
-                    )
+            <Route
+              path="/"
+              element={
+                user ? (
+                  user.role === "admin" ? (
+                    <Navigate to="/dashboard" replace />
                   ) : (
-                    <AdminLogin />
+                    <Navigate to="/dashboard/actions" replace />
                   )
-                }
-              />
+                ) : (
+                  <AdminLogin />
+                )
+              }
+            />
 
-              {/* <Route
+            {/* <Route
               path="/login"
               element={
                 <ProtectedRoute user={!user} redirect="/dashboard">
@@ -171,100 +170,100 @@ function App() {
               }
             /> */}
 
-              <Route
-                path="/reset-password/:token"
-                element={<AdminResetPassword />}
-              />
+            <Route
+              path="/reset-password/:token"
+              element={<AdminResetPassword />}
+            />
 
-              {/* Protected Admin Layout */}
+            {/* Protected Admin Layout */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute user={user} redirect="/">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            >
+              {/*  Nested Pages */}
+              <Route index element={<Dashboard />} />
+              <Route path="actions" element={<Actions />} />
               <Route
-                path="/dashboard"
+                path="invoices"
                 element={
-                  <ProtectedRoute user={user} redirect="/">
-                    <AdminDashboard />
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <Invoices />
                   </ProtectedRoute>
                 }
-              >
-                {/*  Nested Pages */}
-                <Route index element={<Dashboard />} />
-                <Route path="actions" element={<Actions />} />
-                <Route
-                  path="invoices"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <Invoices />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="notification" element={<Notification />} />
-                <Route path="users" element={<Users />} />
-                <Route path="users/:pageId" element={<Users />} />
-                <Route
-                  path="archieved"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <Archieved />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="archieved/actions"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <ArchievedActions />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="archieved/invoices"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <ArchievedInvoices />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="settings" element={<Settings />} />
-                <Route
-                  path="companies-response-time"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <CompaniesResponseTime />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="clients"
-                  element={
-                    <ProtectedRoute
-                      user={user}
-                      redirect="/"
-                      allowedRoles={["admin"]}
-                    >
-                      <Clients />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* <Route
+              />
+              <Route path="notification" element={<Notification />} />
+              <Route path="users" element={<Users />} />
+              <Route path="users/:pageId" element={<Users />} />
+              <Route
+                path="archieved"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <Archieved />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="archieved/actions"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <ArchievedActions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="archieved/invoices"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <ArchievedInvoices />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="settings" element={<Settings />} />
+              <Route
+                path="companies-response-time"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <CompaniesResponseTime />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="clients"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <Clients />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route
                 path="donate-us"
                 element={
                   <ProtectedRoute
@@ -276,21 +275,18 @@ function App() {
                   </ProtectedRoute>
                 }
               /> */}
-              </Route>
+            </Route>
 
-              {/*public pages */}
-              <Route path="/become-member" element={<BecomeMember />} />
-              <Route path="/donate-us" element={<DonateUs />} />
-              <Route
-                path="/terms-and-conditions"
-                element={<TermsAndConditions />}
-              />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/thank-you" element={<ThankYouPage />} />
-            </Routes>
-          ) : (
-            <Loader />
-          )}
+            {/*public pages */}
+            <Route path="/become-member" element={<BecomeMember />} />
+            <Route path="/donate-us" element={<DonateUs />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
+          </Routes>
         </Suspense>
         <GlobalAPILoader />
       </BrowserRouter>

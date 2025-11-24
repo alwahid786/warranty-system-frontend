@@ -460,7 +460,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Claims
       </h2>
-      <div className="w-[100%]">
+      <div className="w-full xl:w-[calc(100vw-300px)] ">
         <DataTable
           columns={columns}
           data={tableData}
