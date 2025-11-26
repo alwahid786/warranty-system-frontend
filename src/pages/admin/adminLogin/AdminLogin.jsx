@@ -9,10 +9,13 @@ import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
+import { HiEye } from "react-icons/hi2";
+import { HiEyeOff } from "react-icons/hi";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetPassword, setResetPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -122,16 +125,28 @@ function AdminLogin() {
                       label={"Confirm Password"}
                     />
                   ) : (
-                    <Input
-                      required
-                      type="password"
-                      onChange={(e) => {
-                        setFormData({ ...formData, password: e.target.value });
-                      }}
-                      value={formData.password}
-                      className="bg-white border"
-                      label={"Password"}
-                    />
+                    <div className="relative">
+                      <Input
+                        required
+                        type={showPassword ? "text" : "password"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        value={formData.password}
+                        className="bg-white border pr-10"
+                        label="Password"
+                      />
+                      <span
+                        className="absolute right-2 top-12"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <HiEye size={20} />
+                        ) : (
+                          <HiEyeOff size={20} />
+                        )}
+                      </span>
+                    </div>
                   )}
                   {forgotPassword ? null : resetPassword ? null : (
                     <p
