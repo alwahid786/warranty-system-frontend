@@ -53,12 +53,18 @@ jobs:
             echo "🔹 Build frontend"
             npm run build
 
+            echo "🔹 Verify build output"
+            if [ ! -d "dist" ]; then
+              echo "❌ Build failed: 'dist' directory not found!"
+              exit 1
+            fi
+
             echo "🔹 Deploy to Nginx"
-            sudo rm -rf /var/www/warranty-frontend/*
-            sudo mkdir -p /var/www/warranty-frontend
-            sudo cp -r dist/* /var/www/warranty-frontend/
+            rm -rf /var/www/warranty-frontend/*
+            mkdir -p /var/www/warranty-frontend
+            cp -r dist/* /var/www/warranty-frontend/
 
             echo "🔹 Reload Nginx"
-            sudo systemctl reload nginx
+            systemctl reload nginx
 
             echo "✅ Frontend deployed successfully!"
