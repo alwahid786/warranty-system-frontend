@@ -67,6 +67,9 @@ function App() {
   const { data: notifications } = useGetNotificationsQuery(undefined, {
     skip: !isSuccess,
     refetchOnMountOrArgChange: false,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    pollingInterval: 15000,
   });
 
   useEffect(() => {
@@ -78,9 +81,9 @@ function App() {
       dispatch(userExist(data?.data));
     }
 
-    if (notifications?.data?.length > 0) {
-      dispatch(unReadNotifications(notifications?.unReadCount));
-      dispatch(setNotifications(notifications?.data));
+    dispatch(setNotifications(notifications?.data || []));
+    if ((notifications?.unReadCount || 0) > 0) {
+      dispatch(unReadNotifications(notifications?.unReadCount || 0));
     } else {
       dispatch(noUnReadNotifications());
     }
