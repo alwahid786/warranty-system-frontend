@@ -18,8 +18,12 @@ const notificationsSlice = createSlice({
       state.unReadCount = 0;
     },
     addNotification: (state, action) => {
-      state.items.unshift(action.payload);
-      state.unReadCount += 1;
+      const incoming = action.payload;
+      if (!incoming?._id) return;
+      const exists = state.items.some((n) => n?._id === incoming._id);
+      if (exists) return;
+      state.items.unshift(incoming);
+      if (!incoming?.isRead) state.unReadCount += 1;
     },
     resetNotifications: (state) => {
       state.items = [];
