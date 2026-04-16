@@ -6,7 +6,9 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 import Loader from "./components/shared/small/Loader";
 import GlobalAPILoader from "./components/shared/small/GlobalLoaderApi";
 import { useGetMyProfileQuery } from "./redux/apis/authApis";
-import { useGetNotificationsQuery } from "./redux/apis/notificationsApis";
+import notificationsApis, {
+  useGetNotificationsQuery,
+} from "./redux/apis/notificationsApis";
 import { userExist, userNotExist } from "./redux/slices/authSlice";
 import {
   noUnReadNotifications,
@@ -110,6 +112,7 @@ function App() {
     const handleNotification = (data) => {
       toast.success(data?.message || "New Notification", { duration: 5000 });
       dispatch(addNotification(data));
+      dispatch(notificationsApis.util.invalidateTags(["notifications"]));
     };
 
     SOCKET.on("connect", () => {
