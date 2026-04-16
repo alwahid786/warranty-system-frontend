@@ -21,17 +21,17 @@ const defaultFilters = {
 const ArchievedInvoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [chatUser, setChatUser] = useState(null);
   const [filters, setFilters] = useState(defaultFilters);
-  const [animateIn, setAnimateIn] = useState(false);
-  const handleChatOpen = (invoice) => setChatUser(invoice);
+  const handleChatOpen = (invoice) => {
+    // Chat functionality not fully implemented in this archived view
+    console.log("Chat open for archived invoice:", invoice);
+  };
   const { data } = useGetArchieveInvoicesQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
   const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
 
-  const handleChatClose = () => setChatUser(null);
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]

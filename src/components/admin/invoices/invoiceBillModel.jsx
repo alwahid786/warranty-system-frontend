@@ -1,6 +1,4 @@
-/* eslint-disable react/prop-types */
 import { FaDiamond } from "react-icons/fa6";
-import getEnv from "../../../configs/config";
 import logoWithBackground from "../../../assets/logos/logo-with-bg.png";
 
 const SectionHeader = ({ children }) => (
@@ -71,7 +69,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
               <FaDiamond size={8} /> Final Total (USD)
             </span>
             <span className="text-xl font-extrabold text-primary">
-              ${invoice.finalTotal?.toFixed(2)}
+              ${Number(invoice.finalTotal || 0).toFixed(2)}
             </span>
           </div>
         </div>
@@ -92,7 +90,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
             <InfoRow label="Number" value={invoice.statementNumber} />
             <InfoRow
               label="Total"
-              value={`$${invoice.statementTotal?.toFixed(2)}`}
+              value={`$${Number(invoice.statementTotal || 0).toFixed(2)}`}
             />
             <InfoRow
               label="Assigned %"
@@ -113,12 +111,12 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
               <InfoRow
                 key={idx}
                 label={adj.type === "add" ? "Charge" : "Deduction"}
-                value={`$${adj.amount.toFixed(2)} (${adj.reason || "N/A"})`}
+                value={`$${Number(adj.amount || 0).toFixed(2)} (${adj.reason || "N/A"})`}
               />
             ))}
             <div className="mt-2 text-[10px] font-bold">
-              Total Additions: ${totalAdd.toFixed(2)} | Total Deductions: $
-              {totalDeduct.toFixed(2)} | Net: ${netAdjustments.toFixed(2)}
+              Total Additions: ${Number(totalAdd || 0).toFixed(2)} | Total Deductions: $
+              {Number(totalDeduct || 0).toFixed(2)} | Net: ${Number(netAdjustments || 0).toFixed(2)}
             </div>
           </div>
         )}

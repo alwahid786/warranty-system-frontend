@@ -1,6 +1,6 @@
 import React from "react";
 
-const DonationIcon = ({ isLinkActive }) => {
+const DonationIcon = () => {
   return (
     <svg
       width="20"

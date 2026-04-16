@@ -42,7 +42,7 @@ export default function ChatModal({
     if (isOpen) {
       setAnimateIn(true);
     }
-  }, [isOpen]);
+  }, [isOpen, setAnimateIn]);
 
   if (!isOpen) return null;
 
@@ -139,7 +139,7 @@ export default function ChatModal({
                         <p>{msg.fileData.filename}</p>
                         <a
                           href={msg.fileData.url}
-                          download
+                          download={msg.fileData.filename}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 underline"

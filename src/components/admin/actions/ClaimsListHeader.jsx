@@ -5,21 +5,29 @@ import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
 // import ClaimsFilterBar from "./ClaimsFilterBar";
 import { useRef } from "react";
-import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
+import { useAddClaimsMutation, useDeleteBulkClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useAddArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
-import { useSelector } from "react-redux";
+import { useState } from "react";
+import ConfirmationModal from "../../../utils/ConfirmationModal";
+import { HiOutlineTrash } from "react-icons/hi2";
 
-const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
+const ClaimsListHeader = ({
+  claims,
+  selectedClaims,
+  setSelectedClaims,
+  showImportExport = true,
+}) => {
   const fileInputRef = useRef(null);
   const [addClaims] = useAddClaimsMutation();
   const [addArchieveClaims] = useAddArchieveClaimsMutation();
   const [removeArchieveClaims] = useRemoveArchieveClaimsMutation();
   const [getExportClaims] = useLazyExportClaimsQuery();
-  const { user } = useSelector((state) => state.auth);
+  const [deleteBulkClaims, { isLoading: isDeleting }] = useDeleteBulkClaimsMutation();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleAddArchieveClaims = async (e) => {
     e.preventDefault();
@@ -31,6 +39,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
       try {
         const res = await addArchieveClaims(selectedClaimsIds).unwrap();
         toast.success(res.message, { duration: 3000 });
+        setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
@@ -38,6 +47,7 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
       try {
         const res = await removeArchieveClaims(selectedClaimsIds).unwrap();
         toast.success(res.message, { duration: 3000 });
+        setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
@@ -65,11 +75,25 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
     try {
       const blob = await getExportClaims().unwrap();
       saveAs(blob, "claims_export.csv");
-      toast.success(res.message || "Claims exported", { duration: 3000 });
+      toast.success("Claims exported successfully", { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message || "Failed to export", { duration: 3000 });
     }
   };
+  const handleBulkDelete = async () => {
+    const ids = selectedClaims.map((claim) => claim._id);
+    try {
+      const res = await deleteBulkClaims(ids).unwrap();
+      toast.success(res.message, { duration: 3000 });
+      setSelectedClaims([]);
+      setIsDeleteModalOpen(false);
+    } catch (err) {
+      toast.error(err.data.message || "Failed to delete claims", {
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center p- rounded-md">
@@ -87,24 +111,33 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
 
         {/* Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
-          {user?.role === "admin" && (
+          {selectedClaims?.length >= 2 && claims?.length > 0 && (
             <Button
-              icon={<ArchievedIcon className="text-xs sm:text-sm" />}
-              text={
-                showImportExport ? "Move To Archive" : "Move Out of Archive"
-              }
-              bg="bg-[#04365599] hover:bg-slate-600"
+              icon={<HiOutlineTrash className="text-xs sm:text-sm" />}
+              text="Delete Selection"
+              bg="bg-red-600 hover:bg-red-700"
               color="text-white"
-              disabled={selectedClaims?.length === 0}
-              style={{
-                cursor:
-                  selectedClaims?.length === 0 ? "not-allowed" : "pointer",
-                opacity: selectedClaims?.length === 0 ? 0.6 : 1,
-              }}
-              onClick={handleAddArchieveClaims}
+              onClick={() => setIsDeleteModalOpen(true)}
+              disabled={isDeleting}
               cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
             />
           )}
+          <Button
+            icon={<ArchievedIcon className="text-xs sm:text-sm" />}
+            text={
+              showImportExport ? "Move To Archive" : "Move Out of Archive"
+            }
+            bg="bg-[#04365599] hover:bg-slate-600"
+            color="text-white"
+            disabled={claims?.length === 0 || selectedClaims?.length === 0}
+            style={{
+              cursor:
+                selectedClaims?.length === 0 ? "not-allowed" : "pointer",
+              opacity: selectedClaims?.length === 0 ? 0.6 : 1,
+            }}
+            onClick={handleAddArchieveClaims}
+            cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
+          />
 
           {showImportExport && (
             <>
@@ -115,6 +148,11 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
                 color="text-white"
                 cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center"
                 onClick={handleExportClaims}
+                disabled={claims?.length === 0}
+                style={{
+                  cursor: claims?.length === 0 ? "not-allowed" : "pointer",
+                  opacity: claims?.length === 0 ? 0.6 : 1,
+                }}
               />
               <div className="flex gap-2 justify-end">
                 <input
@@ -139,6 +177,13 @@ const ClaimsListHeader = ({ selectedClaims, showImportExport = true }) => {
           )}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onSave={handleBulkDelete}
+        data={`Are you sure you want to delete ${selectedClaims?.length} selected claims? this action cannot be undone.`}
+      />
     </>
   );
 };

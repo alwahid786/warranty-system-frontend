@@ -18,7 +18,6 @@ import {
 import { useUpdateClientMutation } from "../../../redux/apis/clientsApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import toast from "react-hot-toast";
-import { useGetClientsStatQuery } from "../../../redux/apis/clientsApis";
 import EditClientsModal from "../../../components/admin/clients/EditClientsModal";
 
 const Clients = () => {
@@ -36,7 +35,7 @@ const Clients = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [clientsData, setclientsData] = useState(null);
 
-  const { data, refetch: refetchClients } = useGetClientsQuery(undefined, {
+  const { data } = useGetClientsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -58,8 +57,6 @@ const Clients = () => {
 
   const [updateClient] = useUpdateClientMutation();
 
-  const { data: clientsStats, refetch: getClientsStatRefetch } =
-    useGetClientsStatQuery();
 
   useEffect(() => {
     if (data) {
@@ -75,7 +72,6 @@ const Clients = () => {
 
   const handleOnDelete = async (id) => {
     try {
-      JSON.stringify(id);
       const res = await deleteClient(id).unwrap();
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
@@ -112,15 +108,11 @@ const Clients = () => {
   const { pageId } = useParams();
   const navigate = useNavigate();
 
-  const currentPage = parseInt(pageId) || 1;
   const clientsPerPage = 8;
-  const totalPages = Math.ceil(clients.length / clientsPerPage);
+  const currentPage = parseInt(pageId) || 1;
 
-  const startIndex = (currentPage - 1) * clientsPerPage;
-  const currentClients = clients.slice(startIndex, startIndex + clientsPerPage);
-
-  // filters handers ----------->
-  const filteredData = currentClients.filter((row) => {
+  // filters handlers ----------->
+  const filteredData = clients.filter((row) => {
     // Search 1
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
@@ -169,21 +161,28 @@ const Clients = () => {
         return false;
     }
 
-    // Date range
+    // Date range (inclusive)
     if (filters.fromDate) {
       const from = new Date(filters.fromDate);
+      from.setHours(0, 0, 0, 0);
       const rowDate = new Date(row.createdAt);
       if (rowDate < from) return false;
     }
 
     if (filters.toDate) {
       const to = new Date(filters.toDate);
+      to.setHours(23, 59, 59, 999);
       const rowDate = new Date(row.createdAt);
       if (rowDate > to) return false;
     }
 
     return true;
   });
+
+  // Paginate the filtered data
+  const totalPages = Math.ceil(filteredData.length / clientsPerPage);
+  const startIndex = (currentPage - 1) * clientsPerPage;
+  const currentClients = filteredData.slice(startIndex, startIndex + clientsPerPage);
 
   const handleResetFilters = () => {
     setFilters({
@@ -230,8 +229,8 @@ const Clients = () => {
         />
 
         <div className="mt-5 ">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredData.map((client) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+            {currentClients.map((client) => (
               <ClientsDetailCard
                 client={client}
                 key={client._id}

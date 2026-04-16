@@ -12,7 +12,7 @@ function AdminResetPassword() {
     confirmPassword: "",
   });
 
-  const [resetPassword, { isLoading, error }] = useResetPasswordMutation();
+  const [resetPassword] = useResetPasswordMutation();
   const { token } = useParams();
 
   const navigate = useNavigate();

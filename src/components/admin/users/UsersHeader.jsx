@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import AddUserModal from "./AddUserModal";
-import { Phone } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   useAddUserMutation,
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery,
+  useGetUsersStatQuery,
 } from "../../../redux/apis/userApis";
-import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 import toast from "react-hot-toast";
 
 const UsersHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setformData] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
   });
-  const { data: usersStats, refetch: getUsersStatRefetch } =
-    useGetUsersStatQuery();
+  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery();
   const [addUser, { isLoading }] = useAddUserMutation();
 
   const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery();
@@ -36,6 +36,7 @@ const UsersHeader = () => {
         setIsOpen(false);
         await getTotalUsersCountRefetch();
         await getAttendanceChartDataRefetch();
+        await getUsersStatRefetch();
         setformData({
           name: "",
           email: "",
@@ -50,7 +51,7 @@ const UsersHeader = () => {
 
   return (
     <div className="flex justify-between items-center mb-6">
-      <div className="flex-direction-column flex-wrap flex justify-between items-center w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3 sm:gap-0">
         <div>
           <h1 className="text-2xl font-semibold">Users List</h1>
           <p className="text-sm text-gray-500">Manage all your Users</p>
@@ -59,7 +60,7 @@ const UsersHeader = () => {
         {/* Button to open modal */}
         <button
           onClick={() => setIsOpen(true)}
-          className="py-2 bg-primary text-base text-white px-4 rounded-sm mt-5"
+          className="py-2 bg-primary text-base text-white px-4 rounded-sm"
         >
           + Add New Users
         </button>
@@ -89,30 +90,46 @@ const UsersHeader = () => {
           />
           <label>Phone</label>
           <input
-            type="text"
+            type="tel"
             value={formData.phone}
-            onChange={(e) =>
-              setformData({ ...formData, phone: e.target.value })
-            }
+            onChange={(e) => {
+              const value = e.target.value;
+              const isPlus = value.startsWith("+");
+              const digits = value.replace(/\D/g, "");
+              const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+              setformData({ ...formData, phone: finalValue });
+            }}
             placeholder="Phone Number"
             className="w-full border px-3 py-2 rounded"
           />
           <label>Password</label>
-          <input
-            type="text"
-            value={formData.password}
-            onChange={(e) =>
-              setformData({ ...formData, password: e.target.value })
-            }
-            placeholder="Password"
-            className="w-full border px-3 py-2 rounded"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) =>
+                setformData({ ...formData, password: e.target.value })
+              }
+              placeholder="Password"
+              className="w-full border px-3 py-2 rounded pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-dark-text"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
 
           <button
             type="submit"
-            className="bg-primary text-white px-4 py-2 rounded w-full"
+            disabled={isLoading}
+            className={`bg-primary text-white px-4 py-2 rounded w-full transition-all ${
+              isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary-dark"
+            }`}
           >
-            Save
+            {isLoading ? "Saving..." : "Save"}
           </button>
         </form>
       </AddUserModal>

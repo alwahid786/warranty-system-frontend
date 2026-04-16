@@ -24,7 +24,6 @@ import { useUpdateUserMutation } from "../../../redux/apis/userApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import toast from "react-hot-toast";
 import {
-  useGetUsersStatQuery,
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery,
 } from "../../../redux/apis/userApis";
@@ -57,16 +56,12 @@ const Users = () => {
     data,
     isSuccess,
     isError,
-    isLoading,
-    refetch: refetchUsers,
   } = useGetUsersQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const [deleteUser] = useDeleteUserMutation();
 
   const [updateUser] = useUpdateUserMutation();
 
-  const { data: usersStats, refetch: getUsersStatRefetch } =
-    useGetUsersStatQuery();
 
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
     useGetTotalUsersCountQuery(undefined, {
@@ -94,7 +89,6 @@ const Users = () => {
 
   const handleOnDelete = async (id) => {
     try {
-      JSON.stringify(id);
       const res = await deleteUser(id).unwrap();
       if (res.success) {
         toast.success(res.message || "User deleted", { duration: 3000 });
@@ -218,7 +212,7 @@ const Users = () => {
         />
 
         <div className="mt-5 ">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {filteredData.map((user) => (
               <UsersDetailCard
                 user={user}

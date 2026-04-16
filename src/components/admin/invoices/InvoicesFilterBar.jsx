@@ -142,10 +142,15 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
           </label>
           <input
             type="number"
+            min="0"
             className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full"
             placeholder="Min"
             value={filters.minFinalTotal}
-            onChange={(e) => onFilterChange({ minFinalTotal: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value < 0) return;
+              onFilterChange({ minFinalTotal: value });
+            }}
           />
         </div>
 
@@ -156,10 +161,15 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
           </label>
           <input
             type="number"
+            min="0"
             className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full"
             placeholder="Max"
             value={filters.maxFinalTotal}
-            onChange={(e) => onFilterChange({ maxFinalTotal: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value < 0) return;
+              onFilterChange({ maxFinalTotal: value });
+            }}
           />
         </div>
 

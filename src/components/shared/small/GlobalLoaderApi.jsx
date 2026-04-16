@@ -44,6 +44,7 @@ const apiMessages = {
   getNotifications: "Fetching notifications...",
   deleteNotification: "Deleting notification...",
   readNotification: "Reading notification...",
+  readAllNotifications: "Marking all notifications as read...",
   getUsers: "Fetching users...",
   getUserById: "Fetching user by id...",
   addUser: "Adding user...",
@@ -54,45 +55,16 @@ const apiMessages = {
   getAttendanceChartData: "Fetching attendance chart data...",
 };
 
-const NO_LOADER_ENDPOINTS = new Set([
-  "login",
-  "forgetPassword",
-  "resetPassword",
-  "getMyProfile",
-  "getChat",
-  "sendMessage",
-  "getCompaniesAvgResponseTime",
-  "getCompaniesAvgResponseTimeAll",
-  "getClaims",
-  "getArchieveClaims",
-  "getInvoicesStat",
-  "getClaimsStat",
-  "getClients",
-  "getActiveInactiveCount",
-  "getClientsStat",
-  "getClientsStatByFilters",
-  "getClientsActivityStats",
-  "getInvoices",
-  "getArchieveInvoices",
-  "getNotifications",
-  "getUsers",
-  "getUsersStat",
-  "getTotalUsersCount",
-  "getAttendanceChartData",
-  "sendMessage",
-]);
+// Keep this list small: only skip endpoints where a global loader would be disruptive.
+const SKIP_GLOBAL_LOADER_ENDPOINTS = new Set(["sendMessage"]);
 
 const GlobalAPILoader = () => {
-  const pendingTasks = useSelector((state) => {
-    let tasks = [];
+  const { blockingTasks, nonBlockingTasks } = useSelector((state) => {
+    const blocking = [];
+    const nonBlocking = [];
 
     Object.values(state).forEach((slice) => {
       if (!slice?.queries && !slice?.mutations) return;
-
-      // get the api instance from the store if available
-      const apiInstance = Object.values(state).find(
-        (s) => s?.reducerPath && s?.config
-      );
 
       // process queries + mutations
       ["queries", "mutations"].forEach((type) => {
@@ -103,29 +75,80 @@ const GlobalAPILoader = () => {
           if (q?.status === "pending") {
             const endpoint = key.split("(")[0];
 
-            // Skip endpoints that should not show loader
-            if (NO_LOADER_ENDPOINTS.has(endpoint)) return;
+            if (SKIP_GLOBAL_LOADER_ENDPOINTS.has(endpoint)) return;
 
-            tasks.push(apiMessages[endpoint] || `Processing ${endpoint}...`);
+            const message =
+              apiMessages[endpoint] || `Processing ${endpoint}...`;
+
+            // Mutations are always blocking. Queries block only on first load.
+            if (type === "mutations") {
+              blocking.push(message);
+              return;
+            }
+
+            const isFirstLoad =
+              q?.fulfilledTimeStamp == null && q?.data == null;
+
+            if (isFirstLoad) blocking.push(message);
+            else nonBlocking.push(message);
           }
         });
       });
     });
 
-    return tasks;
+    return {
+      blockingTasks: Array.from(new Set(blocking)),
+      nonBlockingTasks: Array.from(new Set(nonBlocking)),
+    };
   });
 
-  if (pendingTasks.length === 0) return null;
+  const primaryMessage =
+    blockingTasks[0] || nonBlockingTasks[0] || "Loading...";
+  const extraCount =
+    (blockingTasks.length > 0 ? blockingTasks.length : nonBlockingTasks.length) -
+    1;
+
+  if (blockingTasks.length === 0 && nonBlockingTasks.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-50">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-80">
-        <div className="flex items-center space-x-3 mb-3">
-          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="font-semibold text-gray-700">In Progress</span>
+    <>
+      {nonBlockingTasks.length > 0 && blockingTasks.length === 0 && (
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="mx-auto max-w-[1100px] px-4 pt-3">
+            <div className="flex items-center gap-3 rounded-lg bg-white/95 shadow px-4 py-3">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm text-gray-700">{primaryMessage}</span>
+              {extraCount > 0 && (
+                <span className="text-xs text-gray-500">
+                  +{extraCount} more
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+
+      {blockingTasks.length > 0 && (
+        <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-50">
+          <div className="bg-white shadow-lg rounded-lg p-6 w-96">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-gray-800">
+                  Please wait
+                </span>
+                <span className="text-sm text-gray-600">{primaryMessage}</span>
+                {extraCount > 0 && (
+                  <span className="text-xs text-gray-500 mt-1">
+                    +{extraCount} more task(s)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

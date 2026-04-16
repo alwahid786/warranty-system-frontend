@@ -8,15 +8,6 @@ const EditInvoiceForm = ({
   invoiceData,
   onSubmit,
 }) => {
-  if (!isOpen) return null;
-
-  // normalize clients safely
-  const clients = (clientsData?.data || []).map((c) => ({
-    id: String(c._id),
-    name: c.name || "",
-    companyName: c.companyName || c.storeName || "",
-  }));
-
   // main form state
   const [formData, setFormData] = useState({
     clientId: "",
@@ -41,10 +32,10 @@ const EditInvoiceForm = ({
 
   // Hydrate with backend invoice data when it arrives
   useEffect(() => {
-    if (!invoiceData) return;
+    if (!isOpen || !invoiceData) return;
 
     setFormData({
-      clientId: invoiceData.clientId || "",
+      clientId: (typeof invoiceData.clientId === 'object' ? invoiceData.clientId?._id : invoiceData.clientId) || "",
       client: invoiceData.clientName || "",
       company: invoiceData.warrantyCompany || "",
       statementType: invoiceData.statementType || "",
@@ -64,97 +55,13 @@ const EditInvoiceForm = ({
     });
 
     setExistingFiles(invoiceData.attachedReports || []);
-    setManualEdit(false); // start with backend finalTotal trusted
-  }, [invoiceData]);
+    setManualEdit(false); 
+  }, [invoiceData, isOpen]);
 
-  // If clients data arrives later, ensure name/company fields match clientId (help default selection)
+  // calculation logic moved to top
   useEffect(() => {
-    if (!formData.clientId || !clients.length) return;
+    if (!isOpen) return;
 
-    const selected = clients.find((c) => c.id === String(formData.clientId));
-    if (!selected) return;
-
-    setFormData((prev) => {
-      // avoid unnecessary updates
-      if (
-        prev.client === selected.name &&
-        prev.company === selected.companyName
-      ) {
-        return prev;
-      }
-      return { ...prev, client: selected.name, company: selected.companyName };
-    });
-    // don't flip manualEdit here (this is just sync)
-  }, [clients, formData.clientId]);
-
-  // Dealer Change (select client by id)
-  const onDealerChange = (e) => {
-    const clientId = e.target.value;
-    const selectedClient = clients.find((c) => c.id === clientId);
-
-    setFormData((prev) => ({
-      ...prev,
-      clientId: clientId || "",
-      client: selectedClient?.name || "",
-      company: selectedClient?.companyName || "",
-    }));
-
-    setManualEdit(true);
-  };
-
-  // Adjustments handlers (use functional updates)
-  const handleAdjustmentChange = (index, field, value) => {
-    setFormData((prev) => {
-      const newAdjustments = prev.adjustments.map((adj, i) =>
-        i === index ? { ...adj, [field]: value } : adj
-      );
-      return { ...prev, adjustments: newAdjustments };
-    });
-    setManualEdit(true);
-  };
-
-  const addAdjustmentRow = () => {
-    setFormData((prev) => ({
-      ...prev,
-      adjustments: [
-        ...prev.adjustments,
-        { type: "Charge", amount: "", reason: "" },
-      ],
-    }));
-    setManualEdit(true);
-  };
-
-  const removeAdjustmentRow = (index) => {
-    setFormData((prev) => {
-      const newAdjustments = [...prev.adjustments];
-      newAdjustments.splice(index, 1);
-      return { ...prev, adjustments: newAdjustments };
-    });
-    setManualEdit(true);
-  };
-
-  // File Upload Handler (include existingFiles in limit)
-  const handleFileUpload = (e) => {
-    const uploaded = Array.from(e.target.files || []);
-    if (files.length + uploaded.length + existingFiles.length > 5) {
-      toast.error("Maximum 5 files allowed (including existing attachments)");
-      e.target.value = null;
-      return;
-    }
-    setFiles((prev) => [...prev, ...uploaded]);
-    e.target.value = null;
-  };
-
-  const removeFile = (index) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const removeExistingFile = (index) => {
-    setExistingFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Auto calculation of finalTotal
-  useEffect(() => {
     // if backend provided finalTotal and user didn't edit relevant fields, keep backend value
     if (
       !manualEdit &&
@@ -175,16 +82,12 @@ const EditInvoiceForm = ({
     (formData.adjustments || []).forEach((adj) => {
       const amt = Number(adj.amount) || 0;
       const type = String(adj.type || "").toLowerCase();
-      // accept multiple possible type values from backend (add, charge, deduction, etc.)
       const isCharge = /charge|add|plus|credit|increase/i.test(type);
       total += isCharge ? amt : -amt;
     });
 
-    // If bypass is false -> apply assigned percentage.
-    // NOTE: if your business rule is different (e.g. subtract percentage), update accordingly.
     if (!formData.bypass) {
       const perc = Number(formData.assignedPercentage) || 0;
-      // apply percent as proportion of total
       total = total * (perc / 100);
     }
 
@@ -198,8 +101,96 @@ const EditInvoiceForm = ({
     formData.assignedPercentage,
     formData.bypass,
     manualEdit,
-    invoiceData?.finalTotal,
+    invoiceData,
+    isOpen,
   ]);
+
+  useEffect(() => {
+    if (!isOpen || !formData.clientId || !(clientsData?.data?.length)) return;
+
+    const clients_local = (clientsData?.data || []).map((c) => ({
+      id: String(c._id),
+      name: c.name || "",
+      companyName: c.companyName || c.storeName || "",
+    }));
+
+    // normalize formData.clientId to string for comparison
+    const targetId = typeof formData.clientId === 'object' ? formData.clientId?._id : formData.clientId;
+    const selected = clients_local.find((c) => c.id === String(targetId));
+    
+    if (!selected) return;
+
+    setFormData((prev) => {
+      // avoid unnecessary updates
+      if (
+        prev.client === selected.name &&
+        prev.company === selected.companyName
+      ) {
+        return prev;
+      }
+      return { ...prev, client: selected.name, company: selected.companyName };
+    });
+  }, [clientsData, formData.clientId, isOpen]);
+
+  if (!isOpen) return null;
+
+  // normalize clients safely for the UI
+  const clients = (clientsData?.data || []).map((c) => ({
+    id: String(c._id),
+    name: c.name || "",
+    companyName: c.companyName || c.storeName || "",
+  }));
+
+  const onDealerChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      clientId: e.target.value,
+    }));
+    setManualEdit(true);
+  };
+
+  const handleAdjustmentChange = (index, field, value) => {
+    const newAdjustments = [...formData.adjustments];
+    newAdjustments[index][field] = value;
+    setFormData((prev) => ({
+      ...prev,
+      adjustments: newAdjustments,
+    }));
+    setManualEdit(true);
+  };
+
+  const addAdjustmentRow = () => {
+    setFormData((prev) => ({
+      ...prev,
+      adjustments: [
+        ...prev.adjustments,
+        { type: "Charge", amount: "", reason: "" },
+      ],
+    }));
+    setManualEdit(true);
+  };
+
+  const removeAdjustmentRow = (index) => {
+    const newAdjustments = formData.adjustments.filter((_, i) => i !== index);
+    setFormData((prev) => ({
+      ...prev,
+      adjustments: newAdjustments,
+    }));
+    setManualEdit(true);
+  };
+
+  const handleFileUpload = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingFile = (index) => {
+    setExistingFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Save Handler
   const handleSave = async (finalize = false) => {

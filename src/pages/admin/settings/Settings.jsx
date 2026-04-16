@@ -9,8 +9,9 @@ import Dropdown from "../../../components/shared/small/Dropdown";
 import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { useUpdateMyProfileMutation } from "../../../redux/apis/authApis";
 import { useDispatch, useSelector } from "react-redux";
-import { userExist, userNotExist } from "../../../redux/slices/authSlice";
+import { userExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
+import Loader from "../../../components/shared/small/Loader";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
@@ -21,7 +22,6 @@ const Settings = () => {
   const {
     data,
     isLoading: isLoadingForGetMyProfile,
-    refetch: getMyProfileRefetch,
   } = useGetMyProfileQuery(undefined, {
     skip: !!user?._id,
     refetchOnMountOrArgChange: false,
@@ -102,14 +102,16 @@ const Settings = () => {
       }
       const res = await updateProfile(form).unwrap();
       if (res.success) {
-        await getMyProfileRefetch();
+        dispatch(userExist(res.newuser));
+        setIsEditing(false);
         toast.success(res.message, { duration: 3000 });
       }
     } catch (err) {
-      toast.error(err.data.message, { duration: 3000 });
+      toast.error(err?.data?.message || "Something went wrong", { duration: 3000 });
     }
-    setIsEditing(false);
   };
+
+  if (isLoadingForGetMyProfile) return <Loader />;
 
   return (
     <div className="bg-white shadow-md">
@@ -288,8 +290,14 @@ const Settings = () => {
                   text="Cancel"
                   cn="!bg-[#B1B1B1] !py-2 hover:!bg-gray-400"
                   onClick={handleCancel}
+                  disabled={isLoading}
                 />
-                <Button text="Save" cn="!py-2" onClick={handleSave} />
+                <Button
+                  text={isLoading ? "Saving..." : "Save"}
+                  cn="!py-2"
+                  onClick={handleSave}
+                  disabled={isLoading}
+                />
               </>
             )}
           </div>

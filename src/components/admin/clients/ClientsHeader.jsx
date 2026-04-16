@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AddClientModal from "./AddClientModal";
-import { Phone } from "lucide-react";
+import { Phone, Eye, EyeOff } from "lucide-react";
 import {
   useAddClientMutation,
   useGetClientsStatByFiltersQuery,
@@ -11,6 +11,7 @@ import { MdClose } from "react-icons/md";
 
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     clientName: "",
     clientEmail: "",
@@ -66,7 +67,7 @@ const ClientsHeader = () => {
 
   const [addClient, { isLoading }] = useAddClientMutation();
 
-  const { data: clientsStats, refetch: getClientsStatRefetch } =
+  const { refetch: getClientsStatRefetch } =
     useGetClientsStatByFiltersQuery();
 
   const { refetch: getClientsActivityStatRefetch } =
@@ -76,7 +77,15 @@ const ClientsHeader = () => {
     e.preventDefault();
 
     try {
-      const res = await addClient(formData).unwrap();
+      if (formData.percentage && Number(formData.percentage) > 100) {
+        return toast.error("Percentage cannot exceed 100%");
+      }
+
+      // Filter out empty emails
+      const filteredEmails = formData.emails.filter((email) => email.trim() !== "");
+      const dataToSubmit = { ...formData, emails: filteredEmails };
+
+      const res = await addClient(dataToSubmit).unwrap();
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
         setIsOpen(false);
@@ -148,7 +157,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.name}
+                  value={formData.clientName}
                   onChange={(e) =>
                     setFormData({ ...formData, clientName: e.target.value })
                   }
@@ -178,15 +187,24 @@ const ClientsHeader = () => {
                 <label className="block text-sm font-medium mb-1">
                   Client Password
                 </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, clientPassword: e.target.value })
-                  }
-                  placeholder="Enter Password"
-                  className="w-full border px-3 py-2 rounded"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={formData.clientPassword}
+                    onChange={(e) =>
+                      setFormData({ ...formData, clientPassword: e.target.value })
+                    }
+                    placeholder="Enter Password"
+                    className="w-full border px-3 py-2 rounded pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-dark-text"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
               {/* Phone */}
               <div>
@@ -195,10 +213,14 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, clientPhone: e.target.value })
-                  }
+                  value={formData.clientPhone}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const isPlus = value.startsWith("+");
+                    const digits = value.replace(/\D/g, "");
+                    const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                    setFormData({ ...formData, clientPhone: finalValue });
+                  }}
                   placeholder="Phone Number"
                   className="w-full border px-3 py-2 rounded"
                 />
@@ -236,9 +258,10 @@ const ClientsHeader = () => {
                 <input
                   type="text"
                   value={formData.dealerId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dealerId: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, dealerId: value });
+                  }}
                   placeholder="Enter Dealer ID"
                   className="w-full border px-3 py-2 rounded"
                 />
@@ -316,10 +339,14 @@ const ClientsHeader = () => {
               </label>
               <input
                 type="text"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, storePhone: e.target.value })
-                }
+                value={formData.storePhone}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const isPlus = value.startsWith("+");
+                  const digits = value.replace(/\D/g, "");
+                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                  setFormData({ ...formData, storePhone: finalValue });
+                }}
                 placeholder="Phone Number"
                 className="w-full border px-3 py-2 rounded"
               />
@@ -429,9 +456,12 @@ const ClientsHeader = () => {
               <input
                 type="number"
                 value={formData.percentage}
-                onChange={(e) =>
-                  setFormData({ ...formData, percentage: e.target.value })
-                }
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (value > 100) value = 100;
+                  if (value < 0) value = 0;
+                  setFormData({ ...formData, percentage: value });
+                }}
                 placeholder="Enter %"
                 className="w-full border px-3 py-2 rounded"
               />
@@ -442,9 +472,12 @@ const ClientsHeader = () => {
           <div className="sticky bottom-0 bg-white pt-4">
             <button
               type="submit"
-              className="bg-primary text-white px-4 py-2 rounded w-full"
+              disabled={isLoading}
+              className={`bg-primary text-white px-4 py-2 rounded w-full transition-all ${
+                isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary-dark"
+              }`}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

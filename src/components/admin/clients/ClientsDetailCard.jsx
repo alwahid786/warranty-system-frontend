@@ -11,7 +11,7 @@ import {
   FaBell,
 } from "react-icons/fa6";
 import { MdLocationOn } from "react-icons/md";
-import { HiPencil, HiTrash } from "react-icons/hi2";
+import { HiPencil, HiTrash, HiEllipsisHorizontal } from "react-icons/hi2";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -64,29 +64,20 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         {/* Menu */}
         <div ref={menuRef} className="relative">
           <button
-            className="p-2 rounded-full hover:bg-gray-100 transition"
+            className="p-2 -mr-1 rounded-full hover:bg-gray-100 transition-all duration-200 focus:outline-none"
             onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="More options"
           >
-            <svg
-              width="16"
-              height="4"
-              viewBox="0 0 16 4"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="4" height="4" rx="2" fill="#1A1A1A" />
-              <rect x="6" width="4" height="4" rx="2" fill="#1A1A1A" />
-              <rect x="12" width="4" height="4" rx="2" fill="#1A1A1A" />
-            </svg>
+            <HiEllipsisHorizontal className="text-gray-600 text-2xl" />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-200 origin-top-right">
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   onEdit(client);
                 }}
-                className="flex items-center gap-2 w-full text-left font-bold px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                className="flex items-center gap-3 w-full text-left font-bold px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-600 transition-colors"
               >
                 <HiPencil className="text-gray-600" /> Edit
               </button>
@@ -95,7 +86,7 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
                   setMenuOpen(false);
                   onDelete(client._id);
                 }}
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-50 text-red-600"
+                className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm font-bold hover:bg-gray-50 text-red-600 border-t border-gray-50 transition-colors"
               >
                 <HiTrash className="text-red-600" /> Delete
               </button>
@@ -174,9 +165,15 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
           <span className="flex items-center gap-1">
             <FaUserTie className="text-gray-500" /> {client.businessOwner}
             {client.businessOwnerView ? (
-              <FaRegEye className="text-green-500" />
+              <FaRegEye
+                className="text-green-500"
+                title="Business owner can view invoices"
+              />
             ) : (
-              <FaRegEyeSlash className="text-red-500" />
+              <FaRegEyeSlash
+                className="text-red-500"
+                title="Business owner can not view invoices"
+              />
             )}
           </span>
         </div>

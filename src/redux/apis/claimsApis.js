@@ -68,6 +68,16 @@ const claimsApis = createApi({
       invalidatesTags: ["Claims"],
     }),
 
+    // Delete Bulk Claims
+    deleteBulkClaims: builder.mutation({
+      query: (data) => ({
+        url: "/deleteBulkClaims",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Claims"],
+    }),
+
     // get Archieve Claims
     getArchieveClaims: builder.query({
       query: () => ({
@@ -130,6 +140,7 @@ export const {
   useGetClaimsStatQuery,
   useUpdateClaimsAdditionalDataMutation,
   useDeleteClaimMutation,
+  useDeleteBulkClaimsMutation,
 } = claimsApis;
 
 export default claimsApis;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import TopCard from "../../../components/admin/dashboard/TopCard";
 import { recentClaims } from "../../../data/data";
 import TotalClaimsCard from "../../../components/admin/dashboard/ClaimStats/TotalclaimedsCard";
@@ -44,7 +44,7 @@ const Dashboard = () => {
         <h1 className="font-inter font-semibold  text-[14.4px] leading-6 text-primary">
           Claims Stats
         </h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <TotalClaimsCard data={claimsStat?.data} />
           <ClaimsByBrandCard brands={claimsStat?.claimsByCompany} />
           <CompaniesResponseTimeCard data={companiesAvgResponseTime} />

@@ -2,14 +2,6 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
-  if (!isOpen) return null;
-
-  const clients = clientsData?.data.map((client) => ({
-    id: client?._id,
-    name: client?.name,
-    companyName: client?.companyName || client?.storeName,
-  }));
-
   const [formData, setFormData] = useState({
     clientId: "",
     client: "",
@@ -25,6 +17,41 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   });
 
   const [files, setFiles] = useState([]);
+
+  // calculation effect must be called before early return
+  useEffect(() => {
+    if (!isOpen) return;
+    let total = Number(formData.statementTotal) || 0;
+
+    formData.adjustments.forEach((adj) => {
+      const amt = Number(adj.amount) || 0;
+      total += adj.type === "Charge" ? amt : -amt;
+    });
+
+    if (!formData.bypass) {
+      const perc = Number(formData.assignedPercentage) || 0;
+      total = total * (perc / 100);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      finalTotal: total.toFixed(2),
+    }));
+  }, [
+    formData.statementTotal,
+    formData.adjustments,
+    formData.assignedPercentage,
+    formData.bypass,
+    isOpen,
+  ]);
+
+  if (!isOpen) return null;
+
+  const clients = (clientsData?.data || []).map((client) => ({
+    id: client?._id,
+    name: client?.name,
+    companyName: client?.companyName || client?.storeName,
+  }));
 
   // Dealer Change
   const onDealerChange = (e) => {
@@ -80,31 +107,6 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     setFiles(newFiles);
   };
 
-  // Calculation
-  // automatically recalc when dependencies change
-  useEffect(() => {
-    let total = Number(formData.statementTotal) || 0;
-
-    formData.adjustments.forEach((adj) => {
-      const amt = Number(adj.amount) || 0;
-      total += adj.type === "Charge" ? amt : -amt;
-    });
-
-    if (!formData.bypass) {
-      const perc = Number(formData.assignedPercentage) || 0;
-      total = total * (perc / 100);
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      finalTotal: total.toFixed(2),
-    }));
-  }, [
-    formData.statementTotal,
-    formData.adjustments,
-    formData.assignedPercentage,
-    formData.bypass,
-  ]);
 
   // Save Handler
 

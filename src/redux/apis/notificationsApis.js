@@ -36,6 +36,15 @@ const notificationsApis = createApi({
       }),
       invalidatesTags: ["notifications"],
     }),
+
+    // Read All Notifications
+    readAllNotifications: builder.mutation({
+      query: () => ({
+        url: `/readAllNotifications`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["notifications"],
+    }),
   }),
 });
 
@@ -43,6 +52,7 @@ export const {
   useGetNotificationsQuery,
   useDeleteNotificationMutation,
   useReadNotificationMutation,
+  useReadAllNotificationsMutation,
 } = notificationsApis;
 
 export default notificationsApis;

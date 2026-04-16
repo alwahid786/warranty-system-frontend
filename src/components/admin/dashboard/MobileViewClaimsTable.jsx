@@ -68,7 +68,7 @@ const customers = [
     ),
   },
 ];
-const MobileViewClaimsTable = ({ data }) => {
+const MobileViewClaimsTable = () => {
   return (
     <div className="w-full mx-auto bg-white border border-[#EAEDF2] rounded-[10px] p-4 ">
       <h2 className="font-inter font-medium text-[14px] text-[#101421] leading-[29px] mb-4 ">

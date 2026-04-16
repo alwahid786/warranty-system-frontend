@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Button from "../../../components/shared/small/landing-Button.jsx";
 import { Card, CardContent } from "../../../components/shared/small/card.jsx";
@@ -42,7 +42,7 @@ const LandingPage = () => {
       <section className="flex flex-1 items-center justify-center px-10 mt-24">
         <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl">
           {/* Left Logo Area */}
-          <motion.img
+          <Motion.img
             src={getEnv("LOGO_URL_WITH_BACKGROUND")}
             alt="Company Logo"
             className="w-64 h-64 object-contain"
@@ -52,7 +52,7 @@ const LandingPage = () => {
           />
 
           {/* Right Text Area */}
-          <motion.div
+          <Motion.div
             className="text-center md:text-left md:w-1/2 space-y-4"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -72,7 +72,7 @@ const LandingPage = () => {
             >
               Get Started
             </Button>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
@@ -90,7 +90,7 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-6">
           {cards.map((card, idx) => (
-            <motion.div
+            <Motion.div
               key={idx}
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 200 }}
@@ -107,7 +107,7 @@ const LandingPage = () => {
                   <p className="text-gray-600">{card.desc}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           ))}
         </div>
       </section>

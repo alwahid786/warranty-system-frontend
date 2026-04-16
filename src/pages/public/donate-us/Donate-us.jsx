@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -115,7 +115,6 @@ function CheckoutForm({ email, amount, onClose }) {
 }
 
 export default function DonateUs() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [terms, setTerms] = useState(false);
   const [privacyPolicy, setPrivacyPolicy] = useState(false);
@@ -161,14 +160,14 @@ export default function DonateUs() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex flex-col max-lg:py-20">
       <LandingHeader />
       <div className="flex-1 flex items-center justify-center px-4 py-10">
-        <motion.div
+        <Motion.div
           className="w-full max-w-6xl flex flex-col lg:flex-row items-stretch gap-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ staggerChildren: 0.2 }}
         >
           {/* LEFT */}
-          <motion.div
+          <Motion.div
   className="lg:w-1/2 bg-white rounded-2xl shadow-xl border border-blue-100 p-8 flex flex-col justify-between relative overflow-hidden group"
   whileHover={{ scale: 1.05 }}
   transition={{ type: "spring", stiffness: 200, damping: 15 }}
@@ -177,7 +176,7 @@ export default function DonateUs() {
   <div className="absolute bottom-0 left-0 w-28 h-28 bg-indigo-500/10 rounded-full translate-y-12 -translate-x-12 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
 
   <div className="relative z-10 flex flex-col items-center text-center">
-    <motion.div
+    <Motion.div
       initial={{ rotate: 0, scale: 1, y: 0 }}
       whileHover={{ rotate: 10, scale: 1.25, y: -5 }}
       transition={{ type: "spring", stiffness: 300 }}
@@ -187,7 +186,7 @@ export default function DonateUs() {
       <div className="bg-[#0b5c83]/10 text-[#0b5c83] rounded-full p-5 shadow-lg relative z-10">
         <FontAwesomeIcon icon={faHandHoldingDollar} className="text-3xl" />
       </div>
-    </motion.div>
+    </Motion.div>
 
     <div className="flex flex-col gap-4 justify-between items-center w-full mb-6">
       <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -209,7 +208,7 @@ export default function DonateUs() {
       <ul className="space-y-3">
         {donationInfo.benefits.map((b, i) => (
           <li key={i} className="flex items-center gap-3 text-gray-700 group/item">
-            <motion.div
+            <Motion.div
               whileHover={{ rotate: 360, scale: 1.2 }}
               transition={{ duration: 0.6 }}
               className="w-8 h-8 bg-[#0b5c83] rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
@@ -227,7 +226,7 @@ export default function DonateUs() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-            </motion.div>
+            </Motion.div>
             <span className="group-hover/item:text-gray-900 transition-colors duration-300">
               {b}
             </span>
@@ -236,12 +235,12 @@ export default function DonateUs() {
       </ul>
     </div>
   </div>
-</motion.div>
+</Motion.div>
 
 
 
           {/* RIGHT */}
-          <motion.div
+          <Motion.div
             className="lg:w-1/2 bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
             whileHover={{ scale: 1.01 }}
           >
@@ -380,13 +379,13 @@ export default function DonateUs() {
                 </Button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
+          </Motion.div>
+        </Motion.div>
       </div>
 
       <AnimatePresence>
         {showPaymentModal && (
-          <motion.div
+          <Motion.div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -397,7 +396,7 @@ export default function DonateUs() {
               onClick={() => setShowPaymentModal(false)}
             ></div>
 
-            <motion.div
+            <Motion.div
               className="bg-white rounded-3xl w-full max-w-md mx-auto relative z-10 overflow-hidden shadow-2xl"
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -459,8 +458,8 @@ export default function DonateUs() {
                   </p>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </div>

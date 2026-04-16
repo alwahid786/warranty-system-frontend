@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
@@ -13,6 +13,22 @@ const defaultFilters = {
   entryToDate: "",
   selectedBrand: null,
   status: "",
+};
+
+const parseStringDate = (dateStr) => {
+  if (!dateStr || typeof dateStr !== "string") return null;
+  const parts = dateStr.split("/");
+  if (parts.length !== 3) return null;
+
+  let [month, day, year] = parts;
+  if (year.length === 2) {
+    year = `20${year}`;
+  }
+
+  const date = new Date(
+    `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+  );
+  return isNaN(date.getTime()) ? null : date;
 };
 
 const Actions = () => {
@@ -49,37 +65,41 @@ const Actions = () => {
         return false;
     }
 
+    // Filter by RO Date
     if (filters.fromDate || filters.toDate) {
-      const [month, day, year] = row.roDate.split("/");
-      const roDate = new Date(
-        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-      );
+      const roDate = parseStringDate(row.roDate);
 
-      if (filters.fromDate) {
-        const from = new Date(filters.fromDate);
-        if (roDate < from) return false;
-      }
+      if (roDate) {
+        if (filters.fromDate) {
+          const from = new Date(filters.fromDate);
+          from.setHours(0, 0, 0, 0);
+          if (roDate < from) return false;
+        }
 
-      if (filters.toDate) {
-        const to = new Date(filters.toDate);
-        if (roDate > to) return false;
+        if (filters.toDate) {
+          const to = new Date(filters.toDate);
+          to.setHours(23, 59, 59, 999);
+          if (roDate > to) return false;
+        }
       }
     }
 
+    // Filter by Entry Date
     if (filters.entryFromDate || filters.entryToDate) {
-      const [month, day, year] = row.entryDate.split("/");
-      const entryDate = new Date(
-        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-      );
+      const entryDate = parseStringDate(row.entryDate);
 
-      if (filters.entryFromDate) {
-        const from = new Date(filters.entryFromDate);
-        if (entryDate < from) return false;
-      }
+      if (entryDate) {
+        if (filters.entryFromDate) {
+          const from = new Date(filters.entryFromDate);
+          from.setHours(0, 0, 0, 0);
+          if (entryDate < from) return false;
+        }
 
-      if (filters.entryToDate) {
-        const to = new Date(filters.entryToDate);
-        if (entryDate > to) return false;
+        if (filters.entryToDate) {
+          const to = new Date(filters.entryToDate);
+          to.setHours(23, 59, 59, 999);
+          if (entryDate > to) return false;
+        }
       }
     }
 
@@ -95,6 +115,8 @@ const Actions = () => {
     <div>
       <ClaimsListHeader
         selectedClaims={selectedClaims}
+        setSelectedClaims={setSelectedClaims}
+        claims={claims}
         showImportExport={true}
       />
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />

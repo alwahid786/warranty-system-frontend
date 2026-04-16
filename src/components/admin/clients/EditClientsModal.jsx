@@ -84,7 +84,15 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    if (formData.percentage && Number(formData.percentage) > 100) {
+      return toast.error("Percentage cannot exceed 100%");
+    }
+
+    // Filter out empty emails
+    const filteredEmails = formData.emails.filter((email) => email.trim() !== "");
+    const dataToSubmit = { ...formData, emails: filteredEmails };
+
+    onSave(dataToSubmit);
   };
 
   //helper to format address labels
@@ -171,9 +179,13 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 <input
                   type="text"
                   value={formData.clientPhone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, clientPhone: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const isPlus = value.startsWith("+");
+                    const digits = value.replace(/\D/g, "");
+                    const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                    setFormData({ ...formData, clientPhone: finalValue });
+                  }}
                   className="w-full border px-3 py-2 rounded"
                 />
               </div>
@@ -214,9 +226,10 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   type="text"
                   placeholder="Dealer ID"
                   value={formData.dealerId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dealerId: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, dealerId: value });
+                  }}
                   className="w-full border px-3 py-2 rounded"
                 />
               </div>
@@ -266,9 +279,13 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
               <input
                 type="text"
                 value={formData.storePhone}
-                onChange={(e) =>
-                  setFormData({ ...formData, storePhone: e.target.value })
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const isPlus = value.startsWith("+");
+                  const digits = value.replace(/\D/g, "");
+                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                  setFormData({ ...formData, storePhone: finalValue });
+                }}
                 className="w-full border px-3 py-2 rounded"
               />
             </div>
@@ -381,9 +398,12 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
               <input
                 type="number"
                 value={formData.percentage}
-                onChange={(e) =>
-                  setFormData({ ...formData, percentage: e.target.value })
-                }
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (value > 100) value = 100;
+                  if (value < 0) value = 0;
+                  setFormData({ ...formData, percentage: value });
+                }}
                 className="w-full border px-3 py-2 rounded"
               />
             </div>

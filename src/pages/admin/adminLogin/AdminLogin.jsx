@@ -2,10 +2,9 @@ import { useState } from "react";
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
 import { useDispatch } from "react-redux";
-import authApis from "../../../redux/apis/authApis";
 import { useLoginMutation } from "../../../redux/apis/authApis";
 import { useForgetPasswordMutation } from "../../../redux/apis/authApis";
-import { userExist, userNotExist } from "../../../redux/slices/authSlice";
+import { userExist } from "../../../redux/slices/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
@@ -14,7 +13,7 @@ import { HiEyeOff } from "react-icons/hi";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
-  const [resetPassword, setResetPassword] = useState(false);
+  const resetPassword = false;
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -23,9 +22,8 @@ function AdminLogin() {
     confirmPassword: "",
   });
   const dispatch = useDispatch();
-  const [login, { isLoading, error }] = useLoginMutation();
-  const [forgetPassword, { isLoading: resetLoading, error: resetError }] =
-    useForgetPasswordMutation();
+  const [login] = useLoginMutation();
+  const [forgetPassword] = useForgetPasswordMutation();
 
   const navigate = useNavigate();
 

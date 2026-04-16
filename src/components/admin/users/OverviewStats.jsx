@@ -1,7 +1,6 @@
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-const StatusOverviewCard = (userData) => {
+const StatusOverviewCard = () => {
   const { userCount } = useSelector((state) => state.user);
 
   const data = [

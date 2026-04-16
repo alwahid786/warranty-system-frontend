@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -118,7 +118,7 @@ export default function DonateDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">
       {/* Top Section */}
-      <motion.div
+      <Motion.div
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -136,10 +136,10 @@ export default function DonateDashboard() {
           Your contribution helps us continue our mission to create impact and
           support communities in need.
         </p>
-      </motion.div>
+      </Motion.div>
 
       {/* Donation Form Card */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -213,18 +213,18 @@ export default function DonateDashboard() {
             Donate ${amount}
           </Button>
         </form>
-      </motion.div>
+      </Motion.div>
 
       {/* Stripe Modal */}
       <AnimatePresence>
         {showModal && (
-          <motion.div
+          <Motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
+            <Motion.div
               className="bg-white rounded-2xl w-full max-w-md p-6"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -240,8 +240,8 @@ export default function DonateDashboard() {
                   onClose={() => setShowModal(false)}
                 />
               </Elements>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </div>

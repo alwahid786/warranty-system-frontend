@@ -86,7 +86,7 @@ const ClaimsTable = ({ data }) => {
   };
 
   return (
-    <div className="bg-white w-[97vw] md:w-[98vw] xl:w-full p-4 rounded-xl shadow">
+    <div className="bg-white w-full p-4 rounded-xl shadow">
       <h2 className="text-lg font-semibold mb-4 overflow-auto">Recent Contacts</h2>
       <div className="w-full overflow-auto">
         <DataTable

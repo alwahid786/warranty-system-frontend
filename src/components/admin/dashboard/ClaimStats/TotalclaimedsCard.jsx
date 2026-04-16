@@ -4,7 +4,7 @@ import Dropdown from "../../../shared/small/Dropdown";
 const ITEMS_PER_PAGE = 6;
 
 const TotalClaimsCard = ({ data }) => {
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
 
   const tableData = useMemo(() => {
     if (!data) return [];
@@ -47,14 +47,11 @@ const TotalClaimsCard = ({ data }) => {
     return [...metrics, ...brandMetrics];
   }, [data]);
 
-  const totalPages = Math.ceil(tableData.length / ITEMS_PER_PAGE);
   const currentTotal = tableData.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
 
-  const start = (page - 1) * ITEMS_PER_PAGE + 1;
-  const end = Math.min(page * ITEMS_PER_PAGE, tableData.length);
 
   return (
     <div className="bg-white rounded-xl border shadow flex-1">

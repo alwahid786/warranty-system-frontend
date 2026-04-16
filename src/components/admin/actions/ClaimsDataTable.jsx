@@ -5,6 +5,8 @@ import {
   HiChevronDown,
   HiOutlinePencil,
   HiOutlineTrash,
+  HiChevronLeft,
+  HiChevronRight,
 } from "react-icons/hi2";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
@@ -127,6 +129,31 @@ const customStyles = {
       fontSize: "14px",
     },
   },
+  pagination: {
+    style: {
+      borderTop: "1px solid #e5e7eb",
+      minHeight: "56px",
+    },
+  },
+  pageButtonsStyle: {
+    borderRadius: "50%",
+    height: "40px",
+    width: "40px",
+    padding: "8px",
+    margin: "1px",
+    cursor: "pointer",
+    transition: "0.4s",
+    color: "#043655",
+    fill: "#043655",
+    backgroundColor: "transparent",
+    "&:hover:not(:disabled)": {
+      backgroundColor: "#f3f4f6",
+    },
+    "&:focus": {
+      outline: "none",
+      backgroundColor: "#f3f4f6",
+    },
+  },
 };
 
 const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
@@ -147,7 +174,6 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteClaimId, setDeleteClaimId] = useState(null);
   const [deleteClaim] = useDeleteClaimMutation();
-  const [isAsideOpen, setIsAsideOpen] = useState(true);
 
   const handleShowMore = (title, text) => {
     setInfoModal(text);
@@ -457,17 +483,12 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   });
 
   return (
-    <div className="p-2 overflow-visible w-[97vw] md:w-[98vw] xl:w-[100%] rounded-lg bg-white shadow mt-5 mb-10">
+    <div className="p-2 overflow-hidden w-full rounded-lg bg-white shadow mt-5 mb-10">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Claims
       </h2>
-      <div className="w-full xl:w-[calc(100vw-300px)]">
-        <div
-          className=""
-          style={{
-            width: isAsideOpen ? "calc(100vw - 150px)" : "100vw",
-          }}
-        >
+      <div className="w-full">
+        <div className="w-full overflow-x-auto">
           {" "}
           <DataTable
             columns={columns}
@@ -480,6 +501,15 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
             onSelectedRowsChange={({ selectedRows }) => {
               onSelectionChange(selectedRows);
             }}
+            paginationComponentOptions={{
+              rowsPerPageText: "Rows per page:",
+              rangeSeparatorText: "of",
+              noRowsPerPage: false,
+              selectAllRowsItem: false,
+              selectAllRowsItemText: "All",
+            }}
+            paginationIconNext={<HiChevronRight size={20} />}
+            paginationIconPrevious={<HiChevronLeft size={20} />}
           />
         </div>
       </div>

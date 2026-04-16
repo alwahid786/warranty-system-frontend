@@ -3,7 +3,6 @@
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 import { useState } from "react";
-import ChatModal from "../../../components/shared/small/ChatModal";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
 import {
@@ -27,10 +26,11 @@ const defaultFilters = {
 const Invoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [chatUser, setChatUser] = useState(null);
   const [filters, setFilters] = useState(defaultFilters);
-  const [animateIn, setAnimateIn] = useState(false);
-  const handleChatOpen = (invoice) => setChatUser(invoice);
+  const handleChatOpen = (invoice) => {
+    // Chat functionality not fully implemented in this view
+    console.log("Chat open for invoice:", invoice);
+  };
   const { data } = useGetInvoicesQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -40,14 +40,6 @@ const Invoices = () => {
 
   const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
 
-  const handleClose = () => {
-    setAnimateIn(false);
-    setTimeout(() => {
-      handleChatClose();
-    }, 1000); // Match duration-500
-  };
-
-  const handleChatClose = () => setChatUser(null);
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]

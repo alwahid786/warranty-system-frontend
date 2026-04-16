@@ -1,22 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { getDate } from "../../../utils/getDate";
-import { Link, Router, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 // import { RxHamburgerMenu } from "react-icons/rx";
 // import logo from "../../../assets/images/logo.svg";
 import Aside from "./Aside";
 import { HiChevronDown } from "react-icons/hi";
 import { IoChevronForwardOutline, IoLogOutOutline } from "react-icons/io5";
-import authApis, { useGetMyProfileQuery } from "../../../redux/apis/authApis";
+import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { useSelector, useDispatch } from "react-redux";
 import { userExist, userNotExist } from "../../../redux/slices/authSlice";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import {
-  resetNotifications,
-  setNotifications,
-} from "../../../redux/slices/notificationsSlice";
-import notificationsApis from "../../../redux/apis/notificationsApis";
+import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import { clearSelectedUser } from "../../../redux/slices/userSlice";
 
 const Header = () => {
@@ -31,7 +27,7 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const { data, isLoading } = useGetMyProfileQuery(undefined, {
+  const { data } = useGetMyProfileQuery(undefined, {
     skip: !!user?._id,
     refetchOnMountOrArgChange: false,
   });

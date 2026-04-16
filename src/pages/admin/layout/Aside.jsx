@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import getEnv from "../../../configs/config.js";
 import {
   DashboardIcon,
   ActionsIcon,
@@ -21,26 +20,17 @@ import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import authApis, { useLogoutMutation } from "../../../redux/apis/authApis";
 import { userNotExist } from "../../../redux/slices/authSlice";
 import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import toast from "react-hot-toast";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
-import { clearSelectedUser } from "../../../redux/slices/userSlice.js";
+import { useLogoutMutation } from "../../../redux/apis/authApis";
 
 const Aside = () => {
   const { pathname } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [logoutOpen, setLogoutOpen] = useState(false);
-  const [isTokenExpired, setIsTokenExpired] = useState(false);
-  const [email, setEmail] = useState(null);
-  const [firstName, setFirstName] = useState(null);
-  const [avatar, setAvatar] = useState(null);
-  const [logout, { data, isLoading, error }] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
-  // console.log("====================================");
-  // console.log("isMenuOpenisMenuOpen", isMenuOpen);
-  // console.log("====================================");
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
@@ -49,7 +39,7 @@ const Aside = () => {
     {
       id: 1,
       title: "Dashboard",
-      link: ["/"],
+      link: ["/dashboard"],
       icon: <DashboardIcon />,
     },
     {
@@ -172,7 +162,7 @@ const Aside = () => {
                 <img
                   src={logoWithOutBg}
                   alt="warranty-system-logo"
-                  className="mx-auto"
+                  className="mx-auto h-8 object-contain"
                 />
               )}
               {!isMenuOpen && (
