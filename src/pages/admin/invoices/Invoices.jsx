@@ -46,21 +46,14 @@ const Invoices = () => {
     );
   };
 
-  const totalPages = Math.ceil(allInvoices.length / ITEMS_PER_PAGE);
-  const currentInvoices = allInvoices.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
   const handleFilterChange = (updated) => {
     setFilters((prev) => ({ ...prev, ...updated }));
+    setPage(1);
   };
 
-  // Apply all filters
-  const filteredData = currentInvoices.filter((invoice) => {
+  const filteredDataTotal = allInvoices.filter((invoice) => {
     let isMatch = true;
 
-    // 1. Search by field type
     if (filters.searchValue) {
       const fieldValue = String(
         invoice[filters.searchType] || ""
@@ -70,21 +63,16 @@ const Invoices = () => {
       }
     }
 
-    // 2. From / To Invoice Date
-    if (filters.fromDate) {
+    if (filters.fromDate || filters.toDate) {
       const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
-      if (invDate < new Date(filters.fromDate)) {
+      if (filters.fromDate && invDate < new Date(filters.fromDate)) {
         isMatch = false;
       }
-    }
-    if (filters.toDate) {
-      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
-      if (invDate > new Date(filters.toDate)) {
+      if (filters.toDate && invDate > new Date(filters.toDate)) {
         isMatch = false;
       }
     }
 
-    // 3. Statement Type
     if (filters.selectedBrand) {
       if (
         invoice.statementType?.toLowerCase() !==
@@ -94,14 +82,12 @@ const Invoices = () => {
       }
     }
 
-    // 4. Status
     if (filters.status) {
       if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
         isMatch = false;
       }
     }
 
-    // 5. Min / Max Final Total
     if (filters.minFinalTotal) {
       if (Number(invoice.finalTotal) < Number(filters.minFinalTotal)) {
         isMatch = false;
@@ -115,6 +101,13 @@ const Invoices = () => {
 
     return isMatch;
   });
+
+  const sortedData = [...filteredDataTotal].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE);
+  const currentInvoices = sortedData.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="w-full mx-auto ">
@@ -134,7 +127,7 @@ const Invoices = () => {
       </div>
       <h1 className="text-xl font-semibold mb-4">Invoices</h1>
       <InvoicesGrid
-        invoices={filteredData}
+        invoices={currentInvoices}
         selectedIds={selectedIds}
         onSelect={handleSelect}
         onChatOpen={handleChatOpen}
