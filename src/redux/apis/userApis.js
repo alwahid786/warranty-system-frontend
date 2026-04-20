@@ -12,9 +12,10 @@ const userApis = createApi({
   endpoints: (builder) => ({
     // Get all users
     getUsers: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/getUsers",
         method: "GET",
+        params,
       }),
       providesTags: ["Users"],
     }),
@@ -67,25 +68,28 @@ const userApis = createApi({
 
     // Get Users Stat
     getUsersStat: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/getUserStats",
         method: "GET",
+        params,
       }),
     }),
 
     // Get Total Users Count Today, This week and this month
     getTotalUsersCount: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/getUserStatsByFilters",
         method: "GET",
+        params,
       }),
     }),
 
     // Get Attendance Chart Data
     getAttendanceChartData: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/getUserActivityStats",
         method: "GET",
+        params,
       }),
     }),
   }),

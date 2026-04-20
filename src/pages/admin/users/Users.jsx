@@ -56,7 +56,7 @@ const Users = () => {
     data,
     isSuccess,
     isError,
-  } = useGetUsersQuery(undefined, { refetchOnMountOrArgChange: true });
+  } = useGetUsersQuery({ onlyAdminSubusers: true }, { refetchOnMountOrArgChange: true });
 
   const [deleteUser] = useDeleteUserMutation();
 
@@ -64,12 +64,12 @@ const Users = () => {
 
 
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
-    useGetTotalUsersCountQuery(undefined, {
+    useGetTotalUsersCountQuery({ onlyAdminSubusers: true }, {
       refetchOnMountOrArgChange: true,
     });
 
   const { data: attendanceChartData, refetch: getAttendanceChartDataRefetch } =
-    useGetAttendanceChartDataQuery(undefined, {
+    useGetAttendanceChartDataQuery({ onlyAdminSubusers: true }, {
       refetchOnMountOrArgChange: true,
     });
 

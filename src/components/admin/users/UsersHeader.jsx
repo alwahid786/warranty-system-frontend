@@ -18,13 +18,13 @@ const UsersHeader = () => {
     phone: "",
     password: "",
   });
-  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery();
+  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery({ onlyAdminSubusers: true });
   const [addUser, { isLoading }] = useAddUserMutation();
 
-  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery();
+  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery({ onlyAdminSubusers: true });
 
   const { refetch: getAttendanceChartDataRefetch } =
-    useGetAttendanceChartDataQuery();
+    useGetAttendanceChartDataQuery({ onlyAdminSubusers: true });
 
   const handleAddUser = async (e) => {
     e.preventDefault();
