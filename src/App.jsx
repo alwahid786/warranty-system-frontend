@@ -124,6 +124,9 @@ function App() {
     SOCKET.connect();
 
     const handleNotification = (data) => {
+      // Ignore notifications triggered by the current user
+      if (data?.senderId && data.senderId === user?._id) return;
+
       const toastId = data?._id || "notification-update";
       toast.success(data?.message || "New Notification", {
         id: toastId,
