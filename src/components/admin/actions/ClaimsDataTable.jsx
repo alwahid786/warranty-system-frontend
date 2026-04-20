@@ -480,14 +480,14 @@ const ClaimsDataTable = ({
         {toggleActionsMenu?._id === row._id && (
           <div
             ref={menuRef}
-            className="absolute bottom-12 right-0 mt-2 w-40 bg-white border rounded-xl shadow-xl z-[9999] overflow-hidden py-1"
-          > 
+            className="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-xl z-[9999]"
+          >
             <button
               onClick={() => {
                 handleEdit(row);
                 setToggleActionsMenu(null);
               }}
-              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors duration-150"
+              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 transition-colors duration-150"
             >
               <HiOutlinePencil
                 size={20}
@@ -500,7 +500,7 @@ const ClaimsDataTable = ({
                 handleDelete(row);
                 setToggleActionsMenu(null);
               }}
-              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-red-50 text-red-500 transition-colors duration-150"
+              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-red-500 hover:bg-red-50 transition-colors duration-150"
             >
               <HiOutlineTrash
                 size={20}
@@ -514,7 +514,7 @@ const ClaimsDataTable = ({
                 setShowChat(true);
                 setToggleActionsMenu(null);
               }}
-              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-gray-50 hover:text-primary transition-colors duration-150"
+              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 hover:text-primary transition-colors duration-150"
             >
               <HiChatBubbleLeftRight
                 size={20}
@@ -535,7 +535,7 @@ const ClaimsDataTable = ({
   });
 
   return (
-    <div className="p-2 overflow-hidden w-full rounded-lg bg-white shadow mt-5 mb-10">
+    <div className="mb-10 mt-5 w-full overflow-visible rounded-lg bg-white p-2 shadow">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Claims
       </h2>
