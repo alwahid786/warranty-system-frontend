@@ -6,11 +6,25 @@ import {
 } from "../../../redux/apis/notificationsApis";
 import { Trash2, CheckCheck } from "lucide-react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { markNotificationRead } from "../../../redux/slices/notificationsSlice";
+import { useNavigate } from "react-router-dom";
 
-const NotificationItem = ({ id, title, message, time, isRead }) => {
+const NotificationItem = ({ notification }) => {
+  const {
+    _id: id,
+    title,
+    message,
+    createdAt: time,
+    isRead,
+    claimId,
+    invoiceNumber,
+  } = notification || {};
   const [deleteNotification] = useDeleteNotificationMutation();
   const [readNotification] = useReadNotificationMutation();
   const { refetch: notificationsRefetch } = useGetNotificationsQuery();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [showActions, setShowActions] = useState(false);
 
@@ -28,6 +42,7 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
     if (!isRead) {
       try {
         const res = await readNotification(id).unwrap();
+        dispatch(markNotificationRead(id));
         toast.success(res.message || "Marked as read", { duration: 3000 });
         await notificationsRefetch();
       } catch (err) {
@@ -38,14 +53,46 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
     }
   };
 
+  const handleOpen = async () => {
+    if (!id) return;
+
+    if (!isRead) {
+      try {
+        await readNotification(id).unwrap();
+        dispatch(markNotificationRead(id));
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to mark read", {
+          duration: 3000,
+        });
+        return;
+      }
+    }
+
+    if (claimId) {
+      navigate("/dashboard/actions", {
+        state: {
+          openChatClaimId: claimId,
+          fromNotificationId: id,
+        },
+      });
+      return;
+    }
+
+    if (invoiceNumber) {
+      navigate("/dashboard/invoices");
+      return;
+    }
+
+    setShowActions((prev) => !prev);
+  };
+
   return (
     <div
       className={`group flex justify-between items-start gap-2 py-3 border-t first:border-none px-2 rounded-lg transition-colors ${
         isRead ? "bg-gray-100" : "bg-white hover:bg-gray-50"
       }`}
-      onClick={() => setShowActions((prev) => !prev)}
+      onClick={handleOpen}
     >
-      {/* Left side */}
       <div className="flex items-start gap-3">
         <div
           className={`w-5 h-5 rounded-full ${
@@ -62,7 +109,6 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
         </div>
       </div>
 
-      {/* Right side */}
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500 whitespace-nowrap">
           {new Date(time).toLocaleTimeString([], {
@@ -71,17 +117,15 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
           })}
         </span>
 
-        {/* Actions */}
         <div
           className={`items-center gap-2 ${
             showActions ? "flex" : "hidden group-hover:flex"
           }`}
         >
-          {/* Read Icon */}
           {!isRead && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); // prevent closing actions on click
+                e.stopPropagation();
                 handleRead();
               }}
               className="p-1 rounded-full hover:bg-green-100 text-green-600"
@@ -90,7 +134,6 @@ const NotificationItem = ({ id, title, message, time, isRead }) => {
               <CheckCheck size={18} />
             </button>
           )}
-          {/* Delete Icon */}
           <button
             onClick={(e) => {
               e.stopPropagation();

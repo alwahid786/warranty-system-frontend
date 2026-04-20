@@ -12,7 +12,7 @@ const CompaniesResponseTimeCard = (data) => {
   }, [data?.data]);
 
   return (
-    <div className="bg-white rounded-xl border shadow flex-1 pb-6">
+    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full">
       <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
         Companies Average Response Time
       </h2>
@@ -22,7 +22,7 @@ const CompaniesResponseTimeCard = (data) => {
           No data available
         </p>
       ) : (
-        <>
+        <div className="flex flex-col flex-1">
           <table className="w-full text-sm">
             <thead className="bg-[#F9FAFB] border">
               <tr className="text-gray-500">
@@ -47,9 +47,7 @@ const CompaniesResponseTimeCard = (data) => {
               ))}
             </tbody>
           </table>
-
-          {/* View All Button */}
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center mt-auto pt-4">
             <button
               onClick={() => navigate("companies-response-time")}
               className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer"
@@ -57,7 +55,7 @@ const CompaniesResponseTimeCard = (data) => {
               View All
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

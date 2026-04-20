@@ -15,6 +15,8 @@ function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const resetPassword = false;
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -51,6 +53,7 @@ function AdminLogin() {
       dispatch(userExist(res.data));
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
+        setForgotPassword(false);
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -89,39 +92,72 @@ function AdminLogin() {
               </p>
               <form action="" className="flex flex-col gap-10">
                 <div className="flex flex-col gap-2">
-                  <Input
-                    required
-                    type={resetPassword ? "password" : "email"}
-                    value={
-                      resetPassword ? formData.newPassword : formData.email
-                    }
-                    onChange={(e) => {
-                      {
+                  <div className="relative">
+                    <Input
+                      required
+                      type={
+                        resetPassword
+                          ? showNewPassword
+                            ? "text"
+                            : "password"
+                          : "email"
+                      }
+                      value={
+                        resetPassword ? formData.newPassword : formData.email
+                      }
+                      onChange={(e) => {
                         resetPassword
                           ? setFormData({
                               ...formData,
                               newPassword: e.target.value,
                             })
                           : setFormData({ ...formData, email: e.target.value });
-                      }
-                    }}
-                    className="bg-white border"
-                    label={resetPassword ? "New Password" : "Email"}
-                  />
-                  {forgotPassword ? null : resetPassword ? (
-                    <Input
-                      required
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        });
                       }}
-                      className="bg-white border"
-                      label={"Confirm Password"}
+                      className="bg-white border pr-10"
+                      label={resetPassword ? "New Password" : "Email"}
                     />
+                    {resetPassword && (
+                      <span
+                        className="absolute right-2 top-12 cursor-pointer text-gray-500"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        {showNewPassword ? (
+                          <HiEye size={20} />
+                        ) : (
+                          <HiEyeOff size={20} />
+                        )}
+                      </span>
+                    )}
+                  </div>
+
+                  {forgotPassword ? null : resetPassword ? (
+                    <div className="relative">
+                      <Input
+                        required
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          });
+                        }}
+                        className="bg-white border pr-10"
+                        label={"Confirm Password"}
+                      />
+                      <span
+                        className="absolute right-2 top-12 cursor-pointer text-gray-500"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                      >
+                        {showConfirmPassword ? (
+                          <HiEye size={20} />
+                        ) : (
+                          <HiEyeOff size={20} />
+                        )}
+                      </span>
+                    </div>
                   ) : (
                     <div className="relative">
                       <Input
@@ -135,7 +171,7 @@ function AdminLogin() {
                         label="Password"
                       />
                       <span
-                        className="absolute right-2 top-12"
+                        className="absolute right-2 top-12 cursor-pointer text-gray-500"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (

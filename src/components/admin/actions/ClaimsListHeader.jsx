@@ -37,16 +37,14 @@ const ClaimsListHeader = ({
     });
     if (showImportExport) {
       try {
-        const res = await addArchieveClaims(selectedClaimsIds).unwrap();
-        toast.success(res.message, { duration: 3000 });
+        await addArchieveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
     } else {
       try {
-        const res = await removeArchieveClaims(selectedClaimsIds).unwrap();
-        toast.success(res.message, { duration: 3000 });
+        await removeArchieveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
@@ -61,10 +59,7 @@ const ClaimsListHeader = ({
       const formData = new FormData();
       formData.append("file", file);
       try {
-        const res = await addClaims(formData).unwrap();
-        if (res.success) {
-          toast.success(res.message, { duration: 3000 });
-        }
+        await addClaims(formData).unwrap();
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
@@ -83,8 +78,7 @@ const ClaimsListHeader = ({
   const handleBulkDelete = async () => {
     const ids = selectedClaims.map((claim) => claim._id);
     try {
-      const res = await deleteBulkClaims(ids).unwrap();
-      toast.success(res.message, { duration: 3000 });
+      await deleteBulkClaims(ids).unwrap();
       setSelectedClaims([]);
       setIsDeleteModalOpen(false);
     } catch (err) {

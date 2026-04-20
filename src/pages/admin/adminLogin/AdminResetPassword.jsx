@@ -5,12 +5,16 @@ import { useResetPasswordMutation } from "../../../redux/apis/authApis";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { HiEye } from "react-icons/hi2";
+import { HiEyeOff } from "react-icons/hi";
 
 function AdminResetPassword() {
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [resetPassword] = useResetPasswordMutation();
   const { token } = useParams();
@@ -52,29 +56,49 @@ function AdminResetPassword() {
               className="flex flex-col gap-10"
             >
               <div className="flex flex-col gap-2">
-                <Input
-                  required
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="bg-white border"
-                  label="New Password"
-                />
-                <Input
-                  required
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  className="bg-white border"
-                  label="Confirm Password"
-                />
+                <div className="relative">
+                  <Input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="bg-white border pr-10"
+                    label="New Password"
+                  />
+                  <span
+                    className="absolute right-3 top-12 cursor-pointer text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <HiEye size={20} /> : <HiEyeOff size={20} />}
+                  </span>
+                </div>
+                <div className="relative">
+                  <Input
+                    required
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    className="bg-white border pr-10"
+                    label="Confirm Password"
+                  />
+                  <span
+                    className="absolute right-3 top-12 cursor-pointer text-gray-500"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <HiEye size={20} />
+                    ) : (
+                      <HiEyeOff size={20} />
+                    )}
+                  </span>
+                </div>
               </div>
 
               <Button cn="justify-center" text="Reset Password" type="submit" />

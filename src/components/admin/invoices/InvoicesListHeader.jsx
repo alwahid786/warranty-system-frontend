@@ -26,11 +26,9 @@ const InvoicesListHeader = ({
     e.preventDefault();
     try {
       if (showImportExport) {
-        const res = await addArchieveInvoices(selectedIds).unwrap();
-        toast.success(res.message, { duration: 3000 });
+        await addArchieveInvoices(selectedIds).unwrap();
       } else {
-        const res = await removeArchieveInvoices(selectedIds).unwrap();
-        toast.success(res.message, { duration: 3000 });
+        await removeArchieveInvoices(selectedIds).unwrap();
       }
 
       setSelectedIds([]);
@@ -43,8 +41,7 @@ const InvoicesListHeader = ({
 
   const handleOutGoingData = async (value) => {
     try {
-      const res = await addInvoice(value).unwrap();
-      toast.success(res.message, { duration: 3000 });
+      await addInvoice(value).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }

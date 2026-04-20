@@ -6,6 +6,8 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 import Loader from "./components/shared/small/Loader";
 import GlobalAPILoader from "./components/shared/small/GlobalLoaderApi";
 import { useGetMyProfileQuery } from "./redux/apis/authApis";
+import claimsApis from "./redux/apis/claimsApis";
+import chatApis from "./redux/apis/chatApis";
 import notificationsApis, {
   useGetNotificationsQuery,
 } from "./redux/apis/notificationsApis";
@@ -18,6 +20,7 @@ import {
 } from "./redux/slices/notificationsSlice";
 import { SOCKET } from "./utils/socket";
 import toast from "react-hot-toast";
+import TermsModal from "./components/shared/TermsModal";
 
 const AdminDashboard = lazy(() => import("./pages/admin/index"));
 const Dashboard = lazy(() => import("./pages/admin/dashboard/Dashboard"));
@@ -79,7 +82,12 @@ function App() {
     // Only set the user from the profile query if the store doesn't already
     // contain a user, or if the returned profile is different from the
     // currently stored user.
-    if (!user?._id || data?.data._id !== user?._id) {
+    if (
+      !user?._id ||
+      data?.data._id !== user?._id ||
+      data?.data.termsAccepted !== user?.termsAccepted ||
+      data?.data.activeStatus !== user?.activeStatus
+    ) {
       dispatch(userExist(data?.data));
     }
 
@@ -94,6 +102,8 @@ function App() {
     data?.data,
     notifications?.data,
     user?._id,
+    user?.activeStatus,
+    user?.termsAccepted,
     notifications?.unReadCount,
     dispatch,
   ]);
@@ -107,33 +117,58 @@ function App() {
 
   useEffect(() => {
     if (!user?._id) return;
-    SOCKET.auth = { userId: user?._id };
+    SOCKET.auth = {
+      userId: user?._id,
+      ownerId: user?.owner?._id || user?.owner,
+    };
     SOCKET.connect();
+
     const handleNotification = (data) => {
-      toast.success(data?.message || "New Notification", { duration: 5000 });
+      const toastId = data?._id || "notification-update";
+      toast.success(data?.message || "New Notification", {
+        id: toastId,
+        duration: 5000,
+      });
       dispatch(addNotification(data));
+      if (data?.claimId) {
+        dispatch(claimsApis.util.invalidateTags(["Claims"]));
+        dispatch(chatApis.util.invalidateTags(["chat"]));
+      }
       dispatch(notificationsApis.util.invalidateTags(["notifications"]));
+    };
+
+    const handleChatMessage = () => {
+      dispatch(claimsApis.util.invalidateTags(["Claims"]));
+      dispatch(chatApis.util.invalidateTags(["chat"]));
     };
 
     SOCKET.on("connect", () => {
       console.log("Connected to server with userId:", user._id);
     });
 
+    SOCKET.off("notification:insert");
     SOCKET.on("notification:insert", handleNotification);
+    SOCKET.off("chat:message");
+    SOCKET.on("chat:message", handleChatMessage);
 
     return () => {
       SOCKET.off("notification:insert", handleNotification);
+      SOCKET.off("chat:message", handleChatMessage);
       SOCKET.off("connect");
       SOCKET.disconnect();
     };
-  }, [user?._id, dispatch]);
+  }, [user?._id, user?.owner, dispatch]);
 
   if (isLoading) return <Loader />;
+
+  const showTermsModal =
+    ['client', 'user'].includes(user?.role) && !user?.termsAccepted;
 
   return (
     <>
       <BrowserRouter>
         <Toaster position="top-right" reverseOrder={false} />
+        {showTermsModal && <TermsModal onAccept={() => {}} />}
         <Suspense fallback={<Loader />}>
           <Routes>
             {/*  Public Routes */}

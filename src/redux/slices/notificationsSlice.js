@@ -25,6 +25,17 @@ const notificationsSlice = createSlice({
       state.items.unshift(incoming);
       if (!incoming?.isRead) state.unReadCount += 1;
     },
+    markNotificationRead: (state, action) => {
+      const notificationId = action.payload;
+      state.items = state.items.map((item) =>
+        item?._id === notificationId ? { ...item, isRead: true } : item
+      );
+      state.unReadCount = state.items.filter((item) => !item?.isRead).length;
+    },
+    markAllNotificationsRead: (state) => {
+      state.items = state.items.map((item) => ({ ...item, isRead: true }));
+      state.unReadCount = 0;
+    },
     resetNotifications: (state) => {
       state.items = [];
       state.unReadCount = 0;
@@ -37,6 +48,8 @@ export const {
   unReadNotifications,
   noUnReadNotifications,
   addNotification,
+  markNotificationRead,
+  markAllNotificationsRead,
   resetNotifications,
 } = notificationsSlice.actions;
 

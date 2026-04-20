@@ -16,7 +16,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
   const end = Math.min(start + currentBrands.length - 1, brands.length);
 
   return (
-    <div className="bg-white rounded-xl border shadow flex-1 pb-6">
+    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full">
       <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
         Claims by Warranty Company
       </h2>
@@ -26,7 +26,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
           No data available
         </p>
       ) : (
-        <>
+        <div className="flex flex-col flex-1">
           <table className="w-full text-sm">
             <thead className="bg-[#F9FAFB] border">
               <tr className="text-gray-500">
@@ -51,34 +51,34 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
               ))}
             </tbody>
           </table>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-center">
-            <div className="flex justify-end items-center mt-4 text-sm gap-3">
-              {page > 1 && (
-                <button
-                  onClick={() => setPage(page - 1)}
-                  disabled={page === 1}
-                  className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
-                >
-                  &lt; Previous
-                </button>
-              )}
-              <p className="text-sm text-gray-600">
-                {start}–{end} of {brands.length}
-              </p>
-              {page < totalPages && (
-                <button
-                  onClick={() => setPage(page + 1)}
-                  disabled={page === totalPages}
-                  className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
-                >
-                  Next &gt;
-                </button>
-              )}
+          <div className="mt-auto px-4">
+            <div className="flex items-center justify-center">
+              <div className="flex justify-end items-center mt-4 text-sm gap-3">
+                {page > 1 && (
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
+                  >
+                    &lt; Previous
+                  </button>
+                )}
+                <p className="text-sm text-gray-600">
+                  {start}–{end} of {brands.length}
+                </p>
+                {page < totalPages && (
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPages}
+                    className="text-[#1C64F2] hover:text-[#143893] text-[12px] cursor-pointer disabled:opacity-50"
+                  >
+                    Next &gt;
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

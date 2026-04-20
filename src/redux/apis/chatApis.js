@@ -35,6 +35,7 @@ const chatApis = createApi({
         url: "/companies/avg-response-time",
         method: "GET",
       }),
+      providesTags: ["chat"],
     }),
 
     // Get Companies Avg Response Time All
@@ -43,6 +44,7 @@ const chatApis = createApi({
         url: `/companies/avg-response-time/all?page=${page}&limit=${limit}`,
         method: "GET",
       }),
+      providesTags: ["chat"],
     }),
   }),
 });
