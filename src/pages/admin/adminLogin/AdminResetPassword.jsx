@@ -23,6 +23,9 @@ function AdminResetPassword() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      return toast.error("Passwords do not match!", { duration: 3000 });
+    }
     try {
       const res = await resetPassword({ ...formData, token }).unwrap();
       if (res.success) {
