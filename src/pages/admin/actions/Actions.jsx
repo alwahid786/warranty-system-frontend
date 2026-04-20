@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
@@ -33,11 +34,14 @@ const parseStringDate = (dateStr) => {
 
 const Actions = () => {
   const [filters, setFilters] = useState(defaultFilters);
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data } = useGetClaimsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   const [selectedClaims, setSelectedClaims] = useState([]);
   const claims = Array.isArray(data) ? data : data?.data ?? [];
+  const openChatClaimId = location.state?.openChatClaimId || null;
   const initialData = claims;
 
   const filteredData = initialData.filter((row) => {
@@ -110,7 +114,12 @@ const Actions = () => {
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
-//
+
+  const handleNotificationChatOpened = () => {
+    if (!openChatClaimId) return;
+    navigate(location.pathname, { replace: true, state: {} });
+  };
+
   return (
     <div>
       <ClaimsListHeader
@@ -124,6 +133,8 @@ const Actions = () => {
         data={filteredData}
         onSelectionChange={setSelectedClaims}
         archived={false}
+        openChatClaimId={openChatClaimId}
+        onNotificationChatOpened={handleNotificationChatOpened}
       />
     </div>
   );

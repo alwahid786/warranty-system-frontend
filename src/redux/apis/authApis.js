@@ -61,6 +61,7 @@ const authApis = createApi({
         url: "/my-profile",
         method: "GET",
       }),
+      providesTags: ["profile"],
     }),
     // update my profile
     updateMyProfile: builder.mutation({
@@ -69,6 +70,15 @@ const authApis = createApi({
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ["profile"],
+    }),
+    // accept terms
+    acceptTerms: builder.mutation({
+      query: () => ({
+        url: "/accept-terms",
+        method: "POST",
+      }),
+      invalidatesTags: ["profile"],
     }),
   }),
 });
@@ -82,5 +92,6 @@ export const {
   useCheckLoginMutation,
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,
+  useAcceptTermsMutation,
 } = authApis;
 export default authApis;

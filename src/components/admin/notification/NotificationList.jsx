@@ -5,11 +5,14 @@ import {
 } from "../../../redux/apis/notificationsApis";
 import toast from "react-hot-toast";
 import { CheckCheck } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { markAllNotificationsRead } from "../../../redux/slices/notificationsSlice";
 
 const NotificationList = ({ groupedNotifications = {} }) => {
   const [readAllNotifications, { isLoading }] =
     useReadAllNotificationsMutation();
   const { refetch: notificationsRefetch } = useGetNotificationsQuery();
+  const dispatch = useDispatch();
 
   const hasUnread = Object.values(groupedNotifications || {}).some((items) =>
     items?.some((n) => !n.isRead)
@@ -18,6 +21,7 @@ const NotificationList = ({ groupedNotifications = {} }) => {
   const handleReadAll = async () => {
     try {
       const res = await readAllNotifications().unwrap();
+      dispatch(markAllNotificationsRead());
       toast.success(res?.message || "All notifications marked as read", {
         duration: 3000,
       });
@@ -60,11 +64,7 @@ const NotificationList = ({ groupedNotifications = {} }) => {
             {groupedNotifications[group].map((n) => (
               <NotificationItem
                 key={n._id}
-                id={n._id}
-                title={n.title}
-                message={n.message}
-                time={n.createdAt}
-                isRead={n.isRead}
+                notification={n}
               />
             ))}
           </div>

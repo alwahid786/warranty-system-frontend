@@ -59,10 +59,9 @@ export default function InvoiceCard({
 
   const handleDeleteInvoice = async (data) => {
     try {
-      const res = await deleteInvoice({
+      await deleteInvoice({
         id: data,
       }).unwrap();
-      toast.success(res.message, { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -70,11 +69,10 @@ export default function InvoiceCard({
 
   const handleEditDataSubmit = async (data) => {
     try {
-      const res = await updateInvoice({
+      await updateInvoice({
         id: data?.id,
         data: data?.data,
       }).unwrap();
-      toast.success(res.message, { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -94,11 +92,10 @@ export default function InvoiceCard({
   // change invoice status to finalize
   const handleFinalizeInvoice = async (invoice) => {
     try {
-      const res = await changeInvoiceStatus({
+      await changeInvoiceStatus({
         id: invoice?._id,
         data: { status: "finalized" },
       }).unwrap();
-      toast.success(res.message, { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -111,11 +108,6 @@ export default function InvoiceCard({
 
       if (response instanceof Blob) {
         saveAs(response, `invoice-${invoice?.invoiceNumber}.pdf`);
-        toast.success("Invoice sent successfully", { duration: 3000 });
-      } else {
-        toast.success(response?.message || "Invoice sent successfully", {
-          duration: 3000,
-        });
       }
     } catch (err) {
       console.error("Send Invoice Error:", err);

@@ -4,7 +4,18 @@ import { MdCancel } from "react-icons/md";
 import { useGetChatQuery } from "../../../redux/apis/chatApis";
 import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { SOCKET } from "../../../utils/socket";
+import claimsApis from "../../../redux/apis/claimsApis";
+import notificationsApis from "../../../redux/apis/notificationsApis";
+
+const normalizeId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value.$oid) return value.$oid;
+  if (typeof value.toString === "function") return value.toString();
+  return String(value);
+};
 
 export default function ChatModal({
   setAnimateIn,
@@ -26,6 +37,8 @@ export default function ChatModal({
   const fileInputRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const activeClaimId = normalizeId(forInvoice ? row?.Id : row?._id);
 
   useEffect(() => {
     if (data) {
@@ -43,6 +56,47 @@ export default function ChatModal({
       setAnimateIn(true);
     }
   }, [isOpen, setAnimateIn]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (activeClaimId) {
+      SOCKET.emit("join:chat", activeClaimId);
+    }
+
+    const handleNewMessage = (payload) => {
+      const payloadClaimId = normalizeId(payload?.claimId);
+      if (payloadClaimId === activeClaimId) {
+        setMessages((prev) => {
+          // Prevent duplicates
+          const incomingMessage = payload?.message;
+          const incomingId = normalizeId(incomingMessage?._id);
+          const alreadyExists = prev.some(
+            (m) => normalizeId(m?._id) === incomingId
+          );
+          if (alreadyExists) return prev;
+          return [...prev, incomingMessage];
+        });
+      }
+
+      dispatch(claimsApis.util.invalidateTags(["Claims"]));
+    };
+
+    SOCKET.on("chat:message", handleNewMessage);
+
+    return () => {
+      if (activeClaimId) {
+        SOCKET.emit("leave:chat", activeClaimId);
+      }
+      SOCKET.off("chat:message", handleNewMessage);
+    };
+  }, [activeClaimId, dispatch, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !data) return;
+    dispatch(claimsApis.util.invalidateTags(["Claims"]));
+    dispatch(notificationsApis.util.invalidateTags(["notifications"]));
+  }, [data, dispatch, isOpen]);
 
   if (!isOpen) return null;
 
@@ -68,10 +122,12 @@ export default function ChatModal({
     if (user?._id) formData.append("senderId", user?._id);
     try {
       const res = await sendMessageMutation(formData).unwrap();
-      toast.success(res.message, { duration: 3000 });
       setNewMessage("");
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      toast.success(res?.message || "Message sent successfully", {
+        duration: 2000,
+      });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -110,14 +166,14 @@ export default function ChatModal({
             <div
               key={msg._id || idx}
               className={`flex ${
-                msg.senderId.toString() == user?._id.toString()
+                normalizeId(msg.senderId) === normalizeId(user?._id)
                   ? "justify-end"
                   : "justify-start"
               }`}
             >
               <div
                 className={`p-3 rounded-lg max-w-xs ${
-                  msg.senderId.toString() == user?._id.toString()
+                  normalizeId(msg.senderId) === normalizeId(user?._id)
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-900"
                 }`}

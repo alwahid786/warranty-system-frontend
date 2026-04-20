@@ -22,6 +22,14 @@ import EditClaimsModal from "./EditClaimsModal";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import { createPortal } from "react-dom";
 
+const normalizeId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value.$oid) return value.$oid;
+  if (typeof value?.toString === "function") return value.toString();
+  return String(value);
+};
+
 // Custom Status Dropdown styled as button=
 const StatusDropdown = ({ status, onChange }) => {
   const [open, setOpen] = useState(false);
@@ -156,7 +164,14 @@ const customStyles = {
   },
 };
 
-const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
+
+const ClaimsDataTable = ({
+  data,
+  onSelectionChange,
+  archived = false,
+  openChatClaimId = null,
+  onNotificationChatOpened,
+}) => {
   const [tableData, setTableData] = useState(data);
   const [chatUser, setChatUser] = useState(null);
   const [showChat, setShowChat] = useState(false);
@@ -188,12 +203,11 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       )
     );
     try {
-      const res = await updateClaims({
+      await updateClaims({
         id: row._id,
         status: newStatus,
         archived: archived,
       }).unwrap();
-      toast.success(res.message, { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -211,8 +225,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
 
   const handleDeleteClaim = async (id) => {
     try {
-      const res = await deleteClaim(id).unwrap();
-      toast.success(res.message, { duration: 3000 });
+      await deleteClaim(id).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -220,11 +233,10 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
 
   const handleOnSubmit = async (updatedClaim) => {
     try {
-      const res = await updateClaimsAdditionalData({
+      await updateClaimsAdditionalData({
         id: updatedClaim._id,
         claimData: updatedClaim,
       }).unwrap();
-      toast.success(res.message, { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
     }
@@ -254,6 +266,20 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
   React.useEffect(() => {
     setTableData(data);
   }, [data]);
+
+  useEffect(() => {
+    if (!openChatClaimId || !Array.isArray(data) || data.length === 0) return;
+
+    const matchedClaim = data.find(
+      (row) => normalizeId(row?._id) === normalizeId(openChatClaimId)
+    );
+
+    if (!matchedClaim) return;
+
+    setChatUser(matchedClaim);
+    setShowChat(true);
+    onNotificationChatOpened?.();
+  }, [data, openChatClaimId, onNotificationChatOpened]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -324,6 +350,24 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
       ),
       sortable: false,
       width: "110px",
+    },
+    {
+      name: "Entry By",
+      selector: (row) => row.owner,
+      cell: (row) => {
+        const owner = row.owner;
+        if (!owner) return <span className="text-xs">Unknown</span>;
+        if (owner.role === "admin")
+          return <span className="text-xs font-semibold">Admin</span>;
+        const displayName =
+          owner.role === "user"
+            ? owner.owner?.companyName || owner.owner?.name || owner.name
+            : owner.companyName || owner.name;
+
+        return <span className="text-xs">{displayName}</span>;
+      },
+      sortable: true,
+      width: "129px",
     },
     {
       name: "Error Description",
@@ -420,7 +464,7 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
     cell: (row) => (
       <div className="relative flex justify-end w-full">
         <button
-          className="p-2 rounded-full hover:bg-gray-100"
+          className="relative p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
           onClick={() =>
             setToggleActionsMenu(
               toggleActionsMenu?._id === row._id ? null : row
@@ -428,36 +472,39 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
           }
         >
           <HiOutlineDotsVertical className="text-gray-600" size={20} />
+          {row.unreadChatCount > 0 && (
+            <span className="absolute top-1 right-1 h-3 w-3 bg-red-600 rounded-full border-2 border-white shadow-sm animate-pulse"></span>
+          )}
         </button>
 
         {toggleActionsMenu?._id === row._id && (
           <div
             ref={menuRef}
-            className="absolute bottom-0 right-7 mt-2 w-32 bg-white border rounded-lg shadow-lg z-20"
-          >
+            className="absolute bottom-12 right-0 mt-2 w-40 bg-white border rounded-xl shadow-xl z-[9999] overflow-hidden py-1"
+          > 
             <button
               onClick={() => {
                 handleEdit(row);
                 setToggleActionsMenu(null);
               }}
-              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors duration-150"
             >
               <HiOutlinePencil
                 size={20}
-                className="mr-2 inline-block text-yellow-600"
+                className="mr-3 text-yellow-600"
               />
-              Edit
+              Edit Claim
             </button>
             <button
               onClick={() => {
                 handleDelete(row);
                 setToggleActionsMenu(null);
               }}
-              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100 text-red-500"
+              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-red-50 text-red-500 transition-colors duration-150"
             >
               <HiOutlineTrash
                 size={20}
-                className="mr-2 inline-block text-red-600"
+                className="mr-3 text-red-600"
               />
               Delete
             </button>
@@ -467,13 +514,18 @@ const ClaimsDataTable = ({ data, onSelectionChange, archived = false }) => {
                 setShowChat(true);
                 setToggleActionsMenu(null);
               }}
-              className="block w-full text-left px-4 py-2 text-sm font-bold hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-gray-50 hover:text-primary transition-colors duration-150"
             >
               <HiChatBubbleLeftRight
                 size={20}
-                className="mr-2 inline-block text-primary"
+                className="mr-3 text-primary"
               />
-              Chat
+              <span className="flex-1">Chat</span>
+              {row.unreadChatCount > 0 && (
+                <span className="ml-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  {row.unreadChatCount}
+                </span>
+              )}
             </button>
           </div>
         )}
