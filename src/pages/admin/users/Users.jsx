@@ -176,7 +176,7 @@ const Users = () => {
     });
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
-      navigate(`/users/${page}`);
+      navigate(`/dashboard/users/${page}`);
     }
   };
 

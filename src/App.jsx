@@ -304,6 +304,18 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="clients/:pageId"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["admin"]}
+                  >
+                    <Clients />
+                  </ProtectedRoute>
+                }
+              />
               {/* <Route
                 path="donate-us"
                 element={

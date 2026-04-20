@@ -202,7 +202,7 @@ const Clients = () => {
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
-      navigate(`/clients/${page}`);
+      navigate(`/dashboard/clients/${page}`);
     }
   };
 
