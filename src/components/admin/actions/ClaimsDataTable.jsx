@@ -64,23 +64,58 @@ const StatusDropdown = ({ status, onChange }) => {
 
   // Positioning
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+
   useEffect(() => {
-    if (open && ref.current) {
+    const updatePosition = () => {
+      if (open && ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const screenHeight = window.innerHeight;
+        const menuHeight = 200; // estimated max height for dropdown
+        const wouldOverflow = rect.bottom + menuHeight > screenHeight;
+
+        setCoords({
+          top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
+          left: rect.left,
+          width: rect.width,
+        });
+      }
+    };
+
+    updatePosition();
+
+    if (open) {
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open]);
+
+  const handleToggle = () => {
+    const nextOpen = !open;
+    if (nextOpen && ref.current) {
       const rect = ref.current.getBoundingClientRect();
+      const screenHeight = window.innerHeight;
+      const menuHeight = 200;
+      const wouldOverflow = rect.bottom + menuHeight > screenHeight;
       setCoords({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
+        left: rect.left,
         width: rect.width,
       });
     }
-  }, [open]);
+    setOpen(nextOpen);
+  };
 
   return (
     <div className="w-full relative inline-block" ref={ref}>
       <button
         type="button"
         className={`flex items-center ${btnColor} font-semibold rounded-lg px-2 py-2 text-sm w-full justify-between focus:outline-none shadow`}
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
       >
         <span className="text-xs truncate">{status}</span>
         <HiChevronDown className="text-sm" />
@@ -92,6 +127,7 @@ const StatusDropdown = ({ status, onChange }) => {
             ref={dropdownRef}
             className="absolute z-[9999] bg-white rounded-lg shadow-lg border border-gray-200"
             style={{
+              position: "fixed",
               top: coords.top,
               left: coords.left,
               width: coords.width,
@@ -189,6 +225,55 @@ const ClaimsDataTable = ({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteClaimId, setDeleteClaimId] = useState(null);
   const [deleteClaim] = useDeleteClaimMutation();
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const [triggerEl, setTriggerEl] = useState(null);
+
+  useEffect(() => {
+    const updateMenuPosition = () => {
+      if (toggleActionsMenu && triggerEl) {
+        const rect = triggerEl.getBoundingClientRect();
+        const screenHeight = window.innerHeight;
+        const menuHeight = 160; // Approximate height for 3 buttons
+        const wouldOverflow = rect.bottom + menuHeight > screenHeight;
+
+        setMenuPosition({
+          top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
+          left: rect.right - 180,
+        });
+      }
+    };
+
+    updateMenuPosition();
+
+    if (toggleActionsMenu) {
+      window.addEventListener("scroll", updateMenuPosition, true);
+      window.addEventListener("resize", updateMenuPosition);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", updateMenuPosition, true);
+      window.removeEventListener("resize", updateMenuPosition);
+    };
+  }, [toggleActionsMenu, triggerEl]);
+
+  const handleMenuOpen = (e, row) => {
+    const el = e.currentTarget;
+    const isOpening = toggleActionsMenu?._id !== row._id;
+
+    if (isOpening) {
+      const rect = el.getBoundingClientRect();
+      const screenHeight = window.innerHeight;
+      const menuHeight = 160;
+      const wouldOverflow = rect.bottom + menuHeight > screenHeight;
+      setMenuPosition({
+        top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
+        left: rect.right - 180,
+      });
+    }
+    
+    setTriggerEl(isOpening ? el : null);
+    setToggleActionsMenu(isOpening ? row : null);
+  };
 
   const handleShowMore = (title, text) => {
     setInfoModal(text);
@@ -283,13 +368,19 @@ const ClaimsDataTable = ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        triggerEl &&
+        !triggerEl.contains(e.target)
+      ) {
         setToggleActionsMenu(null);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [triggerEl]);
 
   // Table columns--------
   const columns = [
@@ -465,11 +556,7 @@ const ClaimsDataTable = ({
       <div className="relative flex justify-end w-full">
         <button
           className="relative p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
-          onClick={() =>
-            setToggleActionsMenu(
-              toggleActionsMenu?._id === row._id ? null : row
-            )
-          }
+          onClick={(e) => handleMenuOpen(e, row)}
         >
           <HiOutlineDotsVertical className="text-gray-600" size={20} />
           {row.unreadChatCount > 0 && (
@@ -477,58 +564,59 @@ const ClaimsDataTable = ({
           )}
         </button>
 
-        {toggleActionsMenu?._id === row._id && (
-          <div
-            ref={menuRef}
-            className="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-xl z-[9999]"
-          >
-            <button
-              onClick={() => {
-                handleEdit(row);
-                setToggleActionsMenu(null);
+        {toggleActionsMenu?._id === row._id &&
+          createPortal(
+            <div
+              ref={menuRef}
+              className="absolute z-[9999] w-44 rounded-xl border bg-white py-1 shadow-xl"
+              style={{
+                position: "fixed",
+                top: menuPosition.top,
+                left: menuPosition.left,
               }}
-              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 transition-colors duration-150"
             >
-              <HiOutlinePencil
-                size={20}
-                className="mr-3 text-yellow-600"
-              />
-              Edit Claim
-            </button>
-            <button
-              onClick={() => {
-                handleDelete(row);
-                setToggleActionsMenu(null);
-              }}
-              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-red-500 hover:bg-red-50 transition-colors duration-150"
-            >
-              <HiOutlineTrash
-                size={20}
-                className="mr-3 text-red-600"
-              />
-              Delete
-            </button>
-            <button
-              onClick={() => {
-                setChatUser(row);
-                setShowChat(true);
-                setToggleActionsMenu(null);
-              }}
-              className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 hover:text-primary transition-colors duration-150"
-            >
-              <HiChatBubbleLeftRight
-                size={20}
-                className="mr-3 text-primary"
-              />
-              <span className="flex-1">Chat</span>
-              {row.unreadChatCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                  {row.unreadChatCount}
-                </span>
-              )}
-            </button>
-          </div>
-        )}
+              <button
+                onClick={() => {
+                  handleEdit(row);
+                  setToggleActionsMenu(null);
+                }}
+                className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 transition-colors duration-150"
+              >
+                <HiOutlinePencil size={20} className="mr-3 text-yellow-600" />
+                Edit Claim
+              </button>
+              <button
+                onClick={() => {
+                  handleDelete(row);
+                  setToggleActionsMenu(null);
+                }}
+                className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-red-500 hover:bg-red-50 transition-colors duration-150"
+              >
+                <HiOutlineTrash size={20} className="mr-3 text-red-600" />
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  setChatUser(row);
+                  setShowChat(true);
+                  setToggleActionsMenu(null);
+                }}
+                className="flex w-full items-center text-left px-4 py-2.5 text-sm font-semibold whitespace-nowrap hover:bg-gray-50 hover:text-primary transition-colors duration-150"
+              >
+                <HiChatBubbleLeftRight
+                  size={20}
+                  className="mr-3 text-primary"
+                />
+                <span className="flex-1">Chat</span>
+                {row.unreadChatCount > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    {row.unreadChatCount}
+                  </span>
+                )}
+              </button>
+            </div>,
+            document.body
+          )}
       </div>
     ),
     width: "100px",
