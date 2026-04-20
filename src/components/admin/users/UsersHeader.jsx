@@ -50,8 +50,8 @@ const UsersHeader = () => {
   };
 
   return (
-    <div className="flex justify-between items-center mb-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3 sm:gap-0">
+    <div className="mb-6">
+      <div className="flex w-full flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-semibold">Users List</h1>
           <p className="text-sm text-gray-500">Manage all your Users</p>
@@ -60,7 +60,7 @@ const UsersHeader = () => {
         {/* Button to open modal */}
         <button
           onClick={() => setIsOpen(true)}
-          className="py-2 bg-primary text-base text-white px-4 rounded-sm"
+          className="w-full rounded-sm bg-primary px-4 py-2 text-base text-white sm:w-auto"
         >
           + Add New Users
         </button>

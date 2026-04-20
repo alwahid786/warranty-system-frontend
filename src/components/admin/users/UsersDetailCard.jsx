@@ -26,8 +26,8 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
       }`}
     >
       {/* Header Section */}
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
           {/* User Avatar */}
           {user?.image ? (
             <img
@@ -42,14 +42,14 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
           )}
 
           {/* User Info */}
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
               <p className="font-semibold text-gray-900 text-base truncate">
                 {user?.name}
               </p>
               {/* Status Badge */}
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                className={`w-fit whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${
                   user?.activeStatus
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
@@ -101,13 +101,13 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
       </div>
 
       {/* Card Details */}
-      <div className="bg-gray-100 p-4 rounded-xl mt-5 text-sm space-y-3">
-        <div className="flex justify-between">
+      <div className="mt-5 space-y-3 rounded-xl bg-gray-100 p-4 text-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="font-semibold text-gray-800">Claims Rate</p>
             <p className="text-xs text-gray-600">{user?.claimsRate}</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="font-semibold text-gray-800">Joining Date</p>
             <p className="text-xs text-gray-600">
               {new Date(user?.createdAt).toLocaleDateString("en-US", {
@@ -118,13 +118,13 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-gray-700">
+        <div className="flex min-w-0 items-start gap-2 text-gray-700">
           <MdEmail className="text-gray-500" />
-          <span className="truncate">{user?.email}</span>
+          <span className="min-w-0 break-all sm:break-normal sm:truncate">{user?.email}</span>
         </div>
         <div className="flex items-center gap-2 text-gray-700">
           <PiPhoneCallFill className="text-gray-500" />
-          <span>{user?.phone}</span>
+          <span className="break-all">{user?.phone}</span>
         </div>
       </div>
     </div>
