@@ -465,17 +465,25 @@ const ClaimsDataTable = ({
       width: "110px",
     },
     {
-      name: "Entry By",
+      name: "Created By",
       selector: (row) => row.owner,
       cell: (row) => {
         const owner = row.owner;
         if (!owner) return <span className="text-xs">Unknown</span>;
         if (owner.role === "admin")
           return <span className="text-xs font-semibold">Admin</span>;
+        
+        const parent = owner.owner;
         const displayName =
-          owner.role === "user"
-            ? owner.owner?.companyName || owner.owner?.name || owner.name
-            : owner.companyName || owner.name;
+          owner.warrantyCompany ||
+          owner.storeName ||
+          owner.companyName ||
+          parent?.warrantyCompany ||
+          parent?.storeName ||
+          parent?.companyName ||
+          parent?.name ||
+          owner.name ||
+          "Unknown";
 
         return <span className="text-xs">{displayName}</span>;
       },
