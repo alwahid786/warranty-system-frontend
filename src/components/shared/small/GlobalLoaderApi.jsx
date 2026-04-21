@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 const SKIP_GLOBAL_LOADER_ENDPOINTS = new Set(["sendMessage"]);
 
 const GlobalAPILoader = () => {
-  const { isAnyTaskBlocking } = useSelector((state) => {
+  const isAnyTaskBlocking = useSelector((state) => {
     let hasBlocking = false;
 
     Object.values(state).forEach((slice) => {
@@ -34,7 +34,7 @@ const GlobalAPILoader = () => {
       });
     });
 
-    return { isAnyTaskBlocking: hasBlocking };
+    return hasBlocking;
   });
 
   if (!isAnyTaskBlocking) return null;
