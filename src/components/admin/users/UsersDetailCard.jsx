@@ -4,7 +4,7 @@ import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
 import { HiPencil, HiTrash, HiEllipsisVertical } from "react-icons/hi2";
 
-const UsersDetailCard = ({ user, onEdit, onDelete }) => {
+const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -63,41 +63,43 @@ const UsersDetailCard = ({ user, onEdit, onDelete }) => {
         </div>
 
         {/* 3-dot menu */}
-        <div ref={menuRef} className="relative shrink-0">
-          <button
-            className="p-2 -mr-1 rounded-full hover:bg-gray-100 transition-all duration-200 focus:outline-none"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen((prev) => !prev);
-            }}
-            aria-label="More options"
-          >
-            <HiEllipsisVertical className="text-gray-600 text-2xl" />
-          </button>
+        {canManage && (
+          <div ref={menuRef} className="relative shrink-0">
+            <button
+              className="p-2 -mr-1 rounded-full hover:bg-gray-100 transition-all duration-200 focus:outline-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen((prev) => !prev);
+              }}
+              aria-label="More options"
+            >
+              <HiEllipsisVertical className="text-gray-600 text-2xl" />
+            </button>
 
-          {menuOpen && (
-            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-2xl z-[100] overflow-hidden animate-in fade-in zoom-in duration-200 origin-top-right">
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  onEdit(user);
-                }}
-                className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-              >
-                <HiPencil className="text-gray-600" /> Edit
-              </button>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  onDelete(user?._id);
-                }}
-                className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-red-600 border-t border-gray-50 transition-colors"
-              >
-                <HiTrash /> Delete
-              </button>
-            </div>
-          )}
-        </div>
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-2xl z-[100] overflow-hidden animate-in fade-in zoom-in duration-200 origin-top-right">
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit(user);
+                  }}
+                  className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                >
+                  <HiPencil className="text-gray-600" /> Edit
+                </button>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete(user?._id);
+                  }}
+                  className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-red-600 border-t border-gray-50 transition-colors"
+                >
+                  <HiTrash /> Delete
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Card Details */}

@@ -25,7 +25,7 @@ const CompaniesResponseTimePage = () => {
           onClick={() => navigate(-1)}
           className="mb-4 bg-primary text-yellow-300 text-3xl py-2 px-4 rounded-2xl"
         >
-          <HiArrowLeft className="w-5 h-5 text-gray-600 cursor-pointer" />
+          <HiArrowLeft className="w-5 h-5 text-white cursor-pointer" />
         </button>
         <h1 className="text-xl font-bold mb-4">All Companies Response Time</h1>
 

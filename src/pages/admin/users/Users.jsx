@@ -29,6 +29,7 @@ import {
 } from "../../../redux/apis/userApis";
 
 const Users = () => {
+  const { user } = useSelector((state) => state.auth);
   // Unused userCount removed to fix linting error
   // const { userCount } = useSelector((state) => state.user);
 
@@ -50,6 +51,10 @@ const Users = () => {
   const dispatch = useDispatch();
 
   const { selectedUser } = useSelector((state) => state.user);
+  const userQueryParams =
+    user?.role === "admin" || user?.role === "superadmin"
+      ? { onlyAdminSubusers: true }
+      : undefined;
 
   const users = Array.isArray(selectedUser)
     ? selectedUser
@@ -59,7 +64,7 @@ const Users = () => {
     data,
     isSuccess,
     isError,
-  } = useGetUsersQuery({ onlyAdminSubusers: true }, { refetchOnMountOrArgChange: true });
+  } = useGetUsersQuery(userQueryParams, { refetchOnMountOrArgChange: true });
 
   const [deleteUser] = useDeleteUserMutation();
 
@@ -67,12 +72,12 @@ const Users = () => {
 
 
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
-    useGetTotalUsersCountQuery({ onlyAdminSubusers: true }, {
+    useGetTotalUsersCountQuery(userQueryParams, {
       refetchOnMountOrArgChange: true,
     });
 
   const { data: attendanceChartData, refetch: getAttendanceChartDataRefetch } =
-    useGetAttendanceChartDataQuery({ onlyAdminSubusers: true }, {
+    useGetAttendanceChartDataQuery(userQueryParams, {
       refetchOnMountOrArgChange: true,
     });
 
@@ -177,6 +182,13 @@ const Users = () => {
       toDate: "",
       status: "",
     });
+
+  const canManageUser = (managedUser) => {
+    if (["admin", "superadmin", "client"].includes(user?.role)) return true;
+    if (managedUser?._id?.toString?.() === user?._id?.toString?.()) return true;
+    return managedUser?.owner?.toString?.() === user?._id?.toString?.();
+  };
+
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       navigate(`/dashboard/users/${page}`);
@@ -249,6 +261,7 @@ const Users = () => {
               <UsersDetailCard
                 user={user}
                 key={user._id}
+                canManage={canManageUser(user)}
                 onEdit={() => handleOnEdit(user)}
                 onDelete={() => handleOnDeleteConfirmation(user._id)}
               />

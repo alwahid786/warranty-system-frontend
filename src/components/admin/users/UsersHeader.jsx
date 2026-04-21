@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import AddUserModal from "./AddUserModal";
 import { Eye, EyeOff } from "lucide-react";
 import {
@@ -10,6 +11,7 @@ import {
 import toast from "react-hot-toast";
 
 const UsersHeader = () => {
+  const { user } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setformData] = useState({
@@ -18,13 +20,17 @@ const UsersHeader = () => {
     phone: "",
     password: "",
   });
-  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery({ onlyAdminSubusers: true });
+  const userQueryParams =
+    user?.role === "admin" || user?.role === "superadmin"
+      ? { onlyAdminSubusers: true }
+      : undefined;
+  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery(userQueryParams);
   const [addUser, { isLoading }] = useAddUserMutation();
 
-  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery({ onlyAdminSubusers: true });
+  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery(userQueryParams);
 
   const { refetch: getAttendanceChartDataRefetch } =
-    useGetAttendanceChartDataQuery({ onlyAdminSubusers: true });
+    useGetAttendanceChartDataQuery(userQueryParams);
 
   const handleAddUser = async (e) => {
     e.preventDefault();

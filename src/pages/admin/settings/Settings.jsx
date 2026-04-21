@@ -15,6 +15,7 @@ import Loader from "../../../components/shared/small/Loader";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
+  const canEditCompanyName = user?.role === "admin" || user?.role === "client";
   const imageInputRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(
     user?.image?.url || "/profile-pic.png"
@@ -55,7 +56,11 @@ const Settings = () => {
         email: user.email || "",
         phone: user.phone || "",
         gender: user.gender || "Male",
-        companyName: user.companyName || user.storeName || "",
+        companyName:
+          user.inheritedCompanyName ||
+          user.companyName ||
+          user.storeName ||
+          "",
         designation: user.designation || "",
       });
       if (user?.image?.url) setImageSrc(user?.image?.url);
@@ -83,7 +88,11 @@ const Settings = () => {
         email: user.email || "",
         phone: user.phone || "",
         gender: user.gender || "Male",
-        companyName: user.companyName || user.storeName || "",
+        companyName:
+          user.inheritedCompanyName ||
+          user.companyName ||
+          user.storeName ||
+          "",
         designation: user.designation || "",
       });
       if (user.image) setImageSrc(user.image.url);
@@ -212,11 +221,11 @@ const Settings = () => {
             <div className="col-span-2 md:col-span-1">
               <Input
                 className={`bg-white border ${
-                  !isEditing && "cursor-not-allowed"
+                  (!isEditing || !canEditCompanyName) && "cursor-not-allowed"
                 }`}
                 label="Company Name"
                 value={formData.companyName}
-                readOnly={!isEditing}
+                readOnly={!isEditing || !canEditCompanyName}
                 onChange={(e) => handleChange("companyName", e.target.value)}
               />
             </div>
