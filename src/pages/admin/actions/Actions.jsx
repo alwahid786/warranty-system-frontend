@@ -131,6 +131,7 @@ const Actions = () => {
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
       <ClaimsDataTable
         data={filteredData}
+        selectedClaims={selectedClaims}
         onSelectionChange={setSelectedClaims}
         archived={false}
         openChatClaimId={openChatClaimId}

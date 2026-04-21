@@ -15,12 +15,14 @@ import {
   useUpdateClaimsMutation,
   useUpdateClaimsAdditionalDataMutation,
   useDeleteClaimMutation,
+  useDeleteBulkClaimsMutation,
 } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import EditClaimsModal from "./EditClaimsModal";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import { createPortal } from "react-dom";
+import Button from "../../shared/small/Button";
 
 const normalizeId = (value) => {
   if (!value) return "";
@@ -203,6 +205,7 @@ const customStyles = {
 
 const ClaimsDataTable = ({
   data,
+  selectedClaims = [],
   onSelectionChange,
   archived = false,
   openChatClaimId = null,
@@ -225,6 +228,8 @@ const ClaimsDataTable = ({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteClaimId, setDeleteClaimId] = useState(null);
   const [deleteClaim] = useDeleteClaimMutation();
+  const [deleteBulkClaims, { isLoading: isDeletingBulk }] = useDeleteBulkClaimsMutation();
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [triggerEl, setTriggerEl] = useState(null);
 
@@ -339,6 +344,23 @@ const ClaimsDataTable = ({
   const handleDeleteClose = () => {
     setIsDeleteOpen(false);
     setDeleteClaimId(null);
+  };
+
+  const handleBulkDeleteClose = () => {
+    setIsBulkDeleteOpen(false);
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = selectedClaims.map((claim) => claim._id);
+    try {
+      await deleteBulkClaims(ids).unwrap();
+      onSelectionChange([]);
+      setIsBulkDeleteOpen(false);
+    } catch (err) {
+      toast.error(err.data.message || "Failed to delete claims", {
+        duration: 3000,
+      });
+    }
   };
 
   const handleClose = () => {
@@ -624,9 +646,20 @@ const ClaimsDataTable = ({
 
   return (
     <div className="mb-10 mt-5 w-full overflow-visible rounded-lg bg-white p-2 shadow">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        Recent Claims
-      </h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 mt-2 px-2">
+        <h2 className="text-lg font-semibold text-gray-800">Recent Claims</h2>
+        {selectedClaims?.length >= 2 && (
+          <Button
+            icon={<HiOutlineTrash className="text-sm" />}
+            text="Delete Selection"
+            bg="bg-red-600 hover:bg-red-700"
+            color="text-white"
+            onClick={() => setIsBulkDeleteOpen(true)}
+            disabled={isDeletingBulk}
+            cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate shadow-sm transition-all duration-200"
+          />
+        )}
+      </div>
       <div className="w-full">
         <div className="w-full overflow-x-auto">
           {" "}
@@ -700,6 +733,14 @@ const ClaimsDataTable = ({
           onSave={handleDeleteClaim}
           data="Are you sure you want to delete this claim?"
           id={deleteClaimId}
+        />
+      )}
+      {isBulkDeleteOpen && (
+        <ConfirmationModal
+          isOpen={isBulkDeleteOpen}
+          onClose={handleBulkDeleteClose}
+          onSave={handleBulkDelete}
+          data={`Are you sure you want to delete ${selectedClaims?.length} selected claims? This action cannot be undone.`}
         />
       )}
     </div>

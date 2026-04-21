@@ -123,6 +123,7 @@ const ArchievedActions = () => {
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
       <ClaimsDataTable
         data={filteredData}
+        selectedClaims={selectedClaims}
         onSelectionChange={setSelectedClaims}
         archived={true}
       />

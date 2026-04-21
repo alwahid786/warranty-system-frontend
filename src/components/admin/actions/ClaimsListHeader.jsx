@@ -1,19 +1,15 @@
-import { FaArchive, FaUpload, FaDownload } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
 import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
 // import ClaimsFilterBar from "./ClaimsFilterBar";
 import { useRef } from "react";
-import { useAddClaimsMutation, useDeleteBulkClaimsMutation } from "../../../redux/apis/claimsApis";
+import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useAddArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
-import { useState } from "react";
-import ConfirmationModal from "../../../utils/ConfirmationModal";
-import { HiOutlineTrash } from "react-icons/hi2";
 
 const ClaimsListHeader = ({
   claims,
@@ -26,8 +22,6 @@ const ClaimsListHeader = ({
   const [addArchieveClaims] = useAddArchieveClaimsMutation();
   const [removeArchieveClaims] = useRemoveArchieveClaimsMutation();
   const [getExportClaims] = useLazyExportClaimsQuery();
-  const [deleteBulkClaims, { isLoading: isDeleting }] = useDeleteBulkClaimsMutation();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleAddArchieveClaims = async (e) => {
     e.preventDefault();
@@ -75,18 +69,7 @@ const ClaimsListHeader = ({
       toast.error(err.data.message || "Failed to export", { duration: 3000 });
     }
   };
-  const handleBulkDelete = async () => {
-    const ids = selectedClaims.map((claim) => claim._id);
-    try {
-      await deleteBulkClaims(ids).unwrap();
-      setSelectedClaims([]);
-      setIsDeleteModalOpen(false);
-    } catch (err) {
-      toast.error(err.data.message || "Failed to delete claims", {
-        duration: 3000,
-      });
-    }
-  };
+
 
   return (
     <>
@@ -105,17 +88,7 @@ const ClaimsListHeader = ({
 
         {/* Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
-          {selectedClaims?.length >= 2 && claims?.length > 0 && (
-            <Button
-              icon={<HiOutlineTrash className="text-xs sm:text-sm" />}
-              text="Delete Selection"
-              bg="bg-red-600 hover:bg-red-700"
-              color="text-white"
-              onClick={() => setIsDeleteModalOpen(true)}
-              disabled={isDeleting}
-              cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
-            />
-          )}
+
           <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
             text={
@@ -172,12 +145,7 @@ const ClaimsListHeader = ({
         </div>
       </div>
 
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onSave={handleBulkDelete}
-        data={`Are you sure you want to delete ${selectedClaims?.length} selected claims? this action cannot be undone.`}
-      />
+
     </>
   );
 };
