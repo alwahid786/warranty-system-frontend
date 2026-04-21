@@ -11,6 +11,7 @@ const searchTypes = [
 ];
 
 const orderStatuses = [
+  { id: 0, name: "All Status" },
   { id: 1, name: "PC" },
   { id: 2, name: "PO" },
   { id: 3, name: "PQ" },
@@ -93,19 +94,21 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
 
         <div className="flex flex-wrap items-end gap-4 flex-1">
           {/* Status Dropdown */}
-          <div className="w-full sm:w-32 lg:w-40">
+          <div className="w-full sm:w-52 lg:w-60">
             <label className="text-xs font-semibold text-secondary mb-1 block uppercase tracking-wider">
               Status
             </label>
             <Dropdown
-              title="All Status"
+              title=""
               options={orderStatuses}
-              defaultValue={orderStatuses.find(
-                (opt) =>
-                  opt.name.toLowerCase() === filters.status?.toLowerCase()
-              )}
+              defaultValue={
+                orderStatuses.find(
+                  (opt) =>
+                    opt.name.toLowerCase() === filters.status?.toLowerCase()
+                ) || orderStatuses[0]
+              }
               onChange={(val) => {
-                onFilterChange({ status: val?.name || "" });
+                onFilterChange({ status: val?.id === 0 ? "" : (val?.name || "") });
               }}
               width="w-full"
             />
