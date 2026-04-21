@@ -29,6 +29,8 @@ const Clients = () => {
     fromDate: "",
     toDate: "",
   });
+
+  const [selectedFilter, setSelectedFilter] = useState("This Month");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -211,9 +213,35 @@ const Clients = () => {
       <ClientsHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">
-          <TotalClientsCard clientsStats={clientsStatsByFilters?.data} />
-          {/* <TotalClientsCard /> */}
-          <StatusOverviewCard clientCount={clientsData?.clientCount} />
+          <TotalClientsCard
+            clientsStats={clientsStatsByFilters?.data}
+            selectedFilter={selectedFilter}
+            onFilterChange={setSelectedFilter}
+          />
+          <StatusOverviewCard
+            active={
+              clientsStatsByFilters?.data?.[
+                selectedFilter === "This Week"
+                  ? "thisWeek"
+                  : selectedFilter === "This Month"
+                  ? "thisMonth"
+                  : selectedFilter === "This Year"
+                  ? "thisYear"
+                  : "today"
+              ]?.active
+            }
+            inactive={
+              clientsStatsByFilters?.data?.[
+                selectedFilter === "This Week"
+                  ? "thisWeek"
+                  : selectedFilter === "This Month"
+                  ? "thisMonth"
+                  : selectedFilter === "This Year"
+                  ? "thisYear"
+                  : "today"
+              ]?.inactive
+            }
+          />
         </div>
         <AttendanceChart data={clientsActivityStats?.data} />
       </div>

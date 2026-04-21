@@ -1,14 +1,14 @@
-const StatusOverviewCard = (clientCount) => {
+const StatusOverviewCard = ({ active, inactive }) => {
   const data = [
     {
       label: "Active",
-      count: clientCount?.clientCount?.activeClients,
+      count: active || 0,
       color: "text-green-500",
       dotColor: "bg-green-500",
     },
     {
       label: "Inactive",
-      count: clientCount?.clientCount?.inactiveClients,
+      count: inactive || 0,
       color: "text-red-500",
       dotColor: "bg-red-500",
     },

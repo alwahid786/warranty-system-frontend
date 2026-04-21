@@ -1,18 +1,16 @@
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
-const StatusOverviewCard = () => {
-  const { userCount } = useSelector((state) => state.user);
-
+const StatusOverviewCard = ({ active, inactive }) => {
   const data = [
     {
       label: "Active",
-      count: userCount?.activeUsers,
+      count: active || 0,
       color: "text-green-500",
       dotColor: "bg-green-500",
     },
     {
       label: "Inactive",
-      count: userCount?.inactiveUsers,
+      count: inactive || 0,
       color: "text-red-500",
       dotColor: "bg-red-500",
     },

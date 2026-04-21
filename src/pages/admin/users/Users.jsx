@@ -29,7 +29,8 @@ import {
 } from "../../../redux/apis/userApis";
 
 const Users = () => {
-  const { userCount } = useSelector((state) => state.user);
+  // Unused userCount removed to fix linting error
+  // const { userCount } = useSelector((state) => state.user);
 
   const [filters, setFilters] = useState({
     searchType: "id",
@@ -38,6 +39,8 @@ const Users = () => {
     toDate: "",
     status: "",
   });
+
+  const [selectedFilter, setSelectedFilter] = useState("This Month");
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -180,6 +183,8 @@ const Users = () => {
     }
   };
 
+  // Unused userSummary removed to fix linting error
+  /*
   const userSummary = {
     total: selectedUser?.length,
     change: "+2.7% from last month",
@@ -188,15 +193,42 @@ const Users = () => {
       { label: "Inactive", value: userCount?.inactiveUsers, color: "red" },
     ],
   };
+  */
 
   return (
     <div className="p-1 bg-gray-50 min-h-screen">
       <UsersHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">
-          <TotalUsersCard stats={totalUsersCount?.data} />
-          {/* <TotalUsersCard /> */}
-          <StatusOverviewCard stats={userSummary.overview} />
+          <TotalUsersCard
+            stats={totalUsersCount?.data}
+            selectedFilter={selectedFilter}
+            onFilterChange={setSelectedFilter}
+          />
+          <StatusOverviewCard
+            active={
+              totalUsersCount?.data?.[
+                selectedFilter === "This Week"
+                  ? "thisWeek"
+                  : selectedFilter === "This Month"
+                  ? "thisMonth"
+                  : selectedFilter === "This Year"
+                  ? "thisYear"
+                  : "today"
+              ]?.active
+            }
+            inactive={
+              totalUsersCount?.data?.[
+                selectedFilter === "This Week"
+                  ? "thisWeek"
+                  : selectedFilter === "This Month"
+                  ? "thisMonth"
+                  : selectedFilter === "This Year"
+                  ? "thisYear"
+                  : "today"
+              ]?.inactive
+            }
+          />
         </div>
         <AttendanceChart data={attendanceChartData?.data} />
       </div>

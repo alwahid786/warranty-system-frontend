@@ -3,11 +3,9 @@ import { ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { ChevronDown } from "lucide-react";
 import { BsArrowUpRightCircle } from "react-icons/bs";
 
-const FILTER_OPTIONS = ["Today", "This Week", "This Month"];
+const FILTER_OPTIONS = ["Today", "This Week", "This Month", "This Year"];
 
-const TotalClientsCard = ({ clientsStats: stats }) => {
-  // Default filter
-  const [selectedFilter, setSelectedFilter] = useState("This Month");
+const TotalClientsCard = ({ clientsStats: stats, selectedFilter, onFilterChange }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   // Map API data to UI structure
@@ -37,6 +35,14 @@ const TotalClientsCard = ({ clientsStats: stats }) => {
         chart: [
           { name: "This Month", value: stats.thisMonth?.count || 0 },
           { name: "Last Month", value: stats.thisMonth?.prev || 0 },
+        ],
+      },
+      "This Year": {
+        value: stats.thisYear?.count || 0,
+        growth: stats.thisYear?.change || 0,
+        chart: [
+          { name: "This Year", value: stats.thisYear?.count || 0 },
+          { name: "Last Year", value: stats.thisYear?.prev || 0 },
         ],
       },
     };
@@ -100,7 +106,7 @@ const TotalClientsCard = ({ clientsStats: stats }) => {
                   key={option}
                   className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setSelectedFilter(option);
+                    if (onFilterChange) onFilterChange(option);
                     setDropdownOpen(false);
                   }}
                 >
