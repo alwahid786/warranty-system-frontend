@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
 import { useGetClaimsQuery } from "../../../redux/apis/claimsApis";
+import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
+import { useSelector } from "react-redux";
 
 const defaultFilters = {
   searchType: "roNumber",
@@ -33,14 +35,26 @@ const parseStringDate = (dateStr) => {
 };
 
 const Actions = () => {
+  const { user } = useSelector((state) => state.auth);
+  const { clientId } = useParams();
   const [filters, setFilters] = useState(defaultFilters);
   const location = useLocation();
   const navigate = useNavigate();
-  const { data } = useGetClaimsQuery(undefined, {
+  const isAdminSideUser =
+    user?.role === "admin" ||
+    (user?.role === "user" && user?.owner?.role === "admin");
+  const claimsQueryParams =
+    isAdminSideUser && clientId ? { clientId } : undefined;
+  const { data } = useGetClaimsQuery(claimsQueryParams, {
     refetchOnMountOrArgChange: true,
+  });
+  const { data: clientsData } = useGetClientsQuery(undefined, {
+    skip: !isAdminSideUser,
   });
   const [selectedClaims, setSelectedClaims] = useState([]);
   const claims = Array.isArray(data) ? data : data?.data ?? [];
+  const clients = clientsData?.data ?? [];
+  const selectedClient = clients.find((client) => client._id === clientId);
   const openChatClaimId = location.state?.openChatClaimId || null;
   const initialData = claims;
 
@@ -127,6 +141,8 @@ const Actions = () => {
         setSelectedClaims={setSelectedClaims}
         claims={claims}
         showImportExport={true}
+        targetClientId={clientId || ""}
+        targetClientName={selectedClient?.storeName || selectedClient?.name || ""}
       />
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
       <ClaimsDataTable

@@ -184,9 +184,7 @@ const Users = () => {
     });
 
   const canManageUser = (managedUser) => {
-    if (["admin", "superadmin", "client"].includes(user?.role)) return true;
-    if (managedUser?._id?.toString?.() === user?._id?.toString?.()) return true;
-    return managedUser?.owner?.toString?.() === user?._id?.toString?.();
+    return managedUser?.canManage === true;
   };
 
   const handlePageChange = (page) => {

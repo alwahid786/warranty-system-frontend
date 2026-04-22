@@ -12,9 +12,10 @@ const claimsApis = createApi({
   endpoints: (builder) => ({
     // Get all Claims
     getClaims: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/getClaims",
         method: "GET",
+        params,
       }),
       providesTags: ["Claims"],
     }),

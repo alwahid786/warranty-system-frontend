@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -25,6 +25,7 @@ import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import toast from "react-hot-toast";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
+import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
 
 const Aside = () => {
   const { pathname } = useLocation();
@@ -34,6 +35,12 @@ const Aside = () => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
+  const isAdminSideUser =
+    user?.role === "admin" || (user?.role === "user" && user?.owner?.role === "admin");
+  const { data: clientsData } = useGetClientsQuery(undefined, {
+    skip: !isAdminSideUser,
+  });
+  const clients = clientsData?.data ?? [];
 
   const pages = [
     {
@@ -45,8 +52,18 @@ const Aside = () => {
     {
       id: 2,
       title: "Actions",
-      link: ["/dashboard/actions"],
+      link: isAdminSideUser
+        ? ["/dashboard/actions", ...clients.map((client) => `/dashboard/actions/${client._id}`)]
+        : ["/dashboard/actions"],
       icon: <ActionsIcon />,
+      children: isAdminSideUser
+        ? clients.map((client) => ({
+            id: client._id,
+            title: client.storeName || client.name,
+            link: `/dashboard/actions/${client._id}`,
+            icon: <ActionSubLink />,
+          }))
+        : [],
     },
     {
       id: 3,
@@ -221,19 +238,26 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const unreadCount = useSelector((state) => state.notifications.unReadCount);
+  const hasActiveChild = page?.children?.some((child) => child.link === pathname);
 
-  if (page.title === "Archieved") {
+  useEffect(() => {
+    if (hasActiveChild) {
+      setIsOpen(true);
+    }
+  }, [hasActiveChild]);
+
+  if (page.title === "Archieved" || (page.title === "Actions" && page.children?.length)) {
     return (
       <div className={`flex flex-col rounded-lg`}>
         <div
           onClick={() => setIsOpen(!isOpen)}
           className={`flex items-center py-[10px] px-[12px] rounded-lg text-sm cursor-pointer ${
-            isLinkActive
+            isLinkActive || hasActiveChild
               ? "bg-white text-[#043655]"
               : "text-white hover:text-primary bg-none hover:bg-white"
           } ${isMenuOpen ? "justify-center" : "gap-2"}`}
         >
-          {React.cloneElement(page.icon, { isLinkActive })}
+          {React.cloneElement(page.icon, { isLinkActive: isLinkActive || hasActiveChild })}
           {!isMenuOpen && (
             <>
               <span className="flex-1">{page.title}</span>

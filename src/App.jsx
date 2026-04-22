@@ -231,6 +231,7 @@ function App() {
               {/*  Nested Pages */}
               <Route index element={<Dashboard />} />
               <Route path="actions" element={<Actions />} />
+              <Route path="actions/:clientId" element={<Actions />} />
               <Route
                 path="invoices"
                 element={

@@ -16,6 +16,8 @@ const ClaimsListHeader = ({
   selectedClaims,
   setSelectedClaims,
   showImportExport = true,
+  targetClientId = "",
+  targetClientName = "",
 }) => {
   const fileInputRef = useRef(null);
   const [addClaims] = useAddClaimsMutation();
@@ -52,6 +54,9 @@ const ClaimsListHeader = ({
       // send to backend
       const formData = new FormData();
       formData.append("file", file);
+      if (targetClientId) {
+        formData.append("targetClientId", targetClientId);
+      }
       try {
         await addClaims(formData).unwrap();
       } catch (err) {
@@ -77,7 +82,7 @@ const ClaimsListHeader = ({
         {/* Title & Description */}
         <div className="">
           <h2 className="text-2xl font-medium font-inter text-primary">
-            Claims List
+            {targetClientName ? `${targetClientName} Claims` : "Claims List"}
           </h2>
           <p className="text-sm font-inter font-medium text-secondary">
             Review, update, and organize user-submitted warranty claims. Use

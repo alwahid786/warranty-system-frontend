@@ -165,12 +165,19 @@ export default function ChatModal({
           {messages.map((msg, idx) => (
             <div
               key={msg._id || idx}
-              className={`flex ${
+              className={`flex flex-col ${
                 normalizeId(msg.senderId) === normalizeId(user?._id)
-                  ? "justify-end"
-                  : "justify-start"
+                  ? "items-end"
+                  : "items-start"
               }`}
             >
+              <p className="text-[11px] font-semibold text-gray-500 mb-1 px-1">
+                {msg.senderName ||
+                  (normalizeId(msg.senderId) === normalizeId(user?._id)
+                    ? user?.name || "You"
+                    : "User")}
+              </p>
+
               <div
                 className={`p-3 rounded-lg max-w-xs ${
                   normalizeId(msg.senderId) === normalizeId(user?._id)
@@ -208,7 +215,7 @@ export default function ChatModal({
                   </>
                 )}
 
-                {/* Timestamp */}
+                {/* Timestamp inside the bubble */}
                 <p className="text-[10px] mt-1 opacity-70">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
