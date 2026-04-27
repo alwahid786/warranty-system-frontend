@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { HiEye } from "react-icons/hi2";
 import { HiEyeOff } from "react-icons/hi";
+import { useValidateResetTokenQuery } from "../../../redux/apis/authApis";
+import { useEffect } from "react";
 
 function AdminResetPassword() {
   const [formData, setFormData] = useState({
@@ -19,7 +21,28 @@ function AdminResetPassword() {
   const [resetPassword] = useResetPasswordMutation();
   const { token } = useParams();
 
+  const { error, isLoading } = useValidateResetTokenQuery(token, {
+    skip: !token,
+  });
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error?.data?.message || "Invalid or expired reset link", {
+        duration: 3000,
+      });
+      navigate("/", { replace: true });
+    }
+  }, [error, navigate]);
+
+  if (isLoading || error) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-xl">Validating reset link...</p>
+      </div>
+    );
+  }
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -111,7 +134,7 @@ function AdminResetPassword() {
           <div className="flex flex-col gap-4">
             <p className="text-center">
               Remembered your password?{" "}
-              <a href="/login" className="text-[#00235A]">
+              <a href="/" className="text-[#00235A]">
                 Back to Login
               </a>
             </p>

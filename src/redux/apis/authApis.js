@@ -41,6 +41,13 @@ const authApis = createApi({
         body: data,
       }),
     }),
+    // validate reset token
+    validateResetToken: builder.query({
+      query: (token) => ({
+        url: `/validate-reset-token/${token}`,
+        method: "GET",
+      }),
+    }),
     // logout
     logout: builder.mutation({
       query: () => ({
@@ -93,5 +100,6 @@ export const {
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,
   useAcceptTermsMutation,
+  useValidateResetTokenQuery,
 } = authApis;
 export default authApis;
