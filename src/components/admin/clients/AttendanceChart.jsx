@@ -5,7 +5,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
+  ResponsiveContainer
 } from "recharts";
 
 const AttendanceChart = ({ data }) => (

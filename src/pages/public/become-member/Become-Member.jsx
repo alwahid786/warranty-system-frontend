@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
@@ -6,11 +7,12 @@ import {
   Elements,
   CardElement,
   useStripe,
-  useElements,
+  useElements
 } from "@stripe/react-stripe-js";
+import toast from "react-hot-toast";
+
 import LandingHeader from "../../../components/public/landing-header/landing-header";
 import Button from "../../../components/shared/small/landing-Button";
-import toast from "react-hot-toast";
 import getEnv from "../../../configs/config";
 import { useCreatePaymentIntentMutation } from "../../../redux/apis/paymentApis";
 
@@ -34,13 +36,14 @@ function CheckoutForm({ email, plan, onClose }) {
         email,
         currency: plan.currency,
         amount: plan.price,
-        paymentType: "membership",
+        paymentType: "membership"
       }).unwrap();
 
       const { clientSecret } = res;
       const card = elements.getElement(CardElement);
+
       const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card, billing_details: { email } },
+        payment_method: { card, billing_details: { email } }
       });
 
       if (result.error) {
@@ -71,15 +74,15 @@ function CheckoutForm({ email, plan, onClose }) {
                 fontFamily: "Inter, system-ui, sans-serif",
                 "::placeholder": {
                   color: "#6B7280",
-                  fontWeight: "400",
-                },
+                  fontWeight: "400"
+                }
               },
               invalid: {
                 color: "#EF4444",
-                iconColor: "#EF4444",
-              },
+                iconColor: "#EF4444"
+              }
             },
-            hidePostalCode: true,
+            hidePostalCode: true
           }}
           className="p-3 border border-gray-200 rounded-lg bg-white shadow-sm"
         />
@@ -131,17 +134,19 @@ export default function BecomeMember() {
       "Automated monthly invoices",
       "Dedicated support team",
       "Early access to new features",
-      "Member-only resources",
-    ],
+      "Member-only resources"
+    ]
   };
 
   const validateEmail = (v) => /\S+@\S+\.\S+/.test(v);
+
   const handleCancel = () => {
     setEmail("");
     setPrivacyPolicy(false);
     setTerms(false);
     toast.success("Form cleared");
   };
+
   const handlePayClick = (e) => {
     e.preventDefault();
     if (!email) return toast.error("Please enter your email");
@@ -153,27 +158,29 @@ export default function BecomeMember() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
   };
+
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
   };
+
   const cardHoverVariants = {
     rest: {
       scale: 1,
       boxShadow:
-        "0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
     },
     hover: {
       scale: 1.03,
       boxShadow:
-        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.05)",
-    },
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.05)"
+    }
   };
 
   return (
@@ -226,7 +233,7 @@ export default function BecomeMember() {
                   </div>
                   <div className="space-y-4">
                     <h4 className="font-semibold text-gray-900 text-lg">
-                      What's included:
+                      What&apos;s included:
                     </h4>
                     <ul className="space-y-3">
                       {plan.benefits.map((b, i) => (
@@ -452,7 +459,7 @@ export default function BecomeMember() {
                   </button>
                 </div>
                 <p className="text-blue-100">
-                  You're almost there! Just enter your card details
+                  You&apos;re almost there! Just enter your card details
                 </p>
               </div>
 

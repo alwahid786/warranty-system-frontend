@@ -1,8 +1,14 @@
-import React from 'react';
+import React from "react";
 
 const InvocesIcon = () => {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M16.19 4H7.01437C6.06628 4 5.29413 4.77178 5.29413 5.72024H6.44108C6.44108 5.40508 6.69977 5.14695 7.01437 5.14695H16.19C16.5057 5.14695 16.7633 5.40508 16.7633 5.72024V12.6012C16.7633 12.9167 16.5057 13.1749 16.19 13.1749V14.3218C17.1386 14.3218 17.9102 13.55 17.9102 12.6012V5.72024C17.9102 4.77178 17.1396 4 16.19 4Z"
         fill="currentColor"

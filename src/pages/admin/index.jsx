@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
+
 import Aside from "./layout/Aside";
 import Header from "./layout/Header";
 // import { jwtDecode } from "jwt-decode";
 // import SessionExpiredModal from "../../components/shared/small/SessionExpiredModal";
 
 const AdminDashboard = () => {
-
   //   useEffect(() => {
   //     let timeoutId;
 
@@ -54,7 +54,6 @@ const AdminDashboard = () => {
           </main>
         </div>
       </section>
-
     </section>
   );
 };

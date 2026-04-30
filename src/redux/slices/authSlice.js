@@ -9,8 +9,8 @@ const authSlice = createSlice({
     },
     userNotExist: (state) => {
       state.user = null;
-    },
-  },
+    }
+  }
 });
 
 export const { userExist, userNotExist } = authSlice.actions;

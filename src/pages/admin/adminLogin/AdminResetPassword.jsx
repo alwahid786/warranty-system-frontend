@@ -1,20 +1,23 @@
 import { useState } from "react";
-import Button from "../../../components/shared/small/Button";
-import Input from "../../../components/shared/small/input";
-import { useResetPasswordMutation } from "../../../redux/apis/authApis";
+import { useEffect } from "react";
+
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { HiEye } from "react-icons/hi2";
 import { HiEyeOff } from "react-icons/hi";
+
+import { useResetPasswordMutation } from "../../../redux/apis/authApis";
+import Input from "../../../components/shared/small/input";
+import Button from "../../../components/shared/small/Button";
 import { useValidateResetTokenQuery } from "../../../redux/apis/authApis";
-import { useEffect } from "react";
 
 function AdminResetPassword() {
   const [formData, setFormData] = useState({
     password: "",
-    confirmPassword: "",
+    confirmPassword: ""
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -22,7 +25,7 @@ function AdminResetPassword() {
   const { token } = useParams();
 
   const { error, isLoading } = useValidateResetTokenQuery(token, {
-    skip: !token,
+    skip: !token
   });
 
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ function AdminResetPassword() {
   useEffect(() => {
     if (error) {
       toast.error(error?.data?.message || "Invalid or expired reset link", {
-        duration: 3000,
+        duration: 3000
       });
       navigate("/", { replace: true });
     }
@@ -51,6 +54,7 @@ function AdminResetPassword() {
     }
     try {
       const res = await resetPassword({ ...formData, token }).unwrap();
+
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
         navigate("/");
@@ -97,7 +101,11 @@ function AdminResetPassword() {
                     className="absolute right-3 top-12 cursor-pointer text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <HiEye size={20} /> : <HiEyeOff size={20} />}
+                    {showPassword ? (
+                      <HiEye size={20} />
+                    ) : (
+                      <HiEyeOff size={20} />
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -108,7 +116,7 @@ function AdminResetPassword() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        confirmPassword: e.target.value,
+                        confirmPassword: e.target.value
                       })
                     }
                     className="bg-white border pr-10"

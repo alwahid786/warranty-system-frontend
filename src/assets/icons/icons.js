@@ -15,5 +15,5 @@ export {
   NotifictionIcon,
   InvoicesIcon,
   UsersIcon,
-  DonationIcon,
+  DonationIcon
 };

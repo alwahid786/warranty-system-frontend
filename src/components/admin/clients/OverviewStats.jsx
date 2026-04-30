@@ -4,14 +4,14 @@ const StatusOverviewCard = ({ active, inactive }) => {
       label: "Active",
       count: active || 0,
       color: "text-green-500",
-      dotColor: "bg-green-500",
+      dotColor: "bg-green-500"
     },
     {
       label: "Inactive",
       count: inactive || 0,
       color: "text-red-500",
-      dotColor: "bg-red-500",
-    },
+      dotColor: "bg-red-500"
+    }
   ];
 
   return (

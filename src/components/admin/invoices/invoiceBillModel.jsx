@@ -1,4 +1,5 @@
 import { FaDiamond } from "react-icons/fa6";
+
 import logoWithBackground from "../../../assets/logos/logo-with-bg.png";
 
 const SectionHeader = ({ children }) => (
@@ -18,12 +19,15 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const adjustments = invoice.adjustments || [];
+
   const totalAdd = adjustments
     .filter((a) => a.type === "add")
     .reduce((sum, a) => sum + Number(a.amount), 0);
+
   const totalDeduct = adjustments
     .filter((a) => a.type === "deduction")
     .reduce((sum, a) => sum + Number(a.amount), 0);
+
   const netAdjustments = totalAdd - totalDeduct;
 
   return (
@@ -115,8 +119,9 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
               />
             ))}
             <div className="mt-2 text-[10px] font-bold">
-              Total Additions: ${Number(totalAdd || 0).toFixed(2)} | Total Deductions: $
-              {Number(totalDeduct || 0).toFixed(2)} | Net: ${Number(netAdjustments || 0).toFixed(2)}
+              Total Additions: ${Number(totalAdd || 0).toFixed(2)} | Total
+              Deductions: ${Number(totalDeduct || 0).toFixed(2)} | Net: $
+              {Number(netAdjustments || 0).toFixed(2)}
             </div>
           </div>
         )}

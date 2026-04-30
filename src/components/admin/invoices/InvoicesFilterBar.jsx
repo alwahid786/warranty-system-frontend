@@ -1,24 +1,24 @@
+import { MdFilterAltOff } from "react-icons/md";
+
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
-import { LuSearch } from "react-icons/lu";
-import { MdFilterAltOff } from "react-icons/md";
 
 const searchTypes = [
   { key: "invoiceNumber", label: "INV-#" },
   { key: "warrantyCompany", label: "Company" },
   { key: "clientName", label: "Client" },
-  { key: "statementNumber", label: "Statement-#" },
+  { key: "statementNumber", label: "Statement-#" }
 ];
 
 const statementTypes = [
   { id: 1, name: "Weekly" },
   { id: 2, name: "Monthly" },
-  { id: 3, name: "Custom" },
+  { id: 3, name: "Custom" }
 ];
 
 const orderStatuses = [
   { id: 1, name: "Draft" },
-  { id: 2, name: "Finalized" },
+  { id: 2, name: "Finalized" }
 ];
 
 const defaultLocalFilters = {
@@ -29,7 +29,7 @@ const defaultLocalFilters = {
   selectedBrand: null,
   minFinalTotal: "",
   maxFinalTotal: "",
-  status: "",
+  status: ""
 };
 
 const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
@@ -148,6 +148,7 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
             value={filters.minFinalTotal}
             onChange={(e) => {
               const value = e.target.value;
+
               if (value < 0) return;
               onFilterChange({ minFinalTotal: value });
             }}
@@ -167,6 +168,7 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
             value={filters.maxFinalTotal}
             onChange={(e) => {
               const value = e.target.value;
+
               if (value < 0) return;
               onFilterChange({ maxFinalTotal: value });
             }}

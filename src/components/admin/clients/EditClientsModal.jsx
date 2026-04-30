@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
@@ -18,14 +19,14 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       city: "",
       state: "",
       country: "",
-      zip: "",
+      zip: ""
     },
     storePhone: "",
     emails: [""],
     accountOwner: "",
     businessOwner: "",
     businessOwnerView: false,
-    percentage: "",
+    percentage: ""
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -47,14 +48,14 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
           city: client.address?.city || "",
           state: client.address?.state || "",
           country: client.address?.country || "",
-          zip: client.address?.zip || "",
+          zip: client.address?.zip || ""
         },
         storePhone: client.storePhone || "",
         emails: client.emails?.length ? client.emails : [""],
         accountOwner: client.accountOwner || "",
         businessOwner: client.businessOwner || "",
         businessOwnerView: client.businessOwnerView || false,
-        percentage: client.percentage || "",
+        percentage: client.percentage || ""
       });
     }
   }, [client]);
@@ -63,13 +64,14 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
   const handleAddressChange = (field, value) => {
     setFormData({
       ...formData,
-      address: { ...formData.address, [field]: value },
+      address: { ...formData.address, [field]: value }
     });
   };
 
   // handle emails
   const handleEmailChange = (index, value) => {
     const updatedEmails = [...formData.emails];
+
     updatedEmails[index] = value;
     setFormData({ ...formData, emails: updatedEmails });
   };
@@ -82,6 +84,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
 
   const removeEmailField = (index) => {
     const updatedEmails = formData.emails.filter((_, i) => i !== index);
+
     setFormData({ ...formData, emails: updatedEmails });
   };
 
@@ -92,7 +95,10 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
     }
 
     // Filter out empty emails
-    const filteredEmails = formData.emails.filter((email) => email.trim() !== "");
+    const filteredEmails = formData.emails.filter(
+      (email) => email.trim() !== ""
+    );
+
     const dataToSubmit = { ...formData, emails: filteredEmails };
 
     onSave(dataToSubmit);
@@ -108,7 +114,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       city: "City",
       state: "State",
       country: "Country",
-      zip: "Zip Code",
+      zip: "Zip Code"
     };
 
     return mapping[field] || field.charAt(0).toUpperCase() + field.slice(1);
@@ -172,7 +178,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        clientPassword: e.target.value,
+                        clientPassword: e.target.value
                       })
                     }
                     placeholder="Enter new password"
@@ -198,7 +204,10 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     const value = e.target.value;
                     const isPlus = value.startsWith("+");
                     const digits = value.replace(/\D/g, "");
-                    const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+
+                    const finalValue =
+                      (isPlus ? "+" : "") + digits.slice(0, 11);
+
                     setFormData({ ...formData, clientPhone: finalValue });
                   }}
                   className="w-full border px-3 py-2 rounded"
@@ -243,6 +252,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   value={formData.dealerId}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
+
                     setFormData({ ...formData, dealerId: value });
                   }}
                   className="w-full border px-3 py-2 rounded"
@@ -264,7 +274,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 "city",
                 "state",
                 "country",
-                "zip",
+                "zip"
               ].map((field) => (
                 <div key={field} className="flex flex-col gap-2">
                   <label className="block text-sm font-medium">
@@ -299,6 +309,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   const isPlus = value.startsWith("+");
                   const digits = value.replace(/\D/g, "");
                   const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+
                   setFormData({ ...formData, storePhone: finalValue });
                 }}
                 className="w-full border px-3 py-2 rounded"
@@ -389,7 +400,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      businessOwnerView: e.target.checked,
+                      businessOwnerView: e.target.checked
                     })
                   }
                   className="h-4 w-4"
@@ -415,6 +426,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 value={formData.percentage}
                 onChange={(e) => {
                   let value = e.target.value;
+
                   if (value > 100) value = 100;
                   if (value < 0) value = 0;
                   setFormData({ ...formData, percentage: value });

@@ -1,42 +1,44 @@
-import clsx from "clsx";
-import Button from "../../shared/small/Button";
 import { useState, useRef, useEffect } from "react";
+
+import clsx from "clsx";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import toast from "react-hot-toast";
+import {
+  HiOutlinePencilSquare,
+  HiOutlineLockClosed,
+  HiPencil,
+  HiTrash
+} from "react-icons/hi2";
+import { saveAs } from "file-saver";
+
+import Button from "../../shared/small/Button";
 import styles from "./ivoicesCheckbox.module.css";
 import InvoiceBill from "./invoiceBillModel";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import EditInvoiceForm from "./EditInvoiceForm";
 import {
   useUpdateInvoiceMutation,
   useDeleteInvoiceMutation,
   useChangeInvoiceStatusMutation,
-  useSendInvoiceMutation,
+  useSendInvoiceMutation
 } from "../../../redux/apis/invoiceApis";
-import toast from "react-hot-toast";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
-import {
-  HiOutlinePencilSquare,
-  HiOutlineLockClosed,
-  HiPencil,
-  HiTrash,
-} from "react-icons/hi2";
-import { saveAs } from "file-saver";
 import { getRelativeTime } from "../../../utils/getDate";
 
 const statusColor = {
   draft: "bg-[#007AFF] text-white text-[14px] font-medium",
-  finalized: "bg-[#FF3B30] text-white text-[14px] font-medium",
+  finalized: "bg-[#FF3B30] text-white text-[14px] font-medium"
 };
 
 const statusIcons = {
   draft: <HiOutlinePencilSquare className="text-white w-6 h-6" />,
-  finalized: <HiOutlineLockClosed className="text-white w-6 h-6" />,
+  finalized: <HiOutlineLockClosed className="text-white w-6 h-6" />
 };
 
 export default function InvoiceCard({
   invoice,
   selected,
   onSelect,
-  clientsData,
+  clientsData
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,7 +62,7 @@ export default function InvoiceCard({
   const handleDeleteInvoice = async (data) => {
     try {
       await deleteInvoice({
-        id: data,
+        id: data
       }).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -71,7 +73,7 @@ export default function InvoiceCard({
     try {
       await updateInvoice({
         id: data?.id,
-        data: data?.data,
+        data: data?.data
       }).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -85,7 +87,9 @@ export default function InvoiceCard({
         setMenuOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -94,7 +98,7 @@ export default function InvoiceCard({
     try {
       await changeInvoiceStatus({
         id: invoice?._id,
-        data: { status: "finalized" },
+        data: { status: "finalized" }
       }).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });

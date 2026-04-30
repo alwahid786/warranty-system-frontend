@@ -7,6 +7,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
 
   // If brands is empty, no crash
   const totalPages = Math.ceil(brands.length / ITEMS_PER_PAGE) || 1;
+
   const currentBrands = brands.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE

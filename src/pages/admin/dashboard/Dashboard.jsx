@@ -1,34 +1,35 @@
 import React from "react";
+
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import TopCard from "../../../components/admin/dashboard/TopCard";
 import { recentClaims } from "../../../data/data";
 import TotalClaimsCard from "../../../components/admin/dashboard/ClaimStats/TotalclaimedsCard";
 import ClaimsByBrandCard from "../../../components/admin/dashboard/ClaimStats/ClaimsByBrandCard";
-import TopClaimBrandsChart from "../../../components/admin/dashboard/ClaimStats/TopClaimBrandsChart";
 import { ClaimsTable } from "../../../components/admin/dashboard/ClaimsTable.jsx";
 import CompaniesResponseTimeCard from "../../../components/admin/dashboard/ClaimStats/chatKPI";
 import { useGetUsersStatQuery } from "../../../redux/apis/userApis";
 import { useGetInvoicesStatQuery } from "../../../redux/apis/claimsApis";
 import { useGetClaimsStatQuery } from "../../../redux/apis/claimsApis";
 import { useGetCompaniesAvgResponseTimeQuery } from "../../../redux/apis/chatApis";
-import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const { data: invoicesData } = useGetInvoicesStatQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   const { data: usersStatsData } = useGetUsersStatQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   const { data: claimsStat } = useGetClaimsStatQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   const { data: companiesAvgResponseTime } =
     useGetCompaniesAvgResponseTimeQuery(undefined, {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: true
     });
 
   const user = useSelector((state) => state.auth.user);

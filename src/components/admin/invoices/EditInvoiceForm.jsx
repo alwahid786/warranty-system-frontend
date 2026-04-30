@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import toast from "react-hot-toast";
 
 const EditInvoiceForm = ({
@@ -6,7 +7,7 @@ const EditInvoiceForm = ({
   onClose,
   clientsData,
   invoiceData,
-  onSubmit,
+  onSubmit
 }) => {
   // main form state
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ const EditInvoiceForm = ({
     assignedPercentage: "",
     finalTotal: "",
     bypass: false,
-    explanation: "",
+    explanation: ""
   });
 
   // files
@@ -35,7 +36,10 @@ const EditInvoiceForm = ({
     if (!isOpen || !invoiceData) return;
 
     setFormData({
-      clientId: (typeof invoiceData.clientId === 'object' ? invoiceData.clientId?._id : invoiceData.clientId) || "",
+      clientId:
+        (typeof invoiceData.clientId === "object"
+          ? invoiceData.clientId?._id
+          : invoiceData.clientId) || "",
       client: invoiceData.clientName || "",
       company: invoiceData.warrantyCompany || "",
       statementType: invoiceData.statementType || "",
@@ -51,11 +55,11 @@ const EditInvoiceForm = ({
           ? Number(invoiceData.finalTotal).toFixed(2)
           : "",
       bypass: !!invoiceData.bypassPercentage || !!invoiceData.bypass,
-      explanation: invoiceData.freeTextExplanation || "",
+      explanation: invoiceData.freeTextExplanation || ""
     });
 
     setExistingFiles(invoiceData.attachedReports || []);
-    setManualEdit(false); 
+    setManualEdit(false);
   }, [invoiceData, isOpen]);
 
   // calculation logic moved to top
@@ -71,8 +75,9 @@ const EditInvoiceForm = ({
     ) {
       setFormData((prev) => ({
         ...prev,
-        finalTotal: Number(invoiceData.finalTotal).toFixed(2),
+        finalTotal: Number(invoiceData.finalTotal).toFixed(2)
       }));
+
       return;
     }
 
@@ -83,17 +88,19 @@ const EditInvoiceForm = ({
       const amt = Number(adj.amount) || 0;
       const type = String(adj.type || "").toLowerCase();
       const isCharge = /charge|add|plus|credit|increase/i.test(type);
+
       total += isCharge ? amt : -amt;
     });
 
     if (!formData.bypass) {
       const perc = Number(formData.assignedPercentage) || 0;
+
       total = total * (perc / 100);
     }
 
     setFormData((prev) => ({
       ...prev,
-      finalTotal: Number(total || 0).toFixed(2),
+      finalTotal: Number(total || 0).toFixed(2)
     }));
   }, [
     formData.statementTotal,
@@ -102,22 +109,26 @@ const EditInvoiceForm = ({
     formData.bypass,
     manualEdit,
     invoiceData,
-    isOpen,
+    isOpen
   ]);
 
   useEffect(() => {
-    if (!isOpen || !formData.clientId || !(clientsData?.data?.length)) return;
+    if (!isOpen || !formData.clientId || !clientsData?.data?.length) return;
 
     const clients_local = (clientsData?.data || []).map((c) => ({
       id: String(c._id),
       name: c.name || "",
-      companyName: c.companyName || c.storeName || "",
+      companyName: c.companyName || c.storeName || ""
     }));
 
     // normalize formData.clientId to string for comparison
-    const targetId = typeof formData.clientId === 'object' ? formData.clientId?._id : formData.clientId;
+    const targetId =
+      typeof formData.clientId === "object"
+        ? formData.clientId?._id
+        : formData.clientId;
+
     const selected = clients_local.find((c) => c.id === String(targetId));
-    
+
     if (!selected) return;
 
     setFormData((prev) => {
@@ -128,6 +139,7 @@ const EditInvoiceForm = ({
       ) {
         return prev;
       }
+
       return { ...prev, client: selected.name, company: selected.companyName };
     });
   }, [clientsData, formData.clientId, isOpen]);
@@ -138,23 +150,24 @@ const EditInvoiceForm = ({
   const clients = (clientsData?.data || []).map((c) => ({
     id: String(c._id),
     name: c.name || "",
-    companyName: c.companyName || c.storeName || "",
+    companyName: c.companyName || c.storeName || ""
   }));
 
   const onDealerChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      clientId: e.target.value,
+      clientId: e.target.value
     }));
     setManualEdit(true);
   };
 
   const handleAdjustmentChange = (index, field, value) => {
     const newAdjustments = [...formData.adjustments];
+
     newAdjustments[index][field] = value;
     setFormData((prev) => ({
       ...prev,
-      adjustments: newAdjustments,
+      adjustments: newAdjustments
     }));
     setManualEdit(true);
   };
@@ -164,23 +177,25 @@ const EditInvoiceForm = ({
       ...prev,
       adjustments: [
         ...prev.adjustments,
-        { type: "Charge", amount: "", reason: "" },
-      ],
+        { type: "Charge", amount: "", reason: "" }
+      ]
     }));
     setManualEdit(true);
   };
 
   const removeAdjustmentRow = (index) => {
     const newAdjustments = formData.adjustments.filter((_, i) => i !== index);
+
     setFormData((prev) => ({
       ...prev,
-      adjustments: newAdjustments,
+      adjustments: newAdjustments
     }));
     setManualEdit(true);
   };
 
   const handleFileUpload = (e) => {
     const newFiles = Array.from(e.target.files);
+
     setFiles((prev) => [...prev, ...newFiles]);
   };
 
@@ -201,19 +216,21 @@ const EditInvoiceForm = ({
       !formData.finalTotal
     ) {
       toast.error("Please fill all required fields");
+
       return;
     }
 
     const payload = {
       ...formData,
       status: finalize ? "finalized" : "draft",
-      existingFiles,
+      existingFiles
     };
 
     const formDataObj = new FormData();
 
     Object.keys(payload).forEach((key) => {
       const value = payload[key];
+
       if (Array.isArray(value) || typeof value === "object") {
         formDataObj.append(key, JSON.stringify(value));
       } else {
@@ -229,7 +246,7 @@ const EditInvoiceForm = ({
     // pass back
     onSubmit({
       id: invoiceData?._id,
-      data: formDataObj,
+      data: formDataObj
     });
 
     toast.success(
@@ -311,7 +328,7 @@ const EditInvoiceForm = ({
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        statementType: e.target.value,
+                        statementType: e.target.value
                       }));
                       setManualEdit(true);
                     }}
@@ -333,7 +350,7 @@ const EditInvoiceForm = ({
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    statementNumber: e.target.value,
+                    statementNumber: e.target.value
                   }))
                 }
               />
@@ -349,7 +366,7 @@ const EditInvoiceForm = ({
                 onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
-                    statementTotal: e.target.value,
+                    statementTotal: e.target.value
                   }));
                   setManualEdit(true);
                 }}
@@ -437,7 +454,7 @@ const EditInvoiceForm = ({
                 onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
-                    assignedPercentage: e.target.value,
+                    assignedPercentage: e.target.value
                   }));
                   setManualEdit(true);
                 }}
@@ -451,7 +468,7 @@ const EditInvoiceForm = ({
                 onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
-                    bypass: e.target.checked,
+                    bypass: e.target.checked
                   }));
                   setManualEdit(true);
                 }}
@@ -533,7 +550,7 @@ const EditInvoiceForm = ({
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  explanation: e.target.value,
+                  explanation: e.target.value
                 }))
               }
             />

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
@@ -6,13 +7,14 @@ import {
   Elements,
   CardElement,
   useStripe,
-  useElements,
+  useElements
 } from "@stripe/react-stripe-js";
-import LandingHeader from "../../../components/public/landing-header/landing-header";
-import Button from "../../../components/shared/small/landing-Button";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHandHoldingDollar } from "@fortawesome/free-solid-svg-icons";
+
+import Button from "../../../components/shared/small/landing-Button";
+import LandingHeader from "../../../components/public/landing-header/landing-header";
 import getEnv from "../../../configs/config";
 import { useCreatePaymentIntentMutation } from "../../../redux/apis/paymentApis";
 
@@ -35,14 +37,14 @@ function CheckoutForm({ email, amount, onClose }) {
         email,
         currency: "USD",
         amount,
-        paymentType: "donation",
+        paymentType: "donation"
       }).unwrap();
 
       const { clientSecret } = res;
       const card = elements.getElement(CardElement);
 
       const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card, billing_details: { email } },
+        payment_method: { card, billing_details: { email } }
       });
 
       if (result.error) {
@@ -73,15 +75,15 @@ function CheckoutForm({ email, amount, onClose }) {
                 fontFamily: "Inter, system-ui, sans-serif",
                 "::placeholder": {
                   color: "#6B7280",
-                  fontWeight: "400",
-                },
+                  fontWeight: "400"
+                }
               },
               invalid: {
                 color: "#EF4444",
-                iconColor: "#EF4444",
-              },
+                iconColor: "#EF4444"
+              }
             },
-            hidePostalCode: true,
+            hidePostalCode: true
           }}
           className="p-3 border border-gray-200 rounded-lg bg-white shadow-sm"
         />
@@ -131,8 +133,8 @@ export default function DonateUs() {
       "Keep the platform running",
       "Get exclusive updates",
       "Priority support",
-      "Recognition on our website",
-    ],
+      "Recognition on our website"
+    ]
   };
 
   const handleCancel = () => {
@@ -168,76 +170,80 @@ export default function DonateUs() {
         >
           {/* LEFT */}
           <Motion.div
-  className="lg:w-1/2 bg-white rounded-2xl shadow-xl border border-blue-100 p-8 flex flex-col justify-between relative overflow-hidden group"
-  whileHover={{ scale: 1.05 }}
-  transition={{ type: "spring", stiffness: 200, damping: 15 }}
->
-  <div className="absolute top-0 right-0 w-36 h-36 bg-[#0b5c83]/10 rounded-full -translate-y-16 translate-x-16 blur-2xl scale-125 group-hover:scale-150 transition-transform duration-500"></div>
-  <div className="absolute bottom-0 left-0 w-28 h-28 bg-indigo-500/10 rounded-full translate-y-12 -translate-x-12 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+            className="lg:w-1/2 bg-white rounded-2xl shadow-xl border border-blue-100 p-8 flex flex-col justify-between relative overflow-hidden group"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          >
+            <div className="absolute top-0 right-0 w-36 h-36 bg-[#0b5c83]/10 rounded-full -translate-y-16 translate-x-16 blur-2xl scale-125 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="absolute bottom-0 left-0 w-28 h-28 bg-indigo-500/10 rounded-full translate-y-12 -translate-x-12 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
 
-  <div className="relative z-10 flex flex-col items-center text-center">
-    <Motion.div
-      initial={{ rotate: 0, scale: 1, y: 0 }}
-      whileHover={{ rotate: 10, scale: 1.25, y: -5 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="relative w-20 h-20 flex items-center justify-center mb-5"
-    >
-      <div className="absolute inset-0 bg-gradient-to-tr rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
-      <div className="bg-[#0b5c83]/10 text-[#0b5c83] rounded-full p-5 shadow-lg relative z-10">
-        <FontAwesomeIcon icon={faHandHoldingDollar} className="text-3xl" />
-      </div>
-    </Motion.div>
-
-    <div className="flex flex-col gap-4 justify-between items-center w-full mb-6">
-      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-        {donationInfo.title}
-      </h3>
-      <span className="bg-[#0b5c83]/10 text-[#0b5c83] text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-        MIN ${donationInfo.minAmount}
-      </span>
-    </div>
-
-    <p className="text-gray-600 mb-8 leading-relaxed">
-      {donationInfo.description}
-    </p>
-
-    <div className="space-y-4 w-full text-left">
-      <h4 className="font-semibold text-gray-900 text-lg">
-        What your donation supports:
-      </h4>
-      <ul className="space-y-3">
-        {donationInfo.benefits.map((b, i) => (
-          <li key={i} className="flex items-center gap-3 text-gray-700 group/item">
-            <Motion.div
-              whileHover={{ rotate: 360, scale: 1.2 }}
-              transition={{ duration: 0.6 }}
-              className="w-8 h-8 bg-[#0b5c83] rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
-            >
-              <svg
-                className="w-4 h-4 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <Motion.div
+                initial={{ rotate: 0, scale: 1, y: 0 }}
+                whileHover={{ rotate: 10, scale: 1.25, y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="relative w-20 h-20 flex items-center justify-center mb-5"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </Motion.div>
-            <span className="group-hover/item:text-gray-900 transition-colors duration-300">
-              {b}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</Motion.div>
+                <div className="absolute inset-0 bg-gradient-to-tr rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="bg-[#0b5c83]/10 text-[#0b5c83] rounded-full p-5 shadow-lg relative z-10">
+                  <FontAwesomeIcon
+                    icon={faHandHoldingDollar}
+                    className="text-3xl"
+                  />
+                </div>
+              </Motion.div>
 
+              <div className="flex flex-col gap-4 justify-between items-center w-full mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {donationInfo.title}
+                </h3>
+                <span className="bg-[#0b5c83]/10 text-[#0b5c83] text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                  MIN ${donationInfo.minAmount}
+                </span>
+              </div>
 
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                {donationInfo.description}
+              </p>
+
+              <div className="space-y-4 w-full text-left">
+                <h4 className="font-semibold text-gray-900 text-lg">
+                  What your donation supports:
+                </h4>
+                <ul className="space-y-3">
+                  {donationInfo.benefits.map((b, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 text-gray-700 group/item"
+                    >
+                      <Motion.div
+                        whileHover={{ rotate: 360, scale: 1.2 }}
+                        transition={{ duration: 0.6 }}
+                        className="w-8 h-8 bg-[#0b5c83] rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
+                      >
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </Motion.div>
+                      <span className="group-hover/item:text-gray-900 transition-colors duration-300">
+                        {b}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Motion.div>
 
           {/* RIGHT */}
           <Motion.div
@@ -426,7 +432,7 @@ export default function DonateUs() {
                   </button>
                 </div>
                 <p className="text-[#0b5c83]">
-                  You're almost there! Just enter your card details
+                  You&apos;re almost there! Just enter your card details
                 </p>
               </div>
 

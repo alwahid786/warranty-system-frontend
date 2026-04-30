@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const userApis = createApi({
   reducerPath: "userApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/users`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["Users"],
 
@@ -15,18 +16,18 @@ const userApis = createApi({
       query: (params) => ({
         url: "/getUsers",
         method: "GET",
-        params,
+        params
       }),
-      providesTags: ["Users"],
+      providesTags: ["Users"]
     }),
 
     // Get single user by ID
     getUserById: builder.query({
       query: (id) => ({
         url: `/${id}`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: (result, error, id) => [{ type: "Users", id }],
+      providesTags: (result, error, id) => [{ type: "Users", id }]
     }),
 
     // Add new user
@@ -34,9 +35,9 @@ const userApis = createApi({
       query: (data) => ({
         url: "/createUser",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["Users"]
     }),
 
     // Update user
@@ -44,26 +45,26 @@ const userApis = createApi({
       query: ({ id, ...data }) => ({
         url: `/updateUser/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["Users"]
     }),
 
     // Delete user
     deleteUser: builder.mutation({
       query: (id) => ({
         url: `/deleteUser/${id}`,
-        method: "DELETE",
+        method: "DELETE"
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["Users"]
     }),
 
     // Get Active Inactive Count
     getActiveInactiveCount: builder.query({
       query: () => ({
         url: "/getActiveInactiveCount",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
 
     // Get Users Stat
@@ -71,8 +72,8 @@ const userApis = createApi({
       query: (params) => ({
         url: "/getUserStats",
         method: "GET",
-        params,
-      }),
+        params
+      })
     }),
 
     // Get Total Users Count Today, This week and this month
@@ -80,8 +81,8 @@ const userApis = createApi({
       query: (params) => ({
         url: "/getUserStatsByFilters",
         method: "GET",
-        params,
-      }),
+        params
+      })
     }),
 
     // Get Attendance Chart Data
@@ -89,10 +90,10 @@ const userApis = createApi({
       query: (params) => ({
         url: "/getUserActivityStats",
         method: "GET",
-        params,
-      }),
-    }),
-  }),
+        params
+      })
+    })
+  })
 });
 
 export const {
@@ -104,7 +105,7 @@ export const {
   useGetActiveInactiveCountQuery,
   useGetUsersStatQuery,
   useGetTotalUsersCountQuery,
-  useGetAttendanceChartDataQuery,
+  useGetAttendanceChartDataQuery
 } = userApis;
 
 export default userApis;

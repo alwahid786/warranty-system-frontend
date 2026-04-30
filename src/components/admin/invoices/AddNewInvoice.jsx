@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import toast from "react-hot-toast";
 
 const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
@@ -13,7 +14,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     assignedPercentage: "",
     finalTotal: "",
     bypass: false,
-    explanation: "",
+    explanation: ""
   });
 
   const [files, setFiles] = useState([]);
@@ -25,24 +26,26 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
 
     formData.adjustments.forEach((adj) => {
       const amt = Number(adj.amount) || 0;
+
       total += adj.type === "Charge" ? amt : -amt;
     });
 
     if (!formData.bypass) {
       const perc = Number(formData.assignedPercentage) || 0;
+
       total = total * (perc / 100);
     }
 
     setFormData((prev) => ({
       ...prev,
-      finalTotal: total.toFixed(2),
+      finalTotal: total.toFixed(2)
     }));
   }, [
     formData.statementTotal,
     formData.adjustments,
     formData.assignedPercentage,
     formData.bypass,
-    isOpen,
+    isOpen
   ]);
 
   if (!isOpen) return null;
@@ -50,17 +53,18 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   const clients = (clientsData?.data || []).map((client) => ({
     id: client?._id,
     name: client?.name,
-    companyName: client?.companyName || client?.storeName,
+    companyName: client?.companyName || client?.storeName
   }));
 
   // Dealer Change
   const onDealerChange = (e) => {
     const selectedClient = clients.find((c) => c.id === e.target.value);
+
     setFormData({
       ...formData,
       clientId: selectedClient?.id || "",
       client: selectedClient?.name || "",
-      company: "",
+      company: ""
     });
   };
 
@@ -72,6 +76,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   // Adjustments handler
   const handleAdjustmentChange = (index, field, value) => {
     const newAdjustments = [...formData.adjustments];
+
     newAdjustments[index][field] = value;
     setFormData({ ...formData, adjustments: newAdjustments });
   };
@@ -81,13 +86,14 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       ...formData,
       adjustments: [
         ...formData.adjustments,
-        { type: "Charge", amount: "", reason: "" },
-      ],
+        { type: "Charge", amount: "", reason: "" }
+      ]
     });
   };
 
   const removeAdjustmentRow = (index) => {
     const newAdjustments = [...formData.adjustments];
+
     newAdjustments.splice(index, 1);
     setFormData({ ...formData, adjustments: newAdjustments });
   };
@@ -95,8 +101,10 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   // File Upload Handler
   const handleFileUpload = (e) => {
     const uploaded = Array.from(e.target.files);
+
     if (files.length + uploaded.length > 5) {
       toast.error("Maximum 5 files allowed");
+
       return;
     }
     setFiles([...files, ...uploaded]);
@@ -104,9 +112,9 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
 
   const removeFile = (index) => {
     const newFiles = files.filter((_, i) => i !== index);
+
     setFiles(newFiles);
   };
-
 
   // Save Handler
 
@@ -114,12 +122,13 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     // Basic validation
     if (!formData.client || !formData.company || !formData.statementTotal) {
       toast.error("Please fill all required fields");
+
       return;
     }
 
     const payload = {
       ...formData,
-      status: finalize ? "finalized" : "draft",
+      status: finalize ? "finalized" : "draft"
     };
 
     const formDataObj = new FormData();
@@ -300,7 +309,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  assignedPercentage: e.target.value,
+                  assignedPercentage: e.target.value
                 })
               }
             />

@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import AddClientModal from "./AddClientModal";
-import { Phone, Eye, EyeOff } from "lucide-react";
+
+import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
+import { MdClose } from "react-icons/md";
+
 import {
   useAddClientMutation,
   useGetClientsStatByFiltersQuery,
-  useGetClientsActivityStatsQuery,
+  useGetClientsActivityStatsQuery
 } from "../../../redux/apis/clientsApis";
-import toast from "react-hot-toast";
-import { MdClose } from "react-icons/md";
+import AddClientModal from "./AddClientModal";
 
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     clientName: "",
     clientEmail: "",
@@ -26,27 +29,28 @@ const ClientsHeader = () => {
       city: "",
       state: "",
       country: "",
-      zip: "",
+      zip: ""
     },
     storePhone: "",
     emails: [""],
     accountOwner: "",
     businessOwner: "",
     businessOwnerView: false,
-    percentage: "",
+    percentage: ""
   });
 
   // Handle nested address updates
   const handleAddressChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
-      address: { ...prev.address, [field]: value },
+      address: { ...prev.address, [field]: value }
     }));
   };
 
   // Handle email updates
   const handleEmailChange = (index, value) => {
     const updatedEmails = [...formData.emails];
+
     updatedEmails[index] = value;
     setFormData((prev) => ({ ...prev, emails: updatedEmails }));
   };
@@ -61,14 +65,14 @@ const ClientsHeader = () => {
   // Remove email field
   const removeEmailField = (index) => {
     const updatedEmails = [...formData.emails];
+
     updatedEmails.splice(index, 1);
     setFormData((prev) => ({ ...prev, emails: updatedEmails }));
   };
 
   const [addClient, { isLoading }] = useAddClientMutation();
 
-  const { refetch: getClientsStatRefetch } =
-    useGetClientsStatByFiltersQuery();
+  const { refetch: getClientsStatRefetch } = useGetClientsStatByFiltersQuery();
 
   const { refetch: getClientsActivityStatRefetch } =
     useGetClientsActivityStatsQuery();
@@ -82,10 +86,14 @@ const ClientsHeader = () => {
       }
 
       // Filter out empty emails
-      const filteredEmails = formData.emails.filter((email) => email.trim() !== "");
+      const filteredEmails = formData.emails.filter(
+        (email) => email.trim() !== ""
+      );
+
       const dataToSubmit = { ...formData, emails: filteredEmails };
 
       const res = await addClient(dataToSubmit).unwrap();
+
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
         setIsOpen(false);
@@ -103,14 +111,14 @@ const ClientsHeader = () => {
             city: "",
             state: "",
             country: "",
-            zip: "",
+            zip: ""
           },
           storePhone: "",
           emails: [""],
           accountOwner: "",
           businessOwner: "",
           businessOwnerView: false,
-          percentage: "",
+          percentage: ""
         });
         await getClientsStatRefetch();
         await getClientsActivityStatRefetch();
@@ -192,7 +200,10 @@ const ClientsHeader = () => {
                     type={showPassword ? "text" : "password"}
                     value={formData.clientPassword}
                     onChange={(e) =>
-                      setFormData({ ...formData, clientPassword: e.target.value })
+                      setFormData({
+                        ...formData,
+                        clientPassword: e.target.value
+                      })
                     }
                     placeholder="Enter Password"
                     className="w-full border px-3 py-2 rounded pr-10"
@@ -218,7 +229,10 @@ const ClientsHeader = () => {
                     const value = e.target.value;
                     const isPlus = value.startsWith("+");
                     const digits = value.replace(/\D/g, "");
-                    const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+
+                    const finalValue =
+                      (isPlus ? "+" : "") + digits.slice(0, 11);
+
                     setFormData({ ...formData, clientPhone: finalValue });
                   }}
                   placeholder="Phone Number"
@@ -260,6 +274,7 @@ const ClientsHeader = () => {
                   value={formData.dealerId}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
+
                     setFormData({ ...formData, dealerId: value });
                   }}
                   placeholder="Enter Dealer ID"
@@ -345,6 +360,7 @@ const ClientsHeader = () => {
                   const isPlus = value.startsWith("+");
                   const digits = value.replace(/\D/g, "");
                   const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+
                   setFormData({ ...formData, storePhone: finalValue });
                 }}
                 placeholder="Phone Number"
@@ -432,7 +448,7 @@ const ClientsHeader = () => {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      businessOwnerView: e.target.checked,
+                      businessOwnerView: e.target.checked
                     })
                   }
                   className="h-4 w-4"
@@ -458,6 +474,7 @@ const ClientsHeader = () => {
                 value={formData.percentage}
                 onChange={(e) => {
                   let value = e.target.value;
+
                   if (value > 100) value = 100;
                   if (value < 0) value = 0;
                   setFormData({ ...formData, percentage: value });
@@ -474,7 +491,9 @@ const ClientsHeader = () => {
               type="submit"
               disabled={isLoading}
               className={`bg-primary text-white px-4 py-2 rounded w-full transition-all ${
-                isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary-dark"
+                isLoading
+                  ? "opacity-70 cursor-not-allowed"
+                  : "hover:bg-primary-dark"
               }`}
             >
               {isLoading ? "Saving..." : "Save"}

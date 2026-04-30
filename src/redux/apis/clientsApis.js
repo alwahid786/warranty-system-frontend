@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const clientApis = createApi({
   reducerPath: "clientApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/clients`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["Clients"],
 
@@ -14,18 +15,18 @@ const clientApis = createApi({
     getClients: builder.query({
       query: () => ({
         url: "/getClients",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Clients"],
+      providesTags: ["Clients"]
     }),
 
     // Get single Client by ID
     getClientById: builder.query({
       query: (id) => ({
         url: `/${id}`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: (result, error, id) => [{ type: "Clients", id }],
+      providesTags: (result, error, id) => [{ type: "Clients", id }]
     }),
 
     // Add new Client
@@ -33,9 +34,9 @@ const clientApis = createApi({
       query: (data) => ({
         url: "/createClient",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Clients"],
+      invalidatesTags: ["Clients"]
     }),
 
     // Update Client
@@ -43,52 +44,52 @@ const clientApis = createApi({
       query: ({ id, ...data }) => ({
         url: `/updateClient/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Clients"],
+      invalidatesTags: ["Clients"]
     }),
 
     // Delete Client
     deleteClient: builder.mutation({
       query: (id) => ({
         url: `/deleteClient/${id}`,
-        method: "DELETE",
+        method: "DELETE"
       }),
-      invalidatesTags: ["Clients"],
+      invalidatesTags: ["Clients"]
     }),
 
     // Get Active Inactive Count
     getActiveInactiveCount: builder.query({
       query: () => ({
         url: "/getActiveInactiveCount",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
 
     // Get Clients Stat
     getClientsStat: builder.query({
       query: () => ({
         url: "/getClientStats",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
 
     // Get Clients Stats By Filters Today, Week, Month
     getClientsStatByFilters: builder.query({
       query: () => ({
         url: "/getClientsStatsByFilters",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
 
     // Get Clients Activity Stats
     getClientsActivityStats: builder.query({
       query: () => ({
         url: "/getClientsActivityStats",
-        method: "GET",
-      }),
-    }),
-  }),
+        method: "GET"
+      })
+    })
+  })
 });
 
 export const {
@@ -100,7 +101,7 @@ export const {
   useGetActiveInactiveCountQuery,
   useGetClientsStatQuery,
   useGetClientsStatByFiltersQuery,
-  useGetClientsActivityStatsQuery,
+  useGetClientsActivityStatsQuery
 } = clientApis;
 
 export default clientApis;

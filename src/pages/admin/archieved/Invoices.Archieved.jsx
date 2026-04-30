@@ -1,8 +1,9 @@
 // import { invoices as allInvoices } from '../../../data/data';
 // import InvoiceCard from "../../../components/admin/invoices/InvoicesCard";
+import { useState } from "react";
+
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
-import { useState } from "react";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
 import { useGetArchieveInvoicesQuery } from "../../../redux/apis/invoiceApis";
@@ -15,22 +16,24 @@ const defaultFilters = {
   fromDate: "",
   toDate: "",
   selectedBrand: null,
-  status: "",
+  status: ""
 };
 
 const ArchievedInvoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+
   const handleChatOpen = (invoice) => {
     // Chat functionality not fully implemented in this archived view
     console.log("Chat open for archived invoice:", invoice);
   };
+
   const { data } = useGetArchieveInvoicesQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
-  const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
+  const allInvoices = Array.isArray(data) ? data : (data?.data ?? []);
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -39,6 +42,7 @@ const ArchievedInvoices = () => {
   };
 
   const totalPages = Math.ceil(allInvoices.length / ITEMS_PER_PAGE);
+
   const currentInvoices = allInvoices.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
@@ -57,6 +61,7 @@ const ArchievedInvoices = () => {
       const fieldValue = String(
         invoice[filters.searchType] || ""
       ).toLowerCase();
+
       if (!fieldValue.includes(filters.searchValue.toLowerCase())) {
         isMatch = false;
       }
@@ -65,12 +70,14 @@ const ArchievedInvoices = () => {
     // 2. From / To Invoice Date
     if (filters.fromDate) {
       const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
+
       if (invDate < new Date(filters.fromDate)) {
         isMatch = false;
       }
     }
     if (filters.toDate) {
       const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
+
       if (invDate > new Date(filters.toDate)) {
         isMatch = false;
       }

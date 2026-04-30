@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
@@ -15,7 +16,9 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
         setMenuOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -115,14 +118,16 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
               {new Date(user?.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
-                day: "numeric",
+                day: "numeric"
               })}
             </p>
           </div>
         </div>
         <div className="flex min-w-0 items-start gap-2 text-gray-700">
           <MdEmail className="text-gray-500" />
-          <span className="min-w-0 break-all sm:break-normal sm:truncate">{user?.email}</span>
+          <span className="min-w-0 break-all sm:break-normal sm:truncate">
+            {user?.email}
+          </span>
         </div>
         <div className="flex items-center gap-2 text-gray-700">
           <PiPhoneCallFill className="text-gray-500" />

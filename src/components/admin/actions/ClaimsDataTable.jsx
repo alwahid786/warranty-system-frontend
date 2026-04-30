@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+
 import DataTable from "react-data-table-component";
 import {
   HiChatBubbleLeftRight,
@@ -6,22 +7,23 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiChevronLeft,
-  HiChevronRight,
+  HiChevronRight
 } from "react-icons/hi2";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { createPortal } from "react-dom";
+
 import ChatModal from "../../shared/small/ChatModal";
 import {
   useUpdateClaimsMutation,
   useUpdateClaimsAdditionalDataMutation,
   useDeleteClaimMutation,
-  useDeleteBulkClaimsMutation,
+  useDeleteBulkClaimsMutation
 } from "../../../redux/apis/claimsApis";
-import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
 import EditClaimsModal from "./EditClaimsModal";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
-import { createPortal } from "react-dom";
 import Button from "../../shared/small/Button";
 
 const normalizeId = (value) => {
@@ -29,6 +31,7 @@ const normalizeId = (value) => {
   if (typeof value === "string") return value;
   if (typeof value === "object" && value.$oid) return value.$oid;
   if (typeof value?.toString === "function") return value.toString();
+
   return String(value);
 };
 
@@ -41,6 +44,7 @@ const StatusDropdown = ({ status, onChange }) => {
 
   // Button color logic
   let btnColor = "bg-[#FFCC00] text-white";
+
   if (status === "PC") btnColor = "bg-[#3B82F6] text-white";
   else if (status === "PO") btnColor = "bg-[#22C55E] text-white";
   else if (status === "PQ") btnColor = "bg-[#F97316] text-white";
@@ -60,7 +64,9 @@ const StatusDropdown = ({ status, onChange }) => {
         setOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClick);
+
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
@@ -78,7 +84,7 @@ const StatusDropdown = ({ status, onChange }) => {
         setCoords({
           top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
           left: rect.left,
-          width: rect.width,
+          width: rect.width
         });
       }
     };
@@ -98,15 +104,17 @@ const StatusDropdown = ({ status, onChange }) => {
 
   const handleToggle = () => {
     const nextOpen = !open;
+
     if (nextOpen && ref.current) {
       const rect = ref.current.getBoundingClientRect();
       const screenHeight = window.innerHeight;
       const menuHeight = 200;
       const wouldOverflow = rect.bottom + menuHeight > screenHeight;
+
       setCoords({
         top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
         left: rect.left,
-        width: rect.width,
+        width: rect.width
       });
     }
     setOpen(nextOpen);
@@ -132,7 +140,7 @@ const StatusDropdown = ({ status, onChange }) => {
               position: "fixed",
               top: coords.top,
               left: coords.left,
-              width: coords.width,
+              width: coords.width
             }}
           >
             {options.map((opt) => (
@@ -162,24 +170,24 @@ const customStyles = {
       minHeight: "64px",
       padding: "20px 0",
       "&:nth-of-type(even)": {
-        backgroundColor: "#f9fafb",
-      },
+        backgroundColor: "#f9fafb"
+      }
     },
     highlightOnHoverStyle: {
-      backgroundColor: "#32B0FF21",
-    },
+      backgroundColor: "#32B0FF21"
+    }
   },
   headCells: {
     style: {
       fontWeight: "bold",
-      fontSize: "14px",
-    },
+      fontSize: "14px"
+    }
   },
   pagination: {
     style: {
       borderTop: "1px solid #e5e7eb",
-      minHeight: "56px",
-    },
+      minHeight: "56px"
+    }
   },
   pageButtonsStyle: {
     borderRadius: "50%",
@@ -193,15 +201,14 @@ const customStyles = {
     fill: "#043655",
     backgroundColor: "transparent",
     "&:hover:not(:disabled)": {
-      backgroundColor: "#f3f4f6",
+      backgroundColor: "#f3f4f6"
     },
     "&:focus": {
       outline: "none",
-      backgroundColor: "#f3f4f6",
-    },
-  },
+      backgroundColor: "#f3f4f6"
+    }
+  }
 };
-
 
 const ClaimsDataTable = ({
   data,
@@ -209,7 +216,7 @@ const ClaimsDataTable = ({
   onSelectionChange,
   archived = false,
   openChatClaimId = null,
-  onNotificationChatOpened,
+  onNotificationChatOpened
 }) => {
   const [tableData, setTableData] = useState(data);
   const [chatUser, setChatUser] = useState(null);
@@ -228,7 +235,10 @@ const ClaimsDataTable = ({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteClaimId, setDeleteClaimId] = useState(null);
   const [deleteClaim] = useDeleteClaimMutation();
-  const [deleteBulkClaims, { isLoading: isDeletingBulk }] = useDeleteBulkClaimsMutation();
+
+  const [deleteBulkClaims, { isLoading: isDeletingBulk }] =
+    useDeleteBulkClaimsMutation();
+
   const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [triggerEl, setTriggerEl] = useState(null);
@@ -243,7 +253,7 @@ const ClaimsDataTable = ({
 
         setMenuPosition({
           top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
-          left: rect.right - 180,
+          left: rect.right - 180
         });
       }
     };
@@ -270,12 +280,13 @@ const ClaimsDataTable = ({
       const screenHeight = window.innerHeight;
       const menuHeight = 160;
       const wouldOverflow = rect.bottom + menuHeight > screenHeight;
+
       setMenuPosition({
         top: wouldOverflow ? rect.top - menuHeight : rect.bottom,
-        left: rect.right - 180,
+        left: rect.right - 180
       });
     }
-    
+
     setTriggerEl(isOpening ? el : null);
     setToggleActionsMenu(isOpening ? row : null);
   };
@@ -296,7 +307,7 @@ const ClaimsDataTable = ({
       await updateClaims({
         id: row._id,
         status: newStatus,
-        archived: archived,
+        archived: archived
       }).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -325,7 +336,7 @@ const ClaimsDataTable = ({
     try {
       await updateClaimsAdditionalData({
         id: updatedClaim._id,
-        claimData: updatedClaim,
+        claimData: updatedClaim
       }).unwrap();
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -352,13 +363,14 @@ const ClaimsDataTable = ({
 
   const handleBulkDelete = async () => {
     const ids = selectedClaims.map((claim) => claim._id);
+
     try {
       await deleteBulkClaims(ids).unwrap();
       onSelectionChange([]);
       setIsBulkDeleteOpen(false);
     } catch (err) {
       toast.error(err.data.message || "Failed to delete claims", {
-        duration: 3000,
+        duration: 3000
       });
     }
   };
@@ -401,6 +413,7 @@ const ClaimsDataTable = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [triggerEl]);
 
@@ -424,7 +437,7 @@ const ClaimsDataTable = ({
       ),
       sortable: false,
       grow: 2,
-      width: "200px",
+      width: "200px"
     },
     {
       name: "Job #",
@@ -433,7 +446,7 @@ const ClaimsDataTable = ({
         <span className="text-dark font-normal text-xs ">{row.jobNumber}</span>
       ),
       sortable: true,
-      width: "90px",
+      width: "90px"
     },
     {
       name: "Quoted",
@@ -442,7 +455,7 @@ const ClaimsDataTable = ({
         <span className="text-dark font-normal text-xs ">{row.quoted}</span>
       ),
       sortable: true,
-      width: "110px",
+      width: "110px"
     },
     {
       name: "Status",
@@ -453,7 +466,7 @@ const ClaimsDataTable = ({
         />
       ),
       sortable: false,
-      width: "100px",
+      width: "100px"
     },
     {
       name: "Entry Date",
@@ -462,18 +475,20 @@ const ClaimsDataTable = ({
         <span className="text-dark font-normal text-xs ">{row.entryDate}</span>
       ),
       sortable: false,
-      width: "110px",
+      width: "110px"
     },
     {
       name: "Created By",
       selector: (row) => row.owner,
       cell: (row) => {
         const owner = row.owner;
+
         if (!owner) return <span className="text-xs">Unknown</span>;
         if (owner.role === "admin")
           return <span className="text-xs font-semibold">Admin</span>;
-        
+
         const parent = owner.owner;
+
         const displayName =
           owner.warrantyCompany ||
           owner.storeName ||
@@ -488,7 +503,7 @@ const ClaimsDataTable = ({
         return <span className="text-xs">{displayName}</span>;
       },
       sortable: true,
-      width: "129px",
+      width: "129px"
     },
     {
       name: "Error Description",
@@ -516,7 +531,7 @@ const ClaimsDataTable = ({
         </div>
       ),
       grow: 3,
-      width: "180px",
+      width: "180px"
     },
     {
       name: "Additional Information",
@@ -544,8 +559,8 @@ const ClaimsDataTable = ({
         </div>
       ),
       grow: 2,
-      width: "190px",
-    },
+      width: "190px"
+    }
   ];
 
   // to show internal notes to admin only
@@ -576,7 +591,7 @@ const ClaimsDataTable = ({
         </div>
       ),
       grow: 2,
-      width: "130px",
+      width: "130px"
     });
   }
 
@@ -602,7 +617,7 @@ const ClaimsDataTable = ({
               style={{
                 position: "fixed",
                 top: menuPosition.top,
-                left: menuPosition.left,
+                left: menuPosition.left
               }}
             >
               <button
@@ -649,7 +664,7 @@ const ClaimsDataTable = ({
           )}
       </div>
     ),
-    width: "100px",
+    width: "100px"
   });
 
   return (
@@ -687,7 +702,7 @@ const ClaimsDataTable = ({
               rangeSeparatorText: "of",
               noRowsPerPage: false,
               selectAllRowsItem: false,
-              selectAllRowsItemText: "All",
+              selectAllRowsItemText: "All"
             }}
             paginationIconNext={<HiChevronRight size={20} />}
             paginationIconPrevious={<HiChevronLeft size={20} />}
@@ -754,4 +769,5 @@ const ClaimsDataTable = ({
     </div>
   );
 };
+
 export default ClaimsDataTable;

@@ -1,14 +1,16 @@
+import { useRef } from "react";
+
 import { MdOutlineFileDownload } from "react-icons/md";
 import { LuUpload } from "react-icons/lu";
+import toast from "react-hot-toast";
+import { saveAs } from "file-saver";
+
 import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
 // import ClaimsFilterBar from "./ClaimsFilterBar";
-import { useRef } from "react";
 import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useAddArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
-import toast from "react-hot-toast";
-import { saveAs } from "file-saver";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
 
 const ClaimsListHeader = ({
@@ -17,7 +19,7 @@ const ClaimsListHeader = ({
   setSelectedClaims,
   showImportExport = true,
   targetClientId = "",
-  targetClientName = "",
+  targetClientName = ""
 }) => {
   const fileInputRef = useRef(null);
   const [addClaims] = useAddClaimsMutation();
@@ -28,6 +30,7 @@ const ClaimsListHeader = ({
   const handleAddArchieveClaims = async (e) => {
     e.preventDefault();
     let selectedClaimsIds = [];
+
     selectedClaims.forEach((claim) => {
       selectedClaimsIds.push(claim._id);
     });
@@ -50,9 +53,11 @@ const ClaimsListHeader = ({
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
+
     if (file && file.type === "text/csv") {
       // send to backend
       const formData = new FormData();
+
       formData.append("file", file);
       if (targetClientId) {
         formData.append("targetClientId", targetClientId);
@@ -68,13 +73,13 @@ const ClaimsListHeader = ({
   const handleExportClaims = async () => {
     try {
       const blob = await getExportClaims().unwrap();
+
       saveAs(blob, "claims_export.csv");
       toast.success("Claims exported successfully", { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message || "Failed to export", { duration: 3000 });
     }
   };
-
 
   return (
     <>
@@ -93,19 +98,15 @@ const ClaimsListHeader = ({
 
         {/* Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
-
           <Button
             icon={<ArchievedIcon className="text-xs sm:text-sm" />}
-            text={
-              showImportExport ? "Move To Archive" : "Move Out of Archive"
-            }
+            text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
             color="text-white"
             disabled={claims?.length === 0 || selectedClaims?.length === 0}
             style={{
-              cursor:
-                selectedClaims?.length === 0 ? "not-allowed" : "pointer",
-              opacity: selectedClaims?.length === 0 ? 0.6 : 1,
+              cursor: selectedClaims?.length === 0 ? "not-allowed" : "pointer",
+              opacity: selectedClaims?.length === 0 ? 0.6 : 1
             }}
             onClick={handleAddArchieveClaims}
             cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
@@ -123,7 +124,7 @@ const ClaimsListHeader = ({
                 disabled={claims?.length === 0}
                 style={{
                   cursor: claims?.length === 0 ? "not-allowed" : "pointer",
-                  opacity: claims?.length === 0 ? 0.6 : 1,
+                  opacity: claims?.length === 0 ? 0.6 : 1
                 }}
               />
               <div className="flex gap-2 justify-end">
@@ -149,8 +150,6 @@ const ClaimsListHeader = ({
           )}
         </div>
       </div>
-
-
     </>
   );
 };

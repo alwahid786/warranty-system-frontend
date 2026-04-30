@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const claimsApis = createApi({
   reducerPath: "claimsApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/claims`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["Claims"],
 
@@ -15,9 +16,9 @@ const claimsApis = createApi({
       query: (params) => ({
         url: "/getClaims",
         method: "GET",
-        params,
+        params
       }),
-      providesTags: ["Claims"],
+      providesTags: ["Claims"]
     }),
 
     // Add new Claims
@@ -25,9 +26,9 @@ const claimsApis = createApi({
       query: (data) => ({
         url: "/createClaims",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // export Claims
@@ -35,9 +36,9 @@ const claimsApis = createApi({
       query: () => ({
         url: "/exportClaims",
         method: "GET",
-        responseHandler: (res) => res.blob(),
+        responseHandler: (res) => res.blob()
       }),
-      providesTags: ["Claims"],
+      providesTags: ["Claims"]
     }),
 
     // Update Claims
@@ -45,9 +46,9 @@ const claimsApis = createApi({
       query: ({ id, ...data }) => ({
         url: `/updateClaim/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // Update Claims Additional Data
@@ -55,18 +56,18 @@ const claimsApis = createApi({
       query: ({ id, ...data }) => ({
         url: `/updateClaimAdditionalData/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // Delete Claim
     deleteClaim: builder.mutation({
       query: (id) => ({
         url: `/deleteClaim/${id}`,
-        method: "DELETE",
+        method: "DELETE"
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // Delete Bulk Claims
@@ -74,18 +75,18 @@ const claimsApis = createApi({
       query: (data) => ({
         url: "/deleteBulkClaims",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // get Archieve Claims
     getArchieveClaims: builder.query({
       query: () => ({
         url: "/getArchieveClaims",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Claims"],
+      providesTags: ["Claims"]
     }),
 
     // Add Archieve Claims
@@ -93,9 +94,9 @@ const claimsApis = createApi({
       query: (data) => ({
         url: "/createArchieveClaims",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // move claims out of archieve
@@ -103,29 +104,29 @@ const claimsApis = createApi({
       query: (data) => ({
         url: "/removeArchieveClaims",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Claims"],
+      invalidatesTags: ["Claims"]
     }),
 
     // Get Invoices Dashboard Stats
     getInvoicesStat: builder.query({
       query: () => ({
         url: "/getInvoicesStats",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Claims"],
+      providesTags: ["Claims"]
     }),
 
     // Get Invoices Dashboard Stats
     getClaimsStat: builder.query({
       query: () => ({
         url: "/getClaimsStats",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Claims"],
-    }),
-  }),
+      providesTags: ["Claims"]
+    })
+  })
 });
 
 export const {
@@ -141,7 +142,7 @@ export const {
   useGetClaimsStatQuery,
   useUpdateClaimsAdditionalDataMutation,
   useDeleteClaimMutation,
-  useDeleteBulkClaimsMutation,
+  useDeleteBulkClaimsMutation
 } = claimsApis;
 
 export default claimsApis;

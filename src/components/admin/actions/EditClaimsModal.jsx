@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
 
@@ -28,6 +29,7 @@ const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
       !formData?.errorDescription
     ) {
       toast.error("Please fill out all fields", { duration: 3000 });
+
       return;
     }
     onSubmit(formData);

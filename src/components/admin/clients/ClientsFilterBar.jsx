@@ -1,26 +1,25 @@
-import React from "react";
+import { MdFilterAltOff } from "react-icons/md";
+
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
-import { LuSearch } from "react-icons/lu";
-import { MdFilterAltOff } from "react-icons/md";
 
 const searchTypes = [
   { key: "dealerId", label: "Dealer-ID" },
   { key: "name", label: "NAME" },
   { key: "email", label: "EMAIL" },
-  { key: "phone", label: "PHONE" },
+  { key: "phone", label: "PHONE" }
 ];
 
 const searchTypes2 = [
   { key: "companyName", label: "Company" },
   { key: "accountOwner", label: "Account Owner" },
-  { key: "businessOwner", label: "Business Owner" },
+  { key: "businessOwner", label: "Business Owner" }
 ];
 
 export default function ClientsFilterBar({
   filters = {},
   onFilterChange,
-  onReset,
+  onReset
 }) {
   return (
     <div className="w-full rounded-md mt-4 flex flex-col gap-4">
@@ -66,7 +65,7 @@ export default function ClientsFilterBar({
                 id: filters.searchType,
                 name:
                   searchTypes.find((s) => s.key === filters.searchType)
-                    ?.label || "Select Search Type",
+                    ?.label || "Select Search Type"
               }}
               onChange={(val) => onFilterChange({ searchType: val?.id })}
               width="w-full"
@@ -114,7 +113,7 @@ export default function ClientsFilterBar({
                 id: filters.searchType2,
                 name:
                   searchTypes2.find((s) => s.key === filters.searchType2)
-                    ?.label || "Select Search Type",
+                    ?.label || "Select Search Type"
               }}
               onChange={(val) => onFilterChange({ searchType2: val?.id })}
               width="w-full"

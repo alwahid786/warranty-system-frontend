@@ -1,11 +1,16 @@
 import { useState, useMemo } from "react";
+
 import { ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { ChevronDown } from "lucide-react";
 import { BsArrowUpRightCircle } from "react-icons/bs";
 
 const FILTER_OPTIONS = ["Today", "This Week", "This Month", "This Year"];
 
-const TotalClientsCard = ({ clientsStats: stats, selectedFilter, onFilterChange }) => {
+const TotalClientsCard = ({
+  clientsStats: stats,
+  selectedFilter,
+  onFilterChange
+}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   // Map API data to UI structure
@@ -18,40 +23,40 @@ const TotalClientsCard = ({ clientsStats: stats, selectedFilter, onFilterChange 
         growth: stats.today?.change || 0,
         chart: [
           { name: "Today", value: stats.today?.count || 0 },
-          { name: "Yesterday", value: stats.today?.prev || 0 },
-        ],
+          { name: "Yesterday", value: stats.today?.prev || 0 }
+        ]
       },
       "This Week": {
         value: stats.thisWeek?.count || 0,
         growth: stats.thisWeek?.change || 0,
         chart: [
           { name: "This Week", value: stats.thisWeek?.count || 0 },
-          { name: "Last Week", value: stats.thisWeek?.prev || 0 },
-        ],
+          { name: "Last Week", value: stats.thisWeek?.prev || 0 }
+        ]
       },
       "This Month": {
         value: stats.thisMonth?.count || 0,
         growth: stats.thisMonth?.change || 0,
         chart: [
           { name: "This Month", value: stats.thisMonth?.count || 0 },
-          { name: "Last Month", value: stats.thisMonth?.prev || 0 },
-        ],
+          { name: "Last Month", value: stats.thisMonth?.prev || 0 }
+        ]
       },
       "This Year": {
         value: stats.thisYear?.count || 0,
         growth: stats.thisYear?.change || 0,
         chart: [
           { name: "This Year", value: stats.thisYear?.count || 0 },
-          { name: "Last Year", value: stats.thisYear?.prev || 0 },
-        ],
-      },
+          { name: "Last Year", value: stats.thisYear?.prev || 0 }
+        ]
+      }
     };
   }, [stats]);
 
   const currentData = DATA_MAP[selectedFilter] || {
     value: 0,
     growth: 0,
-    chart: [],
+    chart: []
   };
 
   return (
@@ -124,6 +129,7 @@ const TotalClientsCard = ({ clientsStats: stats, selectedFilter, onFilterChange 
               <Bar dataKey="value" radius={[2, 2, 0, 0]} barSize={14}>
                 {currentData.chart.map((entry, index) => {
                   const colors = ["#1292DB1A", "#073C5B"];
+
                   return (
                     <Cell
                       key={`cell-${index}`}

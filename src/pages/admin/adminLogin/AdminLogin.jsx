@@ -1,15 +1,17 @@
 import { useState } from "react";
+
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { HiEye } from "react-icons/hi2";
+import { HiEyeOff } from "react-icons/hi";
+
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
-import { useDispatch } from "react-redux";
 import { useLoginMutation } from "../../../redux/apis/authApis";
 import { useForgetPasswordMutation } from "../../../redux/apis/authApis";
 import { userExist } from "../../../redux/slices/authSlice";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
-import { HiEye } from "react-icons/hi2";
-import { HiEyeOff } from "react-icons/hi";
 
 function AdminLogin() {
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -17,12 +19,14 @@ function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     newPassword: "",
-    confirmPassword: "",
+    confirmPassword: ""
   });
+
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
   const [forgetPassword] = useForgetPasswordMutation();
@@ -50,6 +54,7 @@ function AdminLogin() {
     e.preventDefault();
     try {
       const res = await forgetPassword(formData).unwrap();
+
       dispatch(userExist(res.data));
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
@@ -87,8 +92,8 @@ function AdminLogin() {
                 {forgotPassword
                   ? "Forgot Password"
                   : resetPassword
-                  ? "Reset Your Password"
-                  : "Welcome to Precision Warranty"}
+                    ? "Reset Your Password"
+                    : "Welcome to Precision Warranty"}
               </p>
               <form action="" className="flex flex-col gap-10">
                 <div className="flex flex-col gap-2">
@@ -109,7 +114,7 @@ function AdminLogin() {
                         resetPassword
                           ? setFormData({
                               ...formData,
-                              newPassword: e.target.value,
+                              newPassword: e.target.value
                             })
                           : setFormData({ ...formData, email: e.target.value });
                       }}
@@ -139,7 +144,7 @@ function AdminLogin() {
                         onChange={(e) => {
                           setFormData({
                             ...formData,
-                            confirmPassword: e.target.value,
+                            confirmPassword: e.target.value
                           });
                         }}
                         className="bg-white border pr-10"
@@ -201,8 +206,8 @@ function AdminLogin() {
                     forgotPassword
                       ? "Send Resent Link"
                       : resetPassword
-                      ? "Reset Password"
-                      : "Login"
+                        ? "Reset Password"
+                        : "Login"
                   }
                 />
               </form>

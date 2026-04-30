@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
+
 import { FaUsers, FaUserCheck } from "react-icons/fa";
 import { FaUserLargeSlash } from "react-icons/fa6";
 import { MdOutlinePendingActions } from "react-icons/md";
-import { HiChevronDown } from "react-icons/hi2";
 
 const TopCards = ({ usersData, invoiceData }) => {
   // Dropdown state for each card
@@ -10,7 +10,7 @@ const TopCards = ({ usersData, invoiceData }) => {
     users: "7",
     active: "7",
     inactive: "7",
-    invoices: "7",
+    invoices: "7"
   });
 
   const formatChange = (value) => {
@@ -18,17 +18,19 @@ const TopCards = ({ usersData, invoiceData }) => {
       return { text: "0% same as last X days", color: "text-gray-500" };
 
     const sign = value > 0 ? "+" : "";
+
     const color =
       value > 0
         ? "text-green-600"
         : value < 0
-        ? "text-red-600"
-        : "text-gray-500";
+          ? "text-red-600"
+          : "text-gray-500";
+
     const word = value > 0 ? "better" : value < 0 ? "worse" : "same";
 
     return {
       text: `It's ${sign}${value}% ${word} than last X days`,
-      color,
+      color
     };
   };
 
@@ -40,7 +42,7 @@ const TopCards = ({ usersData, invoiceData }) => {
         <FaUsers className="text-3xl text-[#043655] bg-[#EBF7FF] rounded-md p-1" />
       ),
       value: usersData?.userCount?.[`totalUser${range.users}`] ?? 0,
-      change: usersData?.userCount?.[`percentUser${range.users}`] ?? 0,
+      change: usersData?.userCount?.[`percentUser${range.users}`] ?? 0
     },
     {
       id: "active",
@@ -49,7 +51,7 @@ const TopCards = ({ usersData, invoiceData }) => {
         <FaUserCheck className="text-3xl text-[#043655] bg-[#EBF7FF] rounded-md p-1" />
       ),
       value: usersData?.activeCount?.[`totalActive${range.active}`] ?? 0,
-      change: usersData?.activeCount?.[`percentActive${range.active}`] ?? 0,
+      change: usersData?.activeCount?.[`percentActive${range.active}`] ?? 0
     },
     {
       id: "inactive",
@@ -59,7 +61,7 @@ const TopCards = ({ usersData, invoiceData }) => {
       ),
       value: usersData?.inactiveCount?.[`totalInactive${range.inactive}`] ?? 0,
       change:
-        usersData?.inactiveCount?.[`percentInactive${range.inactive}`] ?? 0,
+        usersData?.inactiveCount?.[`percentInactive${range.inactive}`] ?? 0
     },
     {
       id: "invoices",
@@ -68,8 +70,8 @@ const TopCards = ({ usersData, invoiceData }) => {
         <MdOutlinePendingActions className="text-3xl text-red-400 bg-[#FCE7E766] rounded-md p-1" />
       ),
       value: invoiceData?.data?.[`totalInvoicesIn${range.invoices}Days`] ?? 0,
-      change: invoiceData?.data?.[`percentageIn${range.invoices}Days`] ?? 0,
-    },
+      change: invoiceData?.data?.[`percentageIn${range.invoices}Days`] ?? 0
+    }
   ];
 
   return (
@@ -116,8 +118,8 @@ const TopCards = ({ usersData, invoiceData }) => {
                     card.change > 0
                       ? "bg-green-100 text-green-600"
                       : card.change < 0
-                      ? "bg-red-100 text-red-600"
-                      : "bg-gray-100 text-gray-500"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-gray-100 text-gray-500"
                   }`}
                 >
                   {card.change > 0 ? `+${card.change}%` : `${card.change}%`}

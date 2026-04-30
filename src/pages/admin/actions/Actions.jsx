@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
 import { useGetClaimsQuery } from "../../../redux/apis/claimsApis";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
-import { useSelector } from "react-redux";
 
 const defaultFilters = {
   searchType: "roNumber",
@@ -15,15 +17,17 @@ const defaultFilters = {
   entryFromDate: "",
   entryToDate: "",
   selectedBrand: null,
-  status: "",
+  status: ""
 };
 
 const parseStringDate = (dateStr) => {
   if (!dateStr || typeof dateStr !== "string") return null;
   const parts = dateStr.split("/");
+
   if (parts.length !== 3) return null;
 
   let [month, day, year] = parts;
+
   if (year.length === 2) {
     year = `20${year}`;
   }
@@ -31,6 +35,7 @@ const parseStringDate = (dateStr) => {
   const date = new Date(
     `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
   );
+
   return isNaN(date.getTime()) ? null : date;
 };
 
@@ -40,19 +45,24 @@ const Actions = () => {
   const [filters, setFilters] = useState(defaultFilters);
   const location = useLocation();
   const navigate = useNavigate();
+
   const isAdminSideUser =
     user?.role === "admin" ||
     (user?.role === "user" && user?.owner?.role === "admin");
+
   const claimsQueryParams =
     isAdminSideUser && clientId ? { clientId } : undefined;
+
   const { data } = useGetClaimsQuery(claimsQueryParams, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
+
   const { data: clientsData } = useGetClientsQuery(undefined, {
-    skip: !isAdminSideUser,
+    skip: !isAdminSideUser
   });
+
   const [selectedClaims, setSelectedClaims] = useState([]);
-  const claims = Array.isArray(data) ? data : data?.data ?? [];
+  const claims = Array.isArray(data) ? data : (data?.data ?? []);
   const clients = clientsData?.data ?? [];
   const selectedClient = clients.find((client) => client._id === clientId);
   const openChatClaimId = location.state?.openChatClaimId || null;
@@ -61,6 +71,7 @@ const Actions = () => {
   const filteredData = initialData.filter((row) => {
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
+
       if (
         filters.searchType === "roNumber" &&
         !row.roNumber?.toLowerCase().includes(val)
@@ -90,12 +101,14 @@ const Actions = () => {
       if (roDate) {
         if (filters.fromDate) {
           const from = new Date(filters.fromDate);
+
           from.setHours(0, 0, 0, 0);
           if (roDate < from) return false;
         }
 
         if (filters.toDate) {
           const to = new Date(filters.toDate);
+
           to.setHours(23, 59, 59, 999);
           if (roDate > to) return false;
         }
@@ -109,12 +122,14 @@ const Actions = () => {
       if (entryDate) {
         if (filters.entryFromDate) {
           const from = new Date(filters.entryFromDate);
+
           from.setHours(0, 0, 0, 0);
           if (entryDate < from) return false;
         }
 
         if (filters.entryToDate) {
           const to = new Date(filters.entryToDate);
+
           to.setHours(23, 59, 59, 999);
           if (entryDate > to) return false;
         }
@@ -142,7 +157,9 @@ const Actions = () => {
         claims={claims}
         showImportExport={true}
         targetClientId={clientId || ""}
-        targetClientName={selectedClient?.storeName || selectedClient?.name || ""}
+        targetClientName={
+          selectedClient?.storeName || selectedClient?.name || ""
+        }
       />
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
       <ClaimsDataTable

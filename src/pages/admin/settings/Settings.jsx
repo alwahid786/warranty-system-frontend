@@ -1,32 +1,36 @@
 import React, { useRef, useState, useEffect } from "react";
+
 import { MdUploadFile } from "react-icons/md";
-import { FaArrowRight } from "react-icons/fa6";
+import PhoneInput from "react-phone-input-2";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
 import Button from "../../../components/shared/small/Button";
 import Input from "../../../components/shared/small/input";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Dropdown from "../../../components/shared/small/Dropdown";
 import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { useUpdateMyProfileMutation } from "../../../redux/apis/authApis";
-import { useDispatch, useSelector } from "react-redux";
 import { userExist } from "../../../redux/slices/authSlice";
-import toast from "react-hot-toast";
 import Loader from "../../../components/shared/small/Loader";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
   const canEditCompanyName = user?.role === "admin" || user?.role === "client";
   const imageInputRef = useRef(null);
+
   const [imageSrc, setImageSrc] = useState(
     user?.image?.url || "/profile-pic.png"
   );
-  const {
-    data,
-    isLoading: isLoadingForGetMyProfile,
-  } = useGetMyProfileQuery(undefined, {
-    skip: !!user?._id,
-    refetchOnMountOrArgChange: false,
-  });
+
+  const { data, isLoading: isLoadingForGetMyProfile } = useGetMyProfileQuery(
+    undefined,
+    {
+      skip: !!user?._id,
+      refetchOnMountOrArgChange: false
+    }
+  );
+
   const [updateProfile, { isLoading }] = useUpdateMyProfileMutation();
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -44,7 +48,7 @@ const Settings = () => {
     phone: "",
     gender: "Male",
     companyName: "",
-    designation: "",
+    designation: ""
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -57,11 +61,8 @@ const Settings = () => {
         phone: user.phone || "",
         gender: user.gender || "Male",
         companyName:
-          user.inheritedCompanyName ||
-          user.companyName ||
-          user.storeName ||
-          "",
-        designation: user.designation || "",
+          user.inheritedCompanyName || user.companyName || user.storeName || "",
+        designation: user.designation || ""
       });
       if (user?.image?.url) setImageSrc(user?.image?.url);
     }
@@ -69,6 +70,7 @@ const Settings = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       setSelectedFile(file);
       setImageSrc(URL.createObjectURL(file));
@@ -89,11 +91,8 @@ const Settings = () => {
         phone: user.phone || "",
         gender: user.gender || "Male",
         companyName:
-          user.inheritedCompanyName ||
-          user.companyName ||
-          user.storeName ||
-          "",
-        designation: user.designation || "",
+          user.inheritedCompanyName || user.companyName || user.storeName || "",
+        designation: user.designation || ""
       });
       if (user.image) setImageSrc(user.image.url);
     }
@@ -103,6 +102,7 @@ const Settings = () => {
   const handleSave = async () => {
     try {
       const form = new FormData();
+
       Object.keys(formData).forEach((key) => {
         form.append(key, formData[key]);
       });
@@ -110,13 +110,16 @@ const Settings = () => {
         form.append("file", selectedFile);
       }
       const res = await updateProfile(form).unwrap();
+
       if (res.success) {
         dispatch(userExist(res.newuser));
         setIsEditing(false);
         toast.success(res.message, { duration: 3000 });
       }
     } catch (err) {
-      toast.error(err?.data?.message || "Something went wrong", { duration: 3000 });
+      toast.error(err?.data?.message || "Something went wrong", {
+        duration: 3000
+      });
     }
   };
 
@@ -129,7 +132,7 @@ const Settings = () => {
         style={{
           background: 'url("/Frame.png")',
           backgroundRepeat: "no-repeat",
-          backgroundSize: "100% 100%",
+          backgroundSize: "100% 100%"
         }}
         className="h-29 flex justify-end px-4 py-3"
       ></div>
@@ -207,7 +210,7 @@ const Settings = () => {
                 options={[
                   { id: 1, name: "Male" },
                   { id: 2, name: "Female" },
-                  { id: 3, name: "Other" },
+                  { id: 3, name: "Other" }
                 ]}
                 defaultValue={{ name: formData.gender }}
                 onChange={(opt) => handleChange("gender", opt.name)}

@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const paymentApis = createApi({
   reducerPath: "paymentApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/payments`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["payments"],
 
@@ -15,10 +16,10 @@ const paymentApis = createApi({
       query: (data) => ({
         url: "/create-payment-intent",
         method: "POST",
-        body: data,
-      }),
-    }),
-  }),
+        body: data
+      })
+    })
+  })
 });
 
 export const { useCreatePaymentIntentMutation } = paymentApis;

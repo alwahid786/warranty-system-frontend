@@ -1,13 +1,14 @@
 // import { invoices as allInvoices } from '../../../data/data';
 // import InvoiceCard from "../../../components/admin/invoices/InvoicesCard";
+import { useState } from "react";
+
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
-import { useState } from "react";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
 import {
   useGetClientsQuery,
-  useGetInvoicesQuery,
+  useGetInvoicesQuery
 } from "../../../redux/apis/invoiceApis";
 
 const ITEMS_PER_PAGE = 6;
@@ -20,25 +21,28 @@ const defaultFilters = {
   selectedBrand: null,
   minFinalTotal: "",
   maxFinalTotal: "",
-  status: "",
+  status: ""
 };
 
 const Invoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+
   const handleChatOpen = (invoice) => {
     // Chat functionality not fully implemented in this view
     console.log("Chat open for invoice:", invoice);
   };
+
   const { data } = useGetInvoicesQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-  const { data: clientsData } = useGetClientsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
-  const allInvoices = Array.isArray(data) ? data : data?.data ?? [];
+  const { data: clientsData } = useGetClientsQuery(undefined, {
+    refetchOnMountOrArgChange: true
+  });
+
+  const allInvoices = Array.isArray(data) ? data : (data?.data ?? []);
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -58,6 +62,7 @@ const Invoices = () => {
       const fieldValue = String(
         invoice[filters.searchType] || ""
       ).toLowerCase();
+
       if (!fieldValue.includes(filters.searchValue.toLowerCase())) {
         isMatch = false;
       }
@@ -65,6 +70,7 @@ const Invoices = () => {
 
     if (filters.fromDate || filters.toDate) {
       const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
+
       if (filters.fromDate && invDate < new Date(filters.fromDate)) {
         isMatch = false;
       }
@@ -102,8 +108,12 @@ const Invoices = () => {
     return isMatch;
   });
 
-  const sortedData = [...filteredDataTotal].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const sortedData = [...filteredDataTotal].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
   const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE);
+
   const currentInvoices = sortedData.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE

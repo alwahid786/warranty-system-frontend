@@ -12,20 +12,25 @@ const GlobalAPILoader = () => {
 
       ["queries", "mutations"].forEach((type) => {
         const collection = slice?.[type];
+
         if (!collection) return;
 
         Object.entries(collection).forEach(([key, q]) => {
           if (q?.status === "pending") {
             const endpoint = key.split("(")[0];
+
             if (SKIP_GLOBAL_LOADER_ENDPOINTS.has(endpoint)) return;
 
             // Mutations are always blocking. Queries block only on first load.
             if (type === "mutations") {
               hasBlocking = true;
+
               return;
             }
 
-            const isFirstLoad = q?.fulfilledTimeStamp == null && q?.data == null;
+            const isFirstLoad =
+              q?.fulfilledTimeStamp == null && q?.data == null;
+
             if (isFirstLoad) {
               hasBlocking = true;
             }

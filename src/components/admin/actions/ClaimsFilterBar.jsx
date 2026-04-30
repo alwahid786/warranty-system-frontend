@@ -1,13 +1,12 @@
-import React from "react";
+import { MdFilterAltOff } from "react-icons/md";
+
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
-import { LuSearch } from "react-icons/lu";
-import { MdFilterAltOff } from "react-icons/md";
 
 const searchTypes = [
   { key: "roNumber", label: "RO Number" },
   { key: "roSuffix", label: "RO Suffix" },
-  { key: "quoted", label: "Quoted" },
+  { key: "quoted", label: "Quoted" }
 ];
 
 const orderStatuses = [
@@ -17,7 +16,7 @@ const orderStatuses = [
   { id: 3, name: "PQ" },
   { id: 4, name: "PR" },
   { id: 5, name: "PA" },
-  { id: 6, name: "CR" },
+  { id: 6, name: "CR" }
 ];
 
 // same defaults as in Actions.jsx
@@ -28,7 +27,7 @@ const defaultFilters = {
   toDate: "",
   entryFromDate: "",
   entryToDate: "",
-  status: "",
+  status: ""
 };
 
 export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
@@ -84,7 +83,7 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
                 id: filters.searchType,
                 name:
                   searchTypes.find((s) => s.key === filters.searchType)
-                    ?.label || "Select",
+                    ?.label || "Select"
               }}
               onChange={(val) => onFilterChange({ searchType: val?.id })}
               width="w-full"
@@ -108,7 +107,9 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
                 ) || orderStatuses[0]
               }
               onChange={(val) => {
-                onFilterChange({ status: val?.id === 0 ? "" : (val?.name || "") });
+                onFilterChange({
+                  status: val?.id === 0 ? "" : val?.name || ""
+                });
               }}
               width="w-full"
             />
@@ -152,7 +153,9 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
               type="date"
               className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full"
               value={filters.entryFromDate || ""}
-              onChange={(e) => onFilterChange({ entryFromDate: e.target.value })}
+              onChange={(e) =>
+                onFilterChange({ entryFromDate: e.target.value })
+              }
             />
           </div>
           <div className="flex-1">

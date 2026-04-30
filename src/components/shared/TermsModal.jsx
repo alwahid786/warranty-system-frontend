@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
-import { useAcceptTermsMutation, useLogoutMutation } from '../../redux/apis/authApis';
-import toast from 'react-hot-toast';
-import { MdClose } from 'react-icons/md';
+import React, { useState } from "react";
+
+import toast from "react-hot-toast";
+import { MdClose } from "react-icons/md";
+
+import {
+  useAcceptTermsMutation,
+  useLogoutMutation
+} from "../../redux/apis/authApis";
 
 const TermsModal = ({ onAccept }) => {
   const [accepted, setAccepted] = useState(false);
@@ -13,21 +18,22 @@ const TermsModal = ({ onAccept }) => {
       await logout().unwrap();
       window.location.reload();
     } catch {
-      toast.error('Logout failed');
+      toast.error("Logout failed");
     }
   };
 
   const handleAccept = async () => {
     if (!accepted) {
-      toast.error('Please accept the terms to continue');
+      toast.error("Please accept the terms to continue");
+
       return;
     }
     try {
       await acceptTerms().unwrap();
       onAccept();
-      toast.success('Terms accepted! Welcome.');
+      toast.success("Terms accepted! Welcome.");
     } catch (error) {
-      toast.error(error?.data?.message || 'Failed to accept terms');
+      toast.error(error?.data?.message || "Failed to accept terms");
     }
   };
 
@@ -37,7 +43,9 @@ const TermsModal = ({ onAccept }) => {
         <div className="flex justify-between items-center border-b p-5 bg-white">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Terms of Usage</h2>
-            <p className="text-sm text-gray-500 mt-1">Please review and accept our terms to activate your account.</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Please review and accept our terms to activate your account.
+            </p>
           </div>
           <button
             onClick={handleLogout}
@@ -49,42 +57,59 @@ const TermsModal = ({ onAccept }) => {
         </div>
         <div className="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-6">
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">1. Acceptance of Terms</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              1. Acceptance of Terms
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              By using the Warranty Management System, you agree to comply with all rules and regulations set forth by the administrator. 
+              By using the Warranty Management System, you agree to comply with
+              all rules and regulations set forth by the administrator.
               Unauthorized access or use of this system is strictly prohibited.
-            </p>
-          </section>
-          
-          <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">2. Data Privacy</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Your data is protected under our strict privacy policy. We ensure that your client information and claim details are 
-              encrypted and secure. Your information will never be shared with third parties without your explicit consent.
-            </p>
-          </section>
-          
-          <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">3. Usage Responsibilities</h3>
-            <p className="text-gray-600 leading-relaxed">
-              As a client or user, you are responsible for maintaining the confidentiality of your login credentials and for all 
-              activities that occur under your account. You must notify the administrator immediately of any breach of security.
-            </p>
-          </section>
-          
-          <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">4. System Integrity</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Any attempt to misuse, manipulate, or compromise the system's integrity will lead to immediate account suspension 
-              and potential legal action.
             </p>
           </section>
 
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">5. Updates to Terms</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              2. Data Privacy
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              We reserve the right to update these terms at any time. Continued use of the system implies acceptance of the 
-              updated terms. We recommend reviewing these terms periodically.
+              Your data is protected under our strict privacy policy. We ensure
+              that your client information and claim details are encrypted and
+              secure. Your information will never be shared with third parties
+              without your explicit consent.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              3. Usage Responsibilities
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              As a client or user, you are responsible for maintaining the
+              confidentiality of your login credentials and for all activities
+              that occur under your account. You must notify the administrator
+              immediately of any breach of security.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              4. System Integrity
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Any attempt to misuse, manipulate, or compromise the system&apos;s
+              integrity will lead to immediate account suspension and potential
+              legal action.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              5. Updates to Terms
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              We reserve the right to update these terms at any time. Continued
+              use of the system implies acceptance of the updated terms. We
+              recommend reviewing these terms periodically.
             </p>
           </section>
         </div>
@@ -92,8 +117,8 @@ const TermsModal = ({ onAccept }) => {
           <div className="flex flex-col gap-4">
             <label className="flex items-center gap-3 cursor-pointer group select-none">
               <div className="relative flex items-center justify-center">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:bg-black checked:border-black transition-all"
                   checked={accepted}
                   onChange={(e) => setAccepted(e.target.checked)}
@@ -117,30 +142,50 @@ const TermsModal = ({ onAccept }) => {
             </label>
 
             <div className="flex gap-3 mt-2">
-              <button 
+              <button
                 className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-white font-bold bg-red-300 hover:bg-red-600 active:bg-red-100 transition-all"
                 onClick={handleLogout}
                 disabled={isAccepting}
               >
                 Logout
               </button>
-              <button 
+              <button
                 className={`flex-[2] px-6 py-3 rounded-xl font-bold text-white shadow-lg transition-all
-                  ${accepted && !isAccepting 
-                    ? 'bg-primary hover:bg-primary-dark active:scale-[0.98] shadow-black/20' 
-                    : 'bg-gray-300 cursor-not-allowed shadow-none'}`}
+                  ${
+                    accepted && !isAccepting
+                      ? "bg-primary hover:bg-primary-dark active:scale-[0.98] shadow-black/20"
+                      : "bg-gray-300 cursor-not-allowed shadow-none"
+                  }`}
                 onClick={handleAccept}
                 disabled={!accepted || isAccepting}
               >
                 {isAccepting ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Activating Account...
                   </span>
-                ) : 'Accept & Continue'}
+                ) : (
+                  "Accept & Continue"
+                )}
               </button>
             </div>
           </div>

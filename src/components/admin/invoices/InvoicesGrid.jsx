@@ -1,5 +1,6 @@
 // components/InvoicesGrid.jsx
 import React from "react";
+
 import InvoiceCard from "./InvoicesCard";
 // import InvoiceCard from "./InvoiceCard";
 
@@ -8,7 +9,7 @@ export default function InvoicesGrid({
   selectedIds,
   onChatOpen,
   onSelect,
-  clientsData,
+  clientsData
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

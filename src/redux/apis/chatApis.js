@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const chatApis = createApi({
   reducerPath: "chatApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/chats`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["chat"],
 
@@ -14,9 +15,9 @@ const chatApis = createApi({
     getChat: builder.query({
       query: (claimId) => ({
         url: `/getChat/${claimId}`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["chat"],
+      providesTags: ["chat"]
     }),
 
     // Send Message
@@ -24,36 +25,36 @@ const chatApis = createApi({
       query: (data) => ({
         url: "/sendMessage",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["chat"],
+      invalidatesTags: ["chat"]
     }),
 
     // Get Companies Avg Response Time
     getCompaniesAvgResponseTime: builder.query({
       query: () => ({
         url: "/companies/avg-response-time",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["chat"],
+      providesTags: ["chat"]
     }),
 
     // Get Companies Avg Response Time All
     getCompaniesAvgResponseTimeAll: builder.query({
       query: ({ page, limit }) => ({
         url: `/companies/avg-response-time/all?page=${page}&limit=${limit}`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["chat"],
-    }),
-  }),
+      providesTags: ["chat"]
+    })
+  })
 });
 
 export const {
   useGetChatQuery,
   useSendMessageMutation,
   useGetCompaniesAvgResponseTimeQuery,
-  useGetCompaniesAvgResponseTimeAllQuery,
+  useGetCompaniesAvgResponseTimeAllQuery
 } = chatApis;
 
 export default chatApis;
