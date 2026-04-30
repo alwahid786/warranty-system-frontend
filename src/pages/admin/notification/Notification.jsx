@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+
 import NotificationList from "../../../components/admin/notification/NotificationList";
 import { useGetNotificationsQuery } from "../../../redux/apis/notificationsApis";
 
@@ -21,7 +22,11 @@ const dedupeNotifications = (...collections) => {
 const Notification = () => {
   const { data, isLoading, isFetching } = useGetNotificationsQuery();
   const notificationsApp = useSelector((state) => state.notifications.items);
-  const notifications = dedupeNotifications(data?.data || [], notificationsApp || []);
+
+  const notifications = dedupeNotifications(
+    data?.data || [],
+    notificationsApp || []
+  );
 
   const grouped = groupByDate(notifications);
 
@@ -47,6 +52,7 @@ const groupByDate = (notifications) => {
       group = "Today";
     } else {
       const yesterday = new Date();
+
       yesterday.setDate(today.getDate() - 1);
       if (createdAt.toDateString() === yesterday.toDateString()) {
         group = "Yesterday";
@@ -55,6 +61,7 @@ const groupByDate = (notifications) => {
 
     acc[group] = acc[group] || [];
     acc[group].push(item);
+
     return acc;
   }, {});
 };

@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import Dropdown from "../../../shared/small/Dropdown";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -12,35 +11,35 @@ const TotalClaimsCard = ({ data }) => {
     const metrics = [
       {
         metric: "Pending Correction Claims",
-        value: data.pendingCorrection ?? 0,
+        value: data.pendingCorrection ?? 0
       },
       {
         metric: "Pending Order Claims",
-        value: data.pendingOrder ?? 0,
+        value: data.pendingOrder ?? 0
       },
       {
         metric: "Pending Question Claims",
-        value: data.pendingQuestion ?? 0,
+        value: data.pendingQuestion ?? 0
       },
       {
         metric: "Pending Review Claims",
-        value: data.pendingReview ?? 0,
+        value: data.pendingReview ?? 0
       },
       {
         metric: "Pending Analysis Claims",
-        value: data.pendingAnalysis ?? 0,
+        value: data.pendingAnalysis ?? 0
       },
       {
         metric: "Credit Ready Claims",
-        value: data.creditReady ?? 0,
-      },
+        value: data.creditReady ?? 0
+      }
     ];
 
     // flatten claimsByBrand
     const brandMetrics = data.claimsByBrand
       ? Object.entries(data.claimsByBrand).map(([brand, value]) => ({
           metric: `${brand} Claims`,
-          value,
+          value
         }))
       : [];
 
@@ -51,7 +50,6 @@ const TotalClaimsCard = ({ data }) => {
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
-
 
   return (
     <div className="bg-white rounded-xl border shadow flex-1">

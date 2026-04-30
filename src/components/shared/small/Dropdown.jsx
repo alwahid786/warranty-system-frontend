@@ -1,16 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { FaAngleDown } from 'react-icons/fa6';
+import { useState, useEffect, useRef } from "react";
+
+import { FaAngleDown } from "react-icons/fa6";
 //pull
 export default function Dropdown({
   title,
   options,
   defaultValue,
   onChange,
-  className = '',
+  className = "",
   width,
   iconColor,
   disabled,
-  bgColor,
+  bgColor
 }) {
   const [selected, setSelected] = useState(defaultValue || null);
   const [open, setOpen] = useState(false);
@@ -26,8 +27,10 @@ export default function Dropdown({
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (option) => {
@@ -38,7 +41,7 @@ export default function Dropdown({
 
   return (
     <div
-      className={`relative inline-block text-sm md:text-base ${width ? width : 'w-64'}`}
+      className={`relative inline-block text-sm md:text-base ${width ? width : "w-64"}`}
       ref={dropdownRef}
     >
       {/* Trigger */}
@@ -48,24 +51,26 @@ export default function Dropdown({
         }}
         className={`!py-2.5
     flex justify-between items-center gap-1 w-full ${
-      bgColor ? bgColor : 'bg-white'
+      bgColor ? bgColor : "bg-white"
     } py-[14px] px-5 rounded-sm text-dark-text transition border
     ${
       disabled
-        ? 'cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300'
-        : 'cursor-pointer border-[#E4E4E7]'
+        ? "cursor-not-allowed bg-gray-100 text-gray-500 border-gray-300"
+        : "cursor-pointer border-[#E4E4E7]"
     }
     ${className}
   `}
       >
         <span className="text-sm text-nowrap overflow-hidden">
-          {title}{' '}
-          <span className="font-semibold">{selected?.name || defaultValue || 'Select'}</span>
+          {title}{" "}
+          <span className="font-semibold">
+            {selected?.name || defaultValue || "Select"}
+          </span>
         </span>
         <FaAngleDown
           className={`text-sm  transition-transform duration-200 
-    ${open ? 'rotate-180' : ''} 
-    ${bgColor ? 'text-white' : iconColor || 'text-[#101421]'}
+    ${open ? "rotate-180" : ""} 
+    ${bgColor ? "text-white" : iconColor || "text-[#101421]"}
   `}
         />
       </div>
@@ -87,7 +92,7 @@ export default function Dropdown({
               className={`
                 px-4 py-2 cursor-pointer text-xs md:text-sm text-[#09090B]
                 hover:bg-gray-100 }
-                ${selected?.id === opt.id ? 'bg-gray-100 font-medium' : ''}
+                ${selected?.id === opt.id ? "bg-gray-100 font-medium" : ""}
               `}
             >
               {opt.name}

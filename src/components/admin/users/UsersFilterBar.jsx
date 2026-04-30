@@ -1,20 +1,20 @@
 import React from "react";
+
+import { MdFilterAltOff } from "react-icons/md";
+
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
-import { LuSearch } from "react-icons/lu";
-import { MdFilterAltOff } from "react-icons/md";
 
 const searchTypes = [
   { key: "name", label: "NAME" },
   { key: "email", label: "EMAIL" },
-  { key: "phone", label: "PHONE" },
+  { key: "phone", label: "PHONE" }
 ];
-
 
 export default function UsersFilterBar({
   filters = {},
   onFilterChange,
-  onReset,
+  onReset
 }) {
   return (
     <div className="w-full rounded-md mt-4 flex flex-col gap-4">
@@ -56,13 +56,13 @@ export default function UsersFilterBar({
             <Dropdown
               options={searchTypes.map((t) => ({
                 id: t.key,
-                name: t.label,
+                name: t.label
               }))}
               defaultValue={{
                 id: filters.searchType,
                 name:
                   searchTypes.find((t) => t.key === filters.searchType)
-                    ?.label || searchTypes[0].label,
+                    ?.label || searchTypes[0].label
               }}
               onChange={(val) =>
                 onFilterChange({ searchType: val?.id || "name" })

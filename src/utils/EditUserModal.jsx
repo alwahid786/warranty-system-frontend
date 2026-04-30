@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import { MdClose } from "react-icons/md";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -7,8 +8,9 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
     name: "",
     email: "",
     phone: "",
-    password: "",
+    password: ""
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   // Pre-fill with user data when modal opens
@@ -18,7 +20,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
-        password: "",
+        password: ""
       });
     }
   }, [user]);

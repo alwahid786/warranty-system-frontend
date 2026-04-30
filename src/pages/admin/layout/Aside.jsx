@@ -1,7 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
 import { FaArrowCircleRight } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoLogOutOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+
 import {
   DashboardIcon,
   ActionsIcon,
@@ -9,20 +16,14 @@ import {
   SettingsIcon,
   NotifictionIcon,
   InvoicesIcon,
-  UsersIcon,
-  DonationIcon,
+  UsersIcon
 } from "../../../assets/icons/icons";
 // import { BsThreeDots } from "react-icons/bs";
 // import Modal from "../../../components/shared/small/Modal";
-import { IoIosArrowDown } from "react-icons/io";
 import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
-import { IoLogOutOutline } from "react-icons/io5";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 import { userNotExist } from "../../../redux/slices/authSlice";
 import { setNotifications } from "../../../redux/slices/notificationsSlice";
-import toast from "react-hot-toast";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 import { useLogoutMutation } from "../../../redux/apis/authApis";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
@@ -35,11 +36,15 @@ const Aside = () => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
+
   const isAdminSideUser =
-    user?.role === "admin" || (user?.role === "user" && user?.owner?.role === "admin");
+    user?.role === "admin" ||
+    (user?.role === "user" && user?.owner?.role === "admin");
+
   const { data: clientsData } = useGetClientsQuery(undefined, {
-    skip: !isAdminSideUser,
+    skip: !isAdminSideUser
   });
+
   const clients = clientsData?.data ?? [];
 
   const pages = [
@@ -47,13 +52,16 @@ const Aside = () => {
       id: 1,
       title: "Dashboard",
       link: ["/dashboard"],
-      icon: <DashboardIcon />,
+      icon: <DashboardIcon />
     },
     {
       id: 2,
       title: "Actions",
       link: isAdminSideUser
-        ? ["/dashboard/actions", ...clients.map((client) => `/dashboard/actions/${client._id}`)]
+        ? [
+            "/dashboard/actions",
+            ...clients.map((client) => `/dashboard/actions/${client._id}`)
+          ]
         : ["/dashboard/actions"],
       icon: <ActionsIcon />,
       children: isAdminSideUser
@@ -61,28 +69,28 @@ const Aside = () => {
             id: client._id,
             title: client.storeName || client.name,
             link: `/dashboard/actions/${client._id}`,
-            icon: <ActionSubLink />,
+            icon: <ActionSubLink />
           }))
-        : [],
+        : []
     },
     {
       id: 3,
       title: "Invoices",
       link: ["/dashboard/invoices"],
-      icon: <InvoicesIcon />,
+      icon: <InvoicesIcon />
     },
     {
       id: 4,
       title: "Notification",
       link: ["/dashboard/notification"],
       icon: <NotifictionIcon />,
-      showBadge: true,
+      showBadge: true
     },
     {
       id: 4,
       title: "Users",
       link: ["/dashboard/users"],
-      icon: <UsersIcon />,
+      icon: <UsersIcon />
     },
     {
       id: 5,
@@ -94,29 +102,29 @@ const Aside = () => {
           id: 1,
           title: "Actions",
           link: "/dashboard/archieved/actions",
-          icon: <ActionSubLink />,
+          icon: <ActionSubLink />
         },
         {
           id: 2,
           title: "Invoices",
           link: "/dashboard/archieved/invoices",
-          icon: <InvoicesSubLink />,
-        },
-      ],
+          icon: <InvoicesSubLink />
+        }
+      ]
     },
 
     {
       id: 6,
       title: "Settings",
       link: ["/dashboard/settings"],
-      icon: <SettingsIcon />,
+      icon: <SettingsIcon />
     },
     {
       id: 7,
       title: "Clients",
       link: ["/dashboard/clients"],
-      icon: <UsersIcon />,
-    },
+      icon: <UsersIcon />
+    }
     // {
     //   id: 8,
     //   title: "Donate Us",
@@ -131,6 +139,7 @@ const Aside = () => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {
       return false;
     }
+
     return true;
   });
 
@@ -139,12 +148,14 @@ const Aside = () => {
   const handleLogout = async () => {
     try {
       const res = await logout().unwrap();
+
       if (res.success) {
         dispatch(userNotExist());
         // dispatch(clearSelectedUser());
         dispatch(setNotifications([]));
         // dispatch(authApis.util.resetApiState());
         toast.success(res.message, { duration: 3000 });
+
         return navigate("/");
       }
     } catch (err) {
@@ -238,7 +249,10 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const unreadCount = useSelector((state) => state.notifications.unReadCount);
-  const hasActiveChild = page?.children?.some((child) => child.link === pathname);
+
+  const hasActiveChild = page?.children?.some(
+    (child) => child.link === pathname
+  );
 
   useEffect(() => {
     if (hasActiveChild) {
@@ -246,7 +260,10 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
     }
   }, [hasActiveChild]);
 
-  if (page.title === "Archieved" || (page.title === "Actions" && page.children?.length)) {
+  if (
+    page.title === "Archieved" ||
+    (page.title === "Actions" && page.children?.length)
+  ) {
     return (
       <div className={`flex flex-col rounded-lg`}>
         <div
@@ -257,14 +274,16 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
               : "text-white hover:text-primary bg-none hover:bg-white"
           } ${isMenuOpen ? "justify-center" : "gap-2"}`}
         >
-          {React.cloneElement(page.icon, { isLinkActive: isLinkActive || hasActiveChild })}
+          {React.cloneElement(page.icon, {
+            isLinkActive: isLinkActive || hasActiveChild
+          })}
           {!isMenuOpen && (
             <>
               <span className="flex-1">{page.title}</span>
               <span
                 className="text-xs transform transition-transform duration-200"
                 style={{
-                  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)"
                 }}
               >
                 <IoIosArrowDown />
@@ -277,6 +296,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
           <div className="ml-6 mt-1 flex flex-col gap-1 border-l border-gray-200 pl-2">
             {page.children.map((child) => {
               const isActive = pathname === child.link;
+
               return (
                 <div
                   key={child.id}

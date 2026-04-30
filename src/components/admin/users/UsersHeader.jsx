@@ -1,33 +1,41 @@
 import React, { useState } from "react";
+
 import { useSelector } from "react-redux";
-import AddUserModal from "./AddUserModal";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
+
+import AddUserModal from "./AddUserModal";
 import {
   useAddUserMutation,
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery,
-  useGetUsersStatQuery,
+  useGetUsersStatQuery
 } from "../../../redux/apis/userApis";
-import toast from "react-hot-toast";
 
 const UsersHeader = () => {
   const { user } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const [formData, setformData] = useState({
     name: "",
     email: "",
     phone: "",
-    password: "",
+    password: ""
   });
+
   const userQueryParams =
     user?.role === "admin" || user?.role === "superadmin"
       ? { onlyAdminSubusers: true }
       : undefined;
-  const { refetch: getUsersStatRefetch } = useGetUsersStatQuery(userQueryParams);
+
+  const { refetch: getUsersStatRefetch } =
+    useGetUsersStatQuery(userQueryParams);
+
   const [addUser, { isLoading }] = useAddUserMutation();
 
-  const { refetch: getTotalUsersCountRefetch } = useGetTotalUsersCountQuery(userQueryParams);
+  const { refetch: getTotalUsersCountRefetch } =
+    useGetTotalUsersCountQuery(userQueryParams);
 
   const { refetch: getAttendanceChartDataRefetch } =
     useGetAttendanceChartDataQuery(userQueryParams);
@@ -37,6 +45,7 @@ const UsersHeader = () => {
 
     try {
       const res = await addUser(formData).unwrap();
+
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
         setIsOpen(false);
@@ -47,7 +56,7 @@ const UsersHeader = () => {
           name: "",
           email: "",
           phone: "",
-          password: "",
+          password: ""
         });
       }
     } catch (err) {
@@ -103,6 +112,7 @@ const UsersHeader = () => {
               const isPlus = value.startsWith("+");
               const digits = value.replace(/\D/g, "");
               const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+
               setformData({ ...formData, phone: finalValue });
             }}
             placeholder="Phone Number"
@@ -132,7 +142,9 @@ const UsersHeader = () => {
             type="submit"
             disabled={isLoading}
             className={`bg-primary text-white px-4 py-2 rounded w-full transition-all ${
-              isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary-dark"
+              isLoading
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-primary-dark"
             }`}
           >
             {isLoading ? "Saving..." : "Save"}

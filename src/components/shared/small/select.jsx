@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+
 import { FaAngleDown } from "react-icons/fa6";
 
 export default function Select({
@@ -7,7 +8,7 @@ export default function Select({
   onChange,
   className = "",
   width,
-  iconColor,
+  iconColor
 }) {
   const [selected, setSelected] = useState(defaultValue || "");
   const [open, setOpen] = useState(false);
@@ -23,7 +24,9 @@ export default function Select({
         setOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 

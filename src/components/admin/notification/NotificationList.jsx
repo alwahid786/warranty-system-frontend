@@ -1,16 +1,18 @@
-import NotificationItem from "./NotificationItem";
-import {
-  useGetNotificationsQuery,
-  useReadAllNotificationsMutation,
-} from "../../../redux/apis/notificationsApis";
 import toast from "react-hot-toast";
 import { CheckCheck } from "lucide-react";
 import { useDispatch } from "react-redux";
+
+import {
+  useGetNotificationsQuery,
+  useReadAllNotificationsMutation
+} from "../../../redux/apis/notificationsApis";
+import NotificationItem from "./NotificationItem";
 import { markAllNotificationsRead } from "../../../redux/slices/notificationsSlice";
 
 const NotificationList = ({ groupedNotifications = {} }) => {
   const [readAllNotifications, { isLoading }] =
     useReadAllNotificationsMutation();
+
   const { refetch: notificationsRefetch } = useGetNotificationsQuery();
   const dispatch = useDispatch();
 
@@ -21,14 +23,15 @@ const NotificationList = ({ groupedNotifications = {} }) => {
   const handleReadAll = async () => {
     try {
       const res = await readAllNotifications().unwrap();
+
       dispatch(markAllNotificationsRead());
       toast.success(res?.message || "All notifications marked as read", {
-        duration: 3000,
+        duration: 3000
       });
       await notificationsRefetch();
     } catch (err) {
       toast.error(err?.data?.message || "Failed to mark all as read", {
-        duration: 3000,
+        duration: 3000
       });
     }
   };
@@ -62,10 +65,7 @@ const NotificationList = ({ groupedNotifications = {} }) => {
           <h3 className="text-sm font-medium text-dark mb-2">{group}</h3>
           <div>
             {groupedNotifications[group].map((n) => (
-              <NotificationItem
-                key={n._id}
-                notification={n}
-              />
+              <NotificationItem key={n._id} notification={n} />
             ))}
           </div>
         </div>

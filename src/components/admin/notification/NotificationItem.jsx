@@ -1,14 +1,16 @@
 import { useState } from "react";
-import {
-  useDeleteNotificationMutation,
-  useReadNotificationMutation,
-  useGetNotificationsQuery,
-} from "../../../redux/apis/notificationsApis";
+
 import { Trash2, CheckCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { markNotificationRead } from "../../../redux/slices/notificationsSlice";
 import { useNavigate } from "react-router-dom";
+
+import { markNotificationRead } from "../../../redux/slices/notificationsSlice";
+import {
+  useDeleteNotificationMutation,
+  useReadNotificationMutation,
+  useGetNotificationsQuery
+} from "../../../redux/apis/notificationsApis";
 
 const NotificationItem = ({ notification }) => {
   const {
@@ -18,8 +20,9 @@ const NotificationItem = ({ notification }) => {
     createdAt: time,
     isRead,
     claimId,
-    invoiceNumber,
+    invoiceNumber
   } = notification || {};
+
   const [deleteNotification] = useDeleteNotificationMutation();
   const [readNotification] = useReadNotificationMutation();
   const { refetch: notificationsRefetch } = useGetNotificationsQuery();
@@ -31,6 +34,7 @@ const NotificationItem = ({ notification }) => {
   const handleDelete = async () => {
     try {
       const res = await deleteNotification(id).unwrap();
+
       toast.success(res.message || "Notification deleted", { duration: 3000 });
       await notificationsRefetch();
     } catch (err) {
@@ -42,12 +46,13 @@ const NotificationItem = ({ notification }) => {
     if (!isRead) {
       try {
         const res = await readNotification(id).unwrap();
+
         dispatch(markNotificationRead(id));
         toast.success(res.message || "Marked as read", { duration: 3000 });
         await notificationsRefetch();
       } catch (err) {
         toast.error(err?.data?.message || "Failed to mark read", {
-          duration: 3000,
+          duration: 3000
         });
       }
     }
@@ -62,8 +67,9 @@ const NotificationItem = ({ notification }) => {
         dispatch(markNotificationRead(id));
       } catch (err) {
         toast.error(err?.data?.message || "Failed to mark read", {
-          duration: 3000,
+          duration: 3000
         });
+
         return;
       }
     }
@@ -72,14 +78,16 @@ const NotificationItem = ({ notification }) => {
       navigate("/dashboard/actions", {
         state: {
           openChatClaimId: claimId,
-          fromNotificationId: id,
-        },
+          fromNotificationId: id
+        }
       });
+
       return;
     }
 
     if (invoiceNumber) {
       navigate("/dashboard/invoices");
+
       return;
     }
 
@@ -113,7 +121,7 @@ const NotificationItem = ({ notification }) => {
         <span className="text-xs text-gray-500 whitespace-nowrap">
           {new Date(time).toLocaleTimeString([], {
             hour: "2-digit",
-            minute: "2-digit",
+            minute: "2-digit"
           })}
         </span>
 

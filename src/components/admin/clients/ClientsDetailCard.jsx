@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { FaUserCircle } from "react-icons/fa";
@@ -8,7 +9,7 @@ import {
   FaUserTie,
   FaUser,
   FaShareNodes,
-  FaBell,
+  FaBell
 } from "react-icons/fa6";
 import { MdLocationOn } from "react-icons/md";
 import { HiPencil, HiTrash, HiEllipsisHorizontal } from "react-icons/hi2";
@@ -24,7 +25,9 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         setMenuOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -111,7 +114,7 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
               {new Date(client.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
-                day: "numeric",
+                day: "numeric"
               })}
             </p>
           </div>
@@ -149,7 +152,7 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
               client.address.city,
               client.address.state,
               client.address.country,
-              client.address.zip,
+              client.address.zip
             ]
               .filter(Boolean)
               .join(", ")}

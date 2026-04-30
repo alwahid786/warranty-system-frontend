@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const authApis = createApi({
   reducerPath: "authApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/auth`,
-    credentials: "include",
+    credentials: "include"
   }),
 
   endpoints: (builder) => ({
@@ -14,80 +15,80 @@ const authApis = createApi({
       query: (data) => ({
         url: "/register",
         method: "POST",
-        body: data,
-      }),
+        body: data
+      })
     }),
     // login
     login: builder.mutation({
       query: (data) => ({
         url: "/login",
         method: "POST",
-        body: data,
-      }),
+        body: data
+      })
     }),
     // forget password
     forgetPassword: builder.mutation({
       query: ({ email }) => ({
         url: "/forget-password",
         method: "POST",
-        body: { email },
-      }),
+        body: { email }
+      })
     }),
     // reset password
     resetPassword: builder.mutation({
       query: (data) => ({
         url: `/reset-password`,
         method: "POST",
-        body: data,
-      }),
+        body: data
+      })
     }),
     // validate reset token
     validateResetToken: builder.query({
       query: (token) => ({
         url: `/validate-reset-token/${token}`,
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
     // logout
     logout: builder.mutation({
       query: () => ({
         url: "/logout",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
     // check user login
     checkLogin: builder.mutation({
       query: () => ({
         url: "/my-profile",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
     // get my profile
     getMyProfile: builder.query({
       query: () => ({
         url: "/my-profile",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["profile"],
+      providesTags: ["profile"]
     }),
     // update my profile
     updateMyProfile: builder.mutation({
       query: (data) => ({
         url: "/my-profile",
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["profile"],
+      invalidatesTags: ["profile"]
     }),
     // accept terms
     acceptTerms: builder.mutation({
       query: () => ({
         url: "/accept-terms",
-        method: "POST",
+        method: "POST"
       }),
-      invalidatesTags: ["profile"],
-    }),
-  }),
+      invalidatesTags: ["profile"]
+    })
+  })
 });
 
 export const {
@@ -100,6 +101,6 @@ export const {
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,
   useAcceptTermsMutation,
-  useValidateResetTokenQuery,
+  useValidateResetTokenQuery
 } = authApis;
 export default authApis;

@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
+
 import { useNavigate, useParams } from "react-router";
+import toast from "react-hot-toast";
+
 import AttendanceChart from "../../../components/admin/clients/AttendanceChart";
 import StatusOverviewCard from "../../../components/admin/clients/OverviewStats";
 // import OverviewStats from "../../../components/admin/Clients/OverviewStats";
@@ -8,16 +12,14 @@ import ClientsFilterBar from "../../../components/admin//clients/ClientsFilterBa
 // import SummaryCard from "../../../components/admin/Clients/TotalClientsCard";
 import ClientsHeader from "../../../components/admin/clients/ClientsHeader";
 import ClientsPagination from "../../../components/admin/clients/ClientsPagination";
-import { useEffect, useState } from "react";
 import {
   useDeleteClientMutation,
   useGetClientsQuery,
   useGetClientsStatByFiltersQuery,
-  useGetClientsActivityStatsQuery,
+  useGetClientsActivityStatsQuery
 } from "../../../redux/apis/clientsApis";
 import { useUpdateClientMutation } from "../../../redux/apis/clientsApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
-import toast from "react-hot-toast";
 import EditClientsModal from "../../../components/admin/clients/EditClientsModal";
 
 const Clients = () => {
@@ -27,7 +29,7 @@ const Clients = () => {
     searchType2: "companyName",
     searchValue2: "",
     fromDate: "",
-    toDate: "",
+    toDate: ""
   });
 
   const [selectedFilter, setSelectedFilter] = useState("This Month");
@@ -38,27 +40,26 @@ const Clients = () => {
   const [clientsData, setclientsData] = useState(null);
 
   const { data } = useGetClientsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   const { data: clientsStatsByFilters, refetch: refetchClientsStatByFilters } =
     useGetClientsStatByFiltersQuery(undefined, {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: true
     });
 
   const { data: clientsActivityStats, refetch: refetchClientsActivity } =
     useGetClientsActivityStatsQuery(undefined, {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: true
     });
 
   const clients = Array.isArray(clientsData)
     ? clientsData
-    : clientsData?.data ?? [];
+    : (clientsData?.data ?? []);
 
   const [deleteClient] = useDeleteClientMutation();
 
   const [updateClient] = useUpdateClientMutation();
-
 
   useEffect(() => {
     if (data) {
@@ -75,6 +76,7 @@ const Clients = () => {
   const handleOnDelete = async (id) => {
     try {
       const res = await deleteClient(id).unwrap();
+
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
         await refetchClientsStatByFilters();
@@ -94,8 +96,9 @@ const Clients = () => {
     try {
       const res = await updateClient({
         id: editingClient._id,
-        ...updatedData,
+        ...updatedData
       }).unwrap();
+
       if (res.success) {
         toast.success(res.message, { duration: 3000 });
         setIsEditOpen(false);
@@ -118,6 +121,7 @@ const Clients = () => {
     // Search 1
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
+
       if (
         filters.searchType === "dealerId" &&
         !row.dealerId?.toString().toLowerCase().includes(val)
@@ -143,6 +147,7 @@ const Clients = () => {
     // Search 2
     if (filters.searchValue2) {
       const val2 = filters.searchValue2.toLowerCase();
+
       if (
         filters.searchType2 === "companyName" &&
         !(
@@ -166,15 +171,19 @@ const Clients = () => {
     // Date range (inclusive)
     if (filters.fromDate) {
       const from = new Date(filters.fromDate);
+
       from.setHours(0, 0, 0, 0);
       const rowDate = new Date(row.createdAt);
+
       if (rowDate < from) return false;
     }
 
     if (filters.toDate) {
       const to = new Date(filters.toDate);
+
       to.setHours(23, 59, 59, 999);
       const rowDate = new Date(row.createdAt);
+
       if (rowDate > to) return false;
     }
 
@@ -184,7 +193,11 @@ const Clients = () => {
   // Paginate the filtered data
   const totalPages = Math.ceil(filteredData.length / clientsPerPage);
   const startIndex = (currentPage - 1) * clientsPerPage;
-  const currentClients = filteredData.slice(startIndex, startIndex + clientsPerPage);
+
+  const currentClients = filteredData.slice(
+    startIndex,
+    startIndex + clientsPerPage
+  );
 
   const handleResetFilters = () => {
     setFilters({
@@ -193,7 +206,7 @@ const Clients = () => {
       searchType2: "companyName",
       searchValue2: "",
       fromDate: "",
-      toDate: "",
+      toDate: ""
     });
   };
 
@@ -224,10 +237,10 @@ const Clients = () => {
                 selectedFilter === "This Week"
                   ? "thisWeek"
                   : selectedFilter === "This Month"
-                  ? "thisMonth"
-                  : selectedFilter === "This Year"
-                  ? "thisYear"
-                  : "today"
+                    ? "thisMonth"
+                    : selectedFilter === "This Year"
+                      ? "thisYear"
+                      : "today"
               ]?.active
             }
             inactive={
@@ -235,10 +248,10 @@ const Clients = () => {
                 selectedFilter === "This Week"
                   ? "thisWeek"
                   : selectedFilter === "This Month"
-                  ? "thisMonth"
-                  : selectedFilter === "This Year"
-                  ? "thisYear"
-                  : "today"
+                    ? "thisMonth"
+                    : selectedFilter === "This Year"
+                      ? "thisYear"
+                      : "today"
               ]?.inactive
             }
           />

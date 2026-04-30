@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import authApis from "./apis/authApis";
 import userApis from "./apis/userApis";
 import authSlice from "./slices/authSlice";
@@ -26,7 +27,7 @@ const store = configureStore({
     // slices
     [authSlice.name]: authSlice.reducer,
     [userSlice.name]: userSlice.reducer,
-    [notificationsSlice.name]: notificationsSlice.reducer,
+    [notificationsSlice.name]: notificationsSlice.reducer
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({ serializableCheck: false })
@@ -38,7 +39,7 @@ const store = configureStore({
       .concat(clientApis.middleware)
       .concat(invoiceApis.middleware)
       .concat(paymentApis.middleware);
-  },
+  }
 });
 
 export default store;

@@ -14,7 +14,7 @@ const customers = [
           View
         </button>
       </div>
-    ),
+    )
   },
   {
     id: "cust-002",
@@ -31,7 +31,7 @@ const customers = [
           View
         </button>
       </div>
-    ),
+    )
   },
   {
     id: "cust-003",
@@ -48,7 +48,7 @@ const customers = [
           View
         </button>
       </div>
-    ),
+    )
   },
   {
     id: "cust-004",
@@ -65,9 +65,10 @@ const customers = [
           View
         </button>
       </div>
-    ),
-  },
+    )
+  }
 ];
+
 const MobileViewClaimsTable = () => {
   return (
     <div className="w-full mx-auto bg-white border border-[#EAEDF2] rounded-[10px] p-4 ">

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useGetCompaniesAvgResponseTimeAllQuery } from "../../../redux/apis/chatApis";
+
 import { useNavigate } from "react-router";
 import { HiArrowLeft } from "react-icons/hi2";
+
+import { useGetCompaniesAvgResponseTimeAllQuery } from "../../../redux/apis/chatApis";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 
 const CompaniesResponseTimePage = () => {

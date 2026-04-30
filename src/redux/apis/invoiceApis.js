@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const invoiceApis = createApi({
   reducerPath: "invoiceApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/invoices`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["Invoices"],
 
@@ -14,25 +15,25 @@ const invoiceApis = createApi({
     getClients: builder.query({
       query: () => ({
         url: "/getClients",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Invoices"],
+      providesTags: ["Invoices"]
     }),
     // Get all Invoices
     getInvoices: builder.query({
       query: () => ({
         url: "/getInvoices",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Invoices"],
+      providesTags: ["Invoices"]
     }),
     // Get single invoice by ID
     getInvoiceById: builder.query({
       query: (id) => ({
         url: `/${id}`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: (result, error, id) => [{ type: "Invoices", id }],
+      providesTags: (result, error, id) => [{ type: "Invoices", id }]
     }),
 
     // Add new Invoice
@@ -40,9 +41,9 @@ const invoiceApis = createApi({
       query: (data) => ({
         url: "/createInvoice",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Update Invoice
@@ -50,9 +51,9 @@ const invoiceApis = createApi({
       query: ({ id, data }) => ({
         url: `/editInvoice/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Change Invoice Status
@@ -60,18 +61,18 @@ const invoiceApis = createApi({
       query: ({ id, data }) => ({
         url: `/changeInvoiceStatus/${id}`,
         method: "PUT",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Delete Invoice
     deleteInvoice: builder.mutation({
       query: ({ id }) => ({
         url: `/deleteInvoice/${id}`,
-        method: "DELETE",
+        method: "DELETE"
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Send Invoice
@@ -79,9 +80,9 @@ const invoiceApis = createApi({
       query: ({ id }) => ({
         url: `/sendInvoice/${id}`,
         method: "POST",
-        responseHandler: (res) => res.blob(),
+        responseHandler: (res) => res.blob()
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Add Archieve Invoices
@@ -89,9 +90,9 @@ const invoiceApis = createApi({
       query: (data) => ({
         url: "/createArchiveInvoices",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // get Archieve Invoices
@@ -99,9 +100,9 @@ const invoiceApis = createApi({
     getArchieveInvoices: builder.query({
       query: () => ({
         url: "/getArchieveInvoices",
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["Invoices"],
+      providesTags: ["Invoices"]
     }),
 
     // move out of invoice archieve
@@ -109,27 +110,27 @@ const invoiceApis = createApi({
       query: (data) => ({
         url: "/removeArchiveInvoices",
         method: "POST",
-        body: data,
+        body: data
       }),
-      invalidatesTags: ["Invoices"],
+      invalidatesTags: ["Invoices"]
     }),
 
     // Get Active Inactive Count
     getActiveInactiveCount: builder.query({
       query: () => ({
         url: "/getActiveInactiveCount",
-        method: "GET",
-      }),
+        method: "GET"
+      })
     }),
 
     // Get Invoices Stat
     getInvoicesStat: builder.query({
       query: () => ({
         url: "/getInvoiceStats",
-        method: "GET",
-      }),
-    }),
-  }),
+        method: "GET"
+      })
+    })
+  })
 });
 
 export const {
@@ -145,7 +146,7 @@ export const {
   useSendInvoiceMutation,
   useGetArchieveInvoicesQuery,
   useRemoveArchieveInvoicesMutation,
-  useAddArchieveInvoicesMutation,
+  useAddArchieveInvoicesMutation
 } = invoiceApis;
 
 export default invoiceApis;

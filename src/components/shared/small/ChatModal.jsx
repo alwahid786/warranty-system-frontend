@@ -1,10 +1,12 @@
 // components/ChatModal.jsx
 import React, { useState, useEffect, useRef } from "react";
+
 import { MdCancel } from "react-icons/md";
-import { useGetChatQuery } from "../../../redux/apis/chatApis";
-import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+
+import { useGetChatQuery } from "../../../redux/apis/chatApis";
+import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import { SOCKET } from "../../../utils/socket";
 import claimsApis from "../../../redux/apis/claimsApis";
 import notificationsApis from "../../../redux/apis/notificationsApis";
@@ -14,6 +16,7 @@ const normalizeId = (value) => {
   if (typeof value === "string") return value;
   if (typeof value === "object" && value.$oid) return value.$oid;
   if (typeof value.toString === "function") return value.toString();
+
   return String(value);
 };
 
@@ -23,14 +26,15 @@ export default function ChatModal({
   isOpen,
   onClose,
   row,
-  forInvoice = false,
+  forInvoice = false
 }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState(null);
   const [sendMessageMutation] = useSendMessageMutation();
+
   const { data } = useGetChatQuery(row?._id, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   const chatEndRef = useRef(null);
@@ -66,15 +70,19 @@ export default function ChatModal({
 
     const handleNewMessage = (payload) => {
       const payloadClaimId = normalizeId(payload?.claimId);
+
       if (payloadClaimId === activeClaimId) {
         setMessages((prev) => {
           // Prevent duplicates
           const incomingMessage = payload?.message;
           const incomingId = normalizeId(incomingMessage?._id);
+
           const alreadyExists = prev.some(
             (m) => normalizeId(m?._id) === incomingId
           );
+
           if (alreadyExists) return prev;
+
           return [...prev, incomingMessage];
         });
       }
@@ -102,10 +110,12 @@ export default function ChatModal({
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
+
     if (!selectedFile) return;
 
     if (selectedFile.type === "image/gif") {
       toast.error("GIFs are not supported", { duration: 3000 });
+
       return;
     }
 
@@ -116,17 +126,19 @@ export default function ChatModal({
     if (!newMessage.trim() && !file) return;
 
     const formData = new FormData();
+
     if (newMessage.trim()) formData.append("message", newMessage);
     if (file) formData.append("file", file);
     formData.append("claimId", forInvoice ? row?.Id : row?._id);
     if (user?._id) formData.append("senderId", user?._id);
     try {
       const res = await sendMessageMutation(formData).unwrap();
+
       setNewMessage("");
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       toast.success(res?.message || "Message sent successfully", {
-        duration: 2000,
+        duration: 2000
       });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -219,7 +231,7 @@ export default function ChatModal({
                 <p className="text-[10px] mt-1 opacity-70">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
-                    minute: "2-digit",
+                    minute: "2-digit"
                   })}
                 </p>
               </div>

@@ -1,4 +1,9 @@
+import { useEffect, useState } from "react";
+
 import { useNavigate, useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
 import AttendanceChart from "../../../components/admin/users/AttendanceChart";
 import StatusOverviewCard from "../../../components/admin/users/OverviewStats";
 // import OverviewStats from "../../../components/admin/users/OverviewStats";
@@ -8,24 +13,21 @@ import UsersFilterBar from "../../../components/admin/users/UsersFilterBar";
 // import SummaryCard from "../../../components/admin/users/TotalUsersCard";
 import UsersHeader from "../../../components/admin/users/UsersHeader";
 import UsersPagination from "../../../components/admin/users/UsersPaginations";
-import { useEffect, useState } from "react";
 import {
   useDeleteUserMutation,
-  useGetUsersQuery,
+  useGetUsersQuery
 } from "../../../redux/apis/userApis";
-import { useDispatch, useSelector } from "react-redux";
 import {
   clearSelectedUser,
   setSelectedUser,
-  setUserCount,
+  setUserCount
 } from "../../../redux/slices/userSlice";
 import EditUserModal from "../../../utils/EditUserModal";
 import { useUpdateUserMutation } from "../../../redux/apis/userApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
-import toast from "react-hot-toast";
 import {
   useGetTotalUsersCountQuery,
-  useGetAttendanceChartDataQuery,
+  useGetAttendanceChartDataQuery
 } from "../../../redux/apis/userApis";
 
 const Users = () => {
@@ -38,7 +40,7 @@ const Users = () => {
     searchValue: "",
     fromDate: "",
     toDate: "",
-    status: "",
+    status: ""
   });
 
   const [selectedFilter, setSelectedFilter] = useState("This Month");
@@ -51,6 +53,7 @@ const Users = () => {
   const dispatch = useDispatch();
 
   const { selectedUser } = useSelector((state) => state.user);
+
   const userQueryParams =
     user?.role === "admin" || user?.role === "superadmin"
       ? { onlyAdminSubusers: true }
@@ -58,27 +61,24 @@ const Users = () => {
 
   const users = Array.isArray(selectedUser)
     ? selectedUser
-    : selectedUser?.data ?? [];
+    : (selectedUser?.data ?? []);
 
-  const {
-    data,
-    isSuccess,
-    isError,
-  } = useGetUsersQuery(userQueryParams, { refetchOnMountOrArgChange: true });
+  const { data, isSuccess, isError } = useGetUsersQuery(userQueryParams, {
+    refetchOnMountOrArgChange: true
+  });
 
   const [deleteUser] = useDeleteUserMutation();
 
   const [updateUser] = useUpdateUserMutation();
 
-
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
     useGetTotalUsersCountQuery(userQueryParams, {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: true
     });
 
   const { data: attendanceChartData, refetch: getAttendanceChartDataRefetch } =
     useGetAttendanceChartDataQuery(userQueryParams, {
-      refetchOnMountOrArgChange: true,
+      refetchOnMountOrArgChange: true
     });
 
   useEffect(() => {
@@ -98,6 +98,7 @@ const Users = () => {
   const handleOnDelete = async (id) => {
     try {
       const res = await deleteUser(id).unwrap();
+
       if (res.success) {
         toast.success(res.message || "User deleted", { duration: 3000 });
         await getTotalUsersCountRefetch();
@@ -116,6 +117,7 @@ const Users = () => {
   const handleSaveUser = async (updatedData) => {
     try {
       const res = await updateUser({ id: editingUser._id, ...updatedData });
+
       toast.success(res?.message || "User updated", { duration: 3000 });
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -139,6 +141,7 @@ const Users = () => {
   const filteredData = currentUsers.filter((row) => {
     if (filters.searchValue) {
       const val = filters.searchValue.toLowerCase();
+
       if (
         filters.searchType === "name" &&
         !row.name?.toLowerCase().includes(val)
@@ -159,11 +162,13 @@ const Users = () => {
     if (filters.fromDate) {
       const from = new Date(filters.fromDate);
       const userDate = new Date(row.createdAt);
+
       if (userDate < from) return false;
     }
     if (filters.toDate) {
       const to = new Date(filters.toDate);
       const userDate = new Date(row.createdAt);
+
       if (userDate > to) return false;
     }
 
@@ -180,7 +185,7 @@ const Users = () => {
       searchValue: "",
       fromDate: "",
       toDate: "",
-      status: "",
+      status: ""
     });
 
   const canManageUser = (managedUser) => {
@@ -221,10 +226,10 @@ const Users = () => {
                 selectedFilter === "This Week"
                   ? "thisWeek"
                   : selectedFilter === "This Month"
-                  ? "thisMonth"
-                  : selectedFilter === "This Year"
-                  ? "thisYear"
-                  : "today"
+                    ? "thisMonth"
+                    : selectedFilter === "This Year"
+                      ? "thisYear"
+                      : "today"
               ]?.active
             }
             inactive={
@@ -232,10 +237,10 @@ const Users = () => {
                 selectedFilter === "This Week"
                   ? "thisWeek"
                   : selectedFilter === "This Month"
-                  ? "thisMonth"
-                  : selectedFilter === "This Year"
-                  ? "thisYear"
-                  : "today"
+                    ? "thisMonth"
+                    : selectedFilter === "This Year"
+                      ? "thisYear"
+                      : "today"
               ]?.inactive
             }
           />

@@ -1,7 +1,10 @@
 import { lazy, Suspense, useEffect } from "react";
+
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import toast from "react-hot-toast";
+
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Loader from "./components/shared/small/Loader";
 import GlobalAPILoader from "./components/shared/small/GlobalLoaderApi";
@@ -9,59 +12,66 @@ import { useGetMyProfileQuery } from "./redux/apis/authApis";
 import claimsApis from "./redux/apis/claimsApis";
 import chatApis from "./redux/apis/chatApis";
 import notificationsApis, {
-  useGetNotificationsQuery,
+  useGetNotificationsQuery
 } from "./redux/apis/notificationsApis";
 import { userExist, userNotExist } from "./redux/slices/authSlice";
 import {
   noUnReadNotifications,
   unReadNotifications,
   setNotifications,
-  addNotification,
+  addNotification
 } from "./redux/slices/notificationsSlice";
 import { SOCKET } from "./utils/socket";
-import toast from "react-hot-toast";
 import TermsModal from "./components/shared/TermsModal";
 
 const AdminDashboard = lazy(() => import("./pages/admin/index"));
 const Dashboard = lazy(() => import("./pages/admin/dashboard/Dashboard"));
 const Actions = lazy(() => import("./pages/admin/actions/Actions"));
 const Invoices = lazy(() => import("./pages/admin/invoices/Invoices"));
-const Notification = lazy(() =>
-  import("./pages/admin/notification/Notification")
+
+const Notification = lazy(
+  () => import("./pages/admin/notification/Notification")
 );
+
 const Users = lazy(() => import("./pages/admin/users/Users"));
 const Archieved = lazy(() => import("./pages/admin/archieved/Archieved"));
-const ArchievedActions = lazy(() =>
-  import("./pages/admin/archieved/actions.archieved")
+
+const ArchievedActions = lazy(
+  () => import("./pages/admin/archieved/actions.archieved")
 );
-const ArchievedInvoices = lazy(() =>
-  import("./pages/admin/archieved/Invoices.Archieved")
+
+const ArchievedInvoices = lazy(
+  () => import("./pages/admin/archieved/Invoices.Archieved")
 );
+
 const Settings = lazy(() => import("./pages/admin/settings/Settings"));
 const Clients = lazy(() => import("./pages/admin/clients/Clients"));
 const AdminLogin = lazy(() => import("./pages/admin/adminLogin/AdminLogin"));
-const AdminResetPassword = lazy(() =>
-  import("./pages/admin/adminLogin/AdminResetPassword")
+
+const AdminResetPassword = lazy(
+  () => import("./pages/admin/adminLogin/AdminResetPassword")
 );
-const CompaniesResponseTime = lazy(() =>
-  import("./pages/admin/Companies-Avg-Response/companies-response-time")
+
+const CompaniesResponseTime = lazy(
+  () => import("./pages/admin/Companies-Avg-Response/companies-response-time")
 );
-const LandingPage = lazy(() => import("./pages/public/landing/Landing"));
-const BecomeMember = lazy(() =>
-  import("./pages/public/become-member/Become-Member")
+
+const BecomeMember = lazy(
+  () => import("./pages/public/become-member/Become-Member")
 );
+
 const DonateUs = lazy(() => import("./pages/public/donate-us/Donate-us"));
-const TermsAndConditions = lazy(() =>
-  import("./pages/public/terms-and-policy/termsAndConditions")
+
+const TermsAndConditions = lazy(
+  () => import("./pages/public/terms-and-policy/termsAndConditions")
 );
-const PrivacyPolicy = lazy(() =>
-  import("./pages/public/terms-and-policy/Privacy-Policy")
+
+const PrivacyPolicy = lazy(
+  () => import("./pages/public/terms-and-policy/Privacy-Policy")
 );
-const ThankYouPage = lazy(() =>
-  import("./pages/public/terms-and-policy/thank-you")
-);
-const DonateUsDashboard = lazy(() =>
-  import("./pages/admin/donate-us/Donate-Us")
+
+const ThankYouPage = lazy(
+  () => import("./pages/public/terms-and-policy/thank-you")
 );
 
 function App() {
@@ -74,7 +84,7 @@ function App() {
     refetchOnMountOrArgChange: false,
     refetchOnFocus: true,
     refetchOnReconnect: true,
-    pollingInterval: 15000,
+    pollingInterval: 15000
   });
 
   useEffect(() => {
@@ -105,7 +115,7 @@ function App() {
     user?.activeStatus,
     user?.termsAccepted,
     notifications?.unReadCount,
-    dispatch,
+    dispatch
   ]);
 
   useEffect(() => {
@@ -119,7 +129,7 @@ function App() {
     if (!user?._id) return;
     SOCKET.auth = {
       userId: user?._id,
-      ownerId: user?.owner?._id || user?.owner,
+      ownerId: user?.owner?._id || user?.owner
     };
     SOCKET.connect();
 
@@ -128,9 +138,10 @@ function App() {
       if (data?.senderId && data.senderId === user?._id) return;
 
       const toastId = data?._id || "notification-update";
+
       toast.success(data?.message || "New Notification", {
         id: toastId,
-        duration: 5000,
+        duration: 5000
       });
       dispatch(addNotification(data));
       if (data?.claimId) {
@@ -165,7 +176,7 @@ function App() {
   if (isLoading) return <Loader />;
 
   const showTermsModal =
-    ['client', 'user'].includes(user?.role) && !user?.termsAccepted;
+    ["client", "user"].includes(user?.role) && !user?.termsAccepted;
 
   return (
     <>

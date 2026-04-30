@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import getEnv from "../../configs/config.js";
 
 const notificationsApis = createApi({
   reducerPath: "notificationsApis",
   baseQuery: fetchBaseQuery({
     baseUrl: `${getEnv("SERVER_URL")}/api/notifications`,
-    credentials: "include",
+    credentials: "include"
   }),
   tagTypes: ["notifications"],
 
@@ -14,45 +15,45 @@ const notificationsApis = createApi({
     getNotifications: builder.query({
       query: () => ({
         url: `/getNotifications`,
-        method: "GET",
+        method: "GET"
       }),
-      providesTags: ["notifications"],
+      providesTags: ["notifications"]
     }),
 
     // Delete Notification
     deleteNotification: builder.mutation({
       query: (id) => ({
         url: `/deleteNotification/${id}`,
-        method: "DELETE",
+        method: "DELETE"
       }),
-      invalidatesTags: ["notifications"],
+      invalidatesTags: ["notifications"]
     }),
 
     // Read Notification
     readNotification: builder.mutation({
       query: (id) => ({
         url: `/readNotification/${id}`,
-        method: "PUT",
+        method: "PUT"
       }),
-      invalidatesTags: ["notifications"],
+      invalidatesTags: ["notifications"]
     }),
 
     // Read All Notifications
     readAllNotifications: builder.mutation({
       query: () => ({
         url: `/readAllNotifications`,
-        method: "PUT",
+        method: "PUT"
       }),
-      invalidatesTags: ["notifications"],
-    }),
-  }),
+      invalidatesTags: ["notifications"]
+    })
+  })
 });
 
 export const {
   useGetNotificationsQuery,
   useDeleteNotificationMutation,
   useReadNotificationMutation,
-  useReadAllNotificationsMutation,
+  useReadAllNotificationsMutation
 } = notificationsApis;
 
 export default notificationsApis;

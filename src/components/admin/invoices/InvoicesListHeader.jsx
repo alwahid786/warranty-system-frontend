@@ -1,20 +1,21 @@
-import { MdOutlineFileDownload } from "react-icons/md";
-import { LuUpload, LuPlus } from "react-icons/lu";
+import { useState } from "react";
+
+import { LuPlus } from "react-icons/lu";
+import toast from "react-hot-toast";
+
 import Button from "../../shared/small/Button";
 // import Button from "../../shared/small/Button";
 import { ArchievedIcon } from "../../../assets/icons/icons";
 import { useAddArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
 import { useRemoveArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
 import InvoiceForm from "./AddNewInvoice";
-import toast from "react-hot-toast";
-import { useState } from "react";
 import { useAddInvoiceMutation } from "../../../redux/apis/invoiceApis";
 
 const InvoicesListHeader = ({
   selectedIds,
   setSelectedIds,
   showImportExport = true,
-  clientsData,
+  clientsData
 }) => {
   const [addArchieveInvoices] = useAddArchieveInvoicesMutation();
   const [removeArchieveInvoices] = useRemoveArchieveInvoicesMutation();
@@ -34,7 +35,7 @@ const InvoicesListHeader = ({
       setSelectedIds([]);
     } catch (err) {
       toast.error(err?.data?.message || "Something went wrong", {
-        duration: 3000,
+        duration: 3000
       });
     }
   };
@@ -82,7 +83,7 @@ const InvoicesListHeader = ({
             disabled={selectedIds?.length === 0}
             style={{
               cursor: selectedIds?.length === 0 ? "not-allowed" : "pointer",
-              opacity: selectedIds?.length === 0 ? 0.6 : 1,
+              opacity: selectedIds?.length === 0 ? 0.6 : 1
             }}
             onClick={handleAddArchieveInvoices}
             cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"

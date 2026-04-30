@@ -3,7 +3,7 @@ const getDate = (date = new Date()) => {
     weekday: "long",
     month: "long",
     day: "numeric",
-    year: "numeric",
+    year: "numeric"
   }).format(date);
 };
 
@@ -25,6 +25,7 @@ const getRelativeTime = (date) => {
   if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   if (diffMonths < 12)
     return `${diffMonths} month${diffMonths !== 1 ? "s" : ""} ago`;
+
   return `${diffYears} year${diffYears !== 1 ? "s" : ""} ago`;
 };
 

@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import Button from '../../../shared/small/Button';
-import Modal from '../../../shared/small/Modal';
-import Input from '../../../shared/small/input';
+import React, { useState } from "react";
+
+import DataTable from "react-data-table-component";
+
+import Button from "../../../shared/small/Button";
+import Modal from "../../../shared/small/Modal";
+import Input from "../../../shared/small/input";
 
 const ClaimsTable = ({ data }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalSubject, setModalSubject] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalSubject, setModalSubject] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
 
   const handleOpenModal = () => setIsModalOpen(true);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setModalSubject('');
-    setModalMessage('');
+    setModalSubject("");
+    setModalMessage("");
   };
+
   const handleSendResponse = () => {
     // Add your send logic here
     handleCloseModal();
@@ -22,37 +26,41 @@ const ClaimsTable = ({ data }) => {
 
   const columns = [
     {
-      name: 'User Name',
+      name: "User Name",
       selector: (row) => row.name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: 'Email',
+      name: "Email",
       selector: (row) => row.email,
-      sortable: true,
+      sortable: true
     },
     {
-      name: 'Date Submitted',
+      name: "Date Submitted",
       selector: (row) => row.date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: 'Message',
+      name: "Message",
       selector: (row) => row.message,
-      wrap: true,
+      wrap: true
     },
     {
-      name: 'Action',
+      name: "Action",
       cell: (row) => (
         <div className="flex gap-2">
           <Button
             text={row.status}
             color="text-white justify-center text-xs"
-            bg={row.status === 'Sent Successfully!' ? 'bg-secondary ' : 'bg-primary'}
+            bg={
+              row.status === "Sent Successfully!"
+                ? "bg-secondary "
+                : "bg-primary"
+            }
             cn="!px-2 w-32 !py-2 !text-xs text-nowrap rounded"
-            disabled={row.status === 'Sent Successfully!'}
+            disabled={row.status === "Sent Successfully!"}
             onClick={() => {
-              if (row.status !== 'Sent Successfully!') handleOpenModal();
+              if (row.status !== "Sent Successfully!") handleOpenModal();
             }}
           />
           <Button
@@ -62,32 +70,34 @@ const ClaimsTable = ({ data }) => {
             cn="!px-2 !py-2 !text-xs text-nowrap rounded"
           />
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const customStyles = {
     headCells: {
       style: {
-        fontWeight: 'bold',
-        backgroundColor: '#f9fafb',
-        color: '#374151',
-        fontSize: '14px',
-      },
+        fontWeight: "bold",
+        backgroundColor: "#f9fafb",
+        color: "#374151",
+        fontSize: "14px"
+      }
     },
     cells: {
       style: {
-        fontSize: '13px',
-        height: '65px',
-        display: 'flex',
-        alignItems: 'center',
-      },
-    },
+        fontSize: "13px",
+        height: "65px",
+        display: "flex",
+        alignItems: "center"
+      }
+    }
   };
 
   return (
     <div className="bg-white w-full p-4 rounded-xl shadow">
-      <h2 className="text-lg font-semibold mb-4 overflow-auto">Recent Contacts</h2>
+      <h2 className="text-lg font-semibold mb-4 overflow-auto">
+        Recent Contacts
+      </h2>
       <div className="w-full overflow-auto">
         <DataTable
           columns={columns}
@@ -110,14 +120,19 @@ const ClaimsTable = ({ data }) => {
         />
       </div>
       {isModalOpen && (
-        <Modal title="Respond to User Query" onClose={handleCloseModal} width="w-full max-w-3xl">
+        <Modal
+          title="Respond to User Query"
+          onClose={handleCloseModal}
+          width="w-full max-w-3xl"
+        >
           <div className="flex flex-col gap-4">
             <p className="text-dark-text text-center">
-              Send a personalized response to the user who submitted a query through the contact
-              form. Fill in the subject and message fields to address their concerns directly.
+              Send a personalized response to the user who submitted a query
+              through the contact form. Fill in the subject and message fields
+              to address their concerns directly.
             </p>
             <Input
-              label={'Subject'}
+              label={"Subject"}
               type="text"
               className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="REG"
@@ -125,7 +140,9 @@ const ClaimsTable = ({ data }) => {
               onChange={(e) => setModalSubject(e.target.value)}
             />
             <div>
-              <label className="text-sm md:text-base lg:text-xl text-dark-text">Message</label>
+              <label className="text-sm md:text-base lg:text-xl text-dark-text">
+                Message
+              </label>
               <textarea
                 className="mt-2 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                 rows={4}

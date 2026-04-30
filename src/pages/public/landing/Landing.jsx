@@ -1,15 +1,17 @@
 import React from "react";
+
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import Button from "../../../components/shared/small/landing-Button.jsx";
-import { Card, CardContent } from "../../../components/shared/small/card.jsx";
-import getEnv from "../../../configs/config.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
   faFileInvoiceDollar,
-  faClipboardCheck,
+  faClipboardCheck
 } from "@fortawesome/free-solid-svg-icons";
+
+import Button from "../../../components/shared/small/landing-Button.jsx";
+import { Card, CardContent } from "../../../components/shared/small/card.jsx";
+import getEnv from "../../../configs/config.js";
 import landingHeader from "../../../components/public/landing-header/landing-header.jsx";
 
 const LandingPage = () => {
@@ -19,18 +21,18 @@ const LandingPage = () => {
     {
       title: "Membership",
       desc: "Become a verified member to manage claims and access dashboard.",
-      icon: faUsers,
+      icon: faUsers
     },
     {
       title: "Claims Management",
       desc: "Clients can submit claims, and admins can approve or reject them easily.",
-      icon: faClipboardCheck,
+      icon: faClipboardCheck
     },
     {
       title: "Invoice System",
       desc: "Automatic invoice generation after claim approval with admin notifications.",
-      icon: faFileInvoiceDollar,
-    },
+      icon: faFileInvoiceDollar
+    }
   ];
 
   return (

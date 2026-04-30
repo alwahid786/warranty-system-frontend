@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
+
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   CardElement,
   useStripe,
-  useElements,
+  useElements
 } from "@stripe/react-stripe-js";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import Button from "../../../components/shared/small/landing-Button";
 import getEnv from "../../../configs/config";
 import { useCreatePaymentIntentMutation } from "../../../redux/apis/paymentApis";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 const stripePromise = loadStripe(getEnv("STRIPE_PUBLISH_KEY"));
 
@@ -36,14 +38,14 @@ function CheckoutForm({ email, amount, onClose }) {
         email,
         currency: "USD",
         amount,
-        paymentType: "donation",
+        paymentType: "donation"
       }).unwrap();
 
       const { clientSecret } = res;
       const card = elements.getElement(CardElement);
 
       const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card, billing_details: { email } },
+        payment_method: { card, billing_details: { email } }
       });
 
       if (result.error) {
@@ -69,10 +71,10 @@ function CheckoutForm({ email, amount, onClose }) {
             base: {
               fontSize: "16px",
               color: "#111",
-              "::placeholder": { color: "#888" },
+              "::placeholder": { color: "#888" }
             },
-            invalid: { color: "#fa755a" },
-          },
+            invalid: { color: "#fa755a" }
+          }
         }}
       />
       <div className="flex justify-end gap-3">

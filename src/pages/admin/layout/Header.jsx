@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { getDate } from "../../../utils/getDate";
-import { Link, useLocation } from "react-router-dom";
+
+import { useLocation } from "react-router-dom";
 // import { RxHamburgerMenu } from "react-icons/rx";
 // import logo from "../../../assets/images/logo.svg";
-import Aside from "./Aside";
 import { HiChevronDown } from "react-icons/hi";
-import { IoChevronForwardOutline, IoLogOutOutline } from "react-icons/io5";
-import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
+import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector, useDispatch } from "react-redux";
-import { userExist, userNotExist } from "../../../redux/slices/authSlice";
-import { useLogoutMutation } from "../../../redux/apis/authApis";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
+import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
+import { userExist, userNotExist } from "../../../redux/slices/authSlice";
+import { useLogoutMutation } from "../../../redux/apis/authApis";
+import Aside from "./Aside";
+import { getDate } from "../../../utils/getDate";
 import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import { clearSelectedUser } from "../../../redux/slices/userSlice";
 
@@ -26,6 +28,7 @@ const Header = () => {
 
   // If the last segment is an ID (24-character hex), use the previous segment if available
   const isId = /^[0-9a-fA-F]{24}$/.test(path);
+
   if (isId && pathSegment.length > 1) {
     path = pathSegment[pathSegment.length - 2];
   }
@@ -33,9 +36,10 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+
   const { data } = useGetMyProfileQuery(undefined, {
     skip: !!user?._id,
-    refetchOnMountOrArgChange: false,
+    refetchOnMountOrArgChange: false
   });
 
   useEffect(() => {
@@ -60,7 +64,9 @@ const Header = () => {
         setIsProfileOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -155,6 +161,7 @@ const Profile = ({ menuRef }) => {
   const handleLogout = async () => {
     try {
       const res = await logout().unwrap();
+
       if (res.success) {
         await refetch();
         dispatch(userNotExist());
@@ -162,6 +169,7 @@ const Profile = ({ menuRef }) => {
         dispatch(setNotifications([]));
 
         toast.success(res.message, { duration: 3000 });
+
         return navigate("/");
       }
     } catch (err) {
