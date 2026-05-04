@@ -4,6 +4,8 @@ import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
+import { formatPhoneNumber } from "../../../utils/formatters";
+
 const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     clientName: "",
@@ -157,6 +159,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
         <form
           onSubmit={handleSubmit}
           className="space-y-6 max-h-[80vh] overflow-y-auto pr-2"
+          autoComplete="off"
         >
           {/* Section: Client Info */}
           <div>
@@ -175,6 +178,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     setFormData({ ...formData, clientName: e.target.value })
                   }
                   className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
                 />
               </div>
               <div>
@@ -186,6 +190,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   value={formData.clientEmail}
                   disabled // cannot change
                   className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600 cursor-not-allowed"
+                  autoComplete="off"
                 />
               </div>
               <div>
@@ -204,6 +209,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     }
                     placeholder="Enter new password"
                     className="w-full border px-3 py-2 rounded pr-10"
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -222,16 +228,13 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   type="text"
                   value={formData.clientPhone}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    const isPlus = value.startsWith("+");
-                    const digits = value.replace(/\D/g, "");
+                    const formattedValue = formatPhoneNumber(e.target.value);
 
-                    const finalValue =
-                      (isPlus ? "+" : "") + digits.slice(0, 12);
-
-                    setFormData({ ...formData, clientPhone: finalValue });
+                    setFormData({ ...formData, clientPhone: formattedValue });
                   }}
+                  placeholder="(XXX) XXX-XXXX"
                   className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -326,13 +329,11 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 type="text"
                 value={formData.storePhone}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  const isPlus = value.startsWith("+");
-                  const digits = value.replace(/\D/g, "");
-                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 12);
+                  const formattedValue = formatPhoneNumber(e.target.value);
 
-                  setFormData({ ...formData, storePhone: finalValue });
+                  setFormData({ ...formData, storePhone: formattedValue });
                 }}
+                placeholder="(XXX) XXX-XXXX"
                 className="w-full border px-3 py-2 rounded"
               />
             </div>
