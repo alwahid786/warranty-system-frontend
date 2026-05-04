@@ -97,7 +97,7 @@ const ClaimsListHeader = ({
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
+        <div className="flex gap-2 justify-start lg:justify-end flex-wrap items-center">
           <Button
             icon={<ArchivedIcon className="text-xs sm:text-sm" />}
             text={showImportExport ? "Move To Archive" : "Move Out of Archive"}

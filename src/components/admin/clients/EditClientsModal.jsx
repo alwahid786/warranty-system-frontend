@@ -62,9 +62,17 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
 
   // handle address updates
   const handleAddressChange = (field, value) => {
+    let filteredValue = value;
+
+    if (field === "city" || field === "state") {
+      filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+    } else if (field === "zip") {
+      filteredValue = value.replace(/\D/g, "");
+    }
+
     setFormData({
       ...formData,
-      address: { ...formData.address, [field]: value }
+      address: { ...formData.address, [field]: filteredValue }
     });
   };
 
@@ -90,6 +98,19 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!formData.clientName || !formData.clientEmail) {
+      return toast.error("Client Name and Email are required");
+    }
+
+    if (!formData.clientPhone) {
+      return toast.error("Client Phone is required");
+    }
+
+    if (!formData.address.city || !formData.address.zip) {
+      return toast.error("City and Zip Code are required in address");
+    }
+
     if (formData.percentage && Number(formData.percentage) > 100) {
       return toast.error("Percentage cannot exceed 100%");
     }
@@ -206,7 +227,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     const digits = value.replace(/\D/g, "");
 
                     const finalValue =
-                      (isPlus ? "+" : "") + digits.slice(0, 11);
+                      (isPlus ? "+" : "") + digits.slice(0, 12);
 
                     setFormData({ ...formData, clientPhone: finalValue });
                   }}
@@ -308,7 +329,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   const value = e.target.value;
                   const isPlus = value.startsWith("+");
                   const digits = value.replace(/\D/g, "");
-                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 12);
 
                   setFormData({ ...formData, storePhone: finalValue });
                 }}
