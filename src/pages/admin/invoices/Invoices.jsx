@@ -112,7 +112,7 @@ const Invoices = () => {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE) || 1;
 
   const currentInvoices = sortedData.slice(
     (page - 1) * ITEMS_PER_PAGE,
@@ -120,30 +120,32 @@ const Invoices = () => {
   );
 
   return (
-    <div className="w-full mx-auto ">
-      <>
+    <div className="w-full mx-auto flex flex-col min-h-full p-6">
+      <div className="flex-1">
         <InvoicesListHeader
           showImportExport={true}
           clientsData={clientsData}
           selectedIds={selectedIds}
           setSelectedIds={setSelectedIds}
         />
-      </>
-      <div className="mb-4">
-        <InvoicesFilterBar
-          filters={filters}
-          onFilterChange={handleFilterChange}
+        <div className="mb-4">
+          <InvoicesFilterBar
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
+        <h1 className="text-xl font-semibold mb-4">Invoices</h1>
+        <InvoicesGrid
+          invoices={currentInvoices}
+          selectedIds={selectedIds}
+          onSelect={handleSelect}
+          onChatOpen={handleChatOpen}
+          clientsData={clientsData}
         />
       </div>
-      <h1 className="text-xl font-semibold mb-4">Invoices</h1>
-      <InvoicesGrid
-        invoices={currentInvoices}
-        selectedIds={selectedIds}
-        onSelect={handleSelect}
-        onChatOpen={handleChatOpen}
-        clientsData={clientsData}
-      />
-      <Pagination current={page} total={totalPages} onPageChange={setPage} />
+      <div className="mt-auto">
+        <Pagination current={page} total={totalPages} onPageChange={setPage} />
+      </div>
     </div>
   );
 };

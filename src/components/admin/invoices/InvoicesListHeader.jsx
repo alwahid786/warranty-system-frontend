@@ -5,9 +5,9 @@ import toast from "react-hot-toast";
 
 import Button from "../../shared/small/Button";
 // import Button from "../../shared/small/Button";
-import { ArchievedIcon } from "../../../assets/icons/icons";
-import { useAddArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
-import { useRemoveArchieveInvoicesMutation } from "../../../redux/apis/invoiceApis";
+import { ArchivedIcon } from "../../../assets/icons/icons";
+import { useAddArchiveInvoicesMutation } from "../../../redux/apis/invoiceApis";
+import { useRemoveArchiveInvoicesMutation } from "../../../redux/apis/invoiceApis";
 import InvoiceForm from "./AddNewInvoice";
 import { useAddInvoiceMutation } from "../../../redux/apis/invoiceApis";
 
@@ -17,19 +17,19 @@ const InvoicesListHeader = ({
   showImportExport = true,
   clientsData
 }) => {
-  const [addArchieveInvoices] = useAddArchieveInvoicesMutation();
-  const [removeArchieveInvoices] = useRemoveArchieveInvoicesMutation();
+  const [addArchiveInvoices] = useAddArchiveInvoicesMutation();
+  const [removeArchiveInvoices] = useRemoveArchiveInvoicesMutation();
   const [addInvoice] = useAddInvoiceMutation();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleAddArchieveInvoices = async (e) => {
+  const handleAddArchiveInvoices = async (e) => {
     e.preventDefault();
     try {
       if (showImportExport) {
-        await addArchieveInvoices(selectedIds).unwrap();
+        await addArchiveInvoices(selectedIds).unwrap();
       } else {
-        await removeArchieveInvoices(selectedIds).unwrap();
+        await removeArchiveInvoices(selectedIds).unwrap();
       }
 
       setSelectedIds([]);
@@ -76,7 +76,7 @@ const InvoicesListHeader = ({
             />
           )}
           <Button
-            icon={<ArchievedIcon className="text-xs sm:text-sm" />}
+            icon={<ArchivedIcon className="text-xs sm:text-sm" />}
             text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
             color="text-white"
@@ -85,7 +85,7 @@ const InvoicesListHeader = ({
               cursor: selectedIds?.length === 0 ? "not-allowed" : "pointer",
               opacity: selectedIds?.length === 0 ? 0.6 : 1
             }}
-            onClick={handleAddArchieveInvoices}
+            onClick={handleAddArchiveInvoices}
             cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
           />
         </div>

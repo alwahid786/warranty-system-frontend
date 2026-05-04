@@ -85,8 +85,8 @@ const invoiceApis = createApi({
       invalidatesTags: ["Invoices"]
     }),
 
-    // Add Archieve Invoices
-    addArchieveInvoices: builder.mutation({
+    // Add Archive Invoices
+    addArchiveInvoices: builder.mutation({
       query: (data) => ({
         url: "/createArchiveInvoices",
         method: "POST",
@@ -95,18 +95,18 @@ const invoiceApis = createApi({
       invalidatesTags: ["Invoices"]
     }),
 
-    // get Archieve Invoices
+    // get Archive Invoices
 
-    getArchieveInvoices: builder.query({
+    getArchiveInvoices: builder.query({
       query: () => ({
-        url: "/getArchieveInvoices",
+        url: "/getArchiveInvoices",
         method: "GET"
       }),
       providesTags: ["Invoices"]
     }),
 
-    // move out of invoice archieve
-    removeArchieveInvoices: builder.mutation({
+    // move out of invoice archive
+    removeArchiveInvoices: builder.mutation({
       query: (data) => ({
         url: "/removeArchiveInvoices",
         method: "POST",
@@ -144,9 +144,9 @@ export const {
   useGetInvoicesQuery,
   useChangeInvoiceStatusMutation,
   useSendInvoiceMutation,
-  useGetArchieveInvoicesQuery,
-  useRemoveArchieveInvoicesMutation,
-  useAddArchieveInvoicesMutation
+  useGetArchiveInvoicesQuery,
+  useRemoveArchiveInvoicesMutation,
+  useAddArchiveInvoicesMutation
 } = invoiceApis;
 
 export default invoiceApis;

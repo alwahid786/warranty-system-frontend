@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
-import { useGetArchieveClaimsQuery } from "../../../redux/apis/claimsApis";
+import { useGetArchiveClaimsQuery } from "../../../redux/apis/claimsApis";
 
 const defaultFilters = {
   searchType: "roNumber",
@@ -36,10 +36,10 @@ const parseStringDate = (dateStr) => {
   return isNaN(date.getTime()) ? null : date;
 };
 
-const ArchievedActions = () => {
+const ArchivedActions = () => {
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { data } = useGetArchieveClaimsQuery(undefined, {
+  const { data } = useGetArchiveClaimsQuery(undefined, {
     refetchOnMountOrArgChange: true
   });
 
@@ -126,20 +126,25 @@ const ArchievedActions = () => {
   };
 
   return (
-    <div>
-      <ClaimsListHeader
-        selectedClaims={selectedClaims}
-        showImportExport={false}
-      />
-      <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
-      <ClaimsDataTable
-        data={filteredData}
-        selectedClaims={selectedClaims}
-        onSelectionChange={setSelectedClaims}
-        archived={true}
-      />
+    <div className="flex flex-col min-h-full p-6">
+      <div className="flex-1">
+        <ClaimsListHeader
+          selectedClaims={selectedClaims}
+          showImportExport={false}
+        />
+        <ClaimsFilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+        <ClaimsDataTable
+          data={filteredData}
+          selectedClaims={selectedClaims}
+          onSelectionChange={setSelectedClaims}
+          archived={true}
+        />
+      </div>
     </div>
   );
 };
 
-export default ArchievedActions;
+export default ArchivedActions;

@@ -21,7 +21,8 @@ const UsersHeader = () => {
     name: "",
     email: "",
     phone: "",
-    password: ""
+    password: "",
+    gender: ""
   });
 
   const userQueryParams =
@@ -56,7 +57,8 @@ const UsersHeader = () => {
           name: "",
           email: "",
           phone: "",
-          password: ""
+          password: "",
+          gender: ""
         });
       }
     } catch (err) {
@@ -92,6 +94,7 @@ const UsersHeader = () => {
             onChange={(e) => setformData({ ...formData, name: e.target.value })}
             placeholder="First Name"
             className="w-full border px-3 py-2 rounded"
+            required
           />
           <label>Email</label>
           <input
@@ -102,6 +105,7 @@ const UsersHeader = () => {
             }
             placeholder="Email Address"
             className="w-full border px-3 py-2 rounded"
+            required
           />
           <label>Phone</label>
           <input
@@ -117,7 +121,23 @@ const UsersHeader = () => {
             }}
             placeholder="Phone Number"
             className="w-full border px-3 py-2 rounded"
+            required
           />
+          <label>Gender</label>
+          <select
+            value={formData.gender}
+            onChange={(e) =>
+              setformData({ ...formData, gender: e.target.value })
+            }
+            className="w-full border px-3 py-2 rounded"
+            required
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
           <label>Password</label>
           <div className="relative">
             <input
@@ -128,6 +148,7 @@ const UsersHeader = () => {
               }
               placeholder="Password"
               className="w-full border px-3 py-2 rounded pr-10"
+              required
             />
             <button
               type="button"

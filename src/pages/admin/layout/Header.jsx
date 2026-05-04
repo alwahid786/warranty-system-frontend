@@ -16,6 +16,7 @@ import Aside from "./Aside";
 import { getDate } from "../../../utils/getDate";
 import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import { clearSelectedUser } from "../../../redux/slices/userSlice";
+import { getInitials } from "../../../utils/getInitials";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -101,11 +102,17 @@ const Header = () => {
       {/* Dropdown */}
       <div className="hidden md:flex items-center gap-4 bg-white">
         <div className="relative flex items-center gap-2">
-          <img
-            src={user?.image?.url || "/profile-pic.png"}
-            alt="User avatar"
-            className="h-12 w-12 rounded-full border border-gray-700 object-cover"
-          />
+          {user?.image?.url ? (
+            <img
+              src={user.image.url}
+              alt="User avatar"
+              className="h-12 w-12 rounded-full border border-gray-700 object-cover"
+            />
+          ) : (
+            <div className="h-12 w-12 rounded-full border border-gray-700 bg-primary flex items-center justify-center text-white font-bold">
+              {getInitials(user?.name)}
+            </div>
+          )}
           <div className="flex flex-col gap-1">
             <h6 className="text-sm font-semibold text-gray-800">{user.name}</h6>
             <p className="text-xs text-gray-600">{user.email}</p>

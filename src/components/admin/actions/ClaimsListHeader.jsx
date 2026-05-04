@@ -6,11 +6,11 @@ import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 
 import Button from "../../shared/small/Button";
-import { ArchievedIcon } from "../../../assets/icons/icons";
+import { ArchivedIcon } from "../../../assets/icons/icons";
 // import ClaimsFilterBar from "./ClaimsFilterBar";
 import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
-import { useAddArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
-import { useRemoveArchieveClaimsMutation } from "../../../redux/apis/claimsApis";
+import { useAddArchiveClaimsMutation } from "../../../redux/apis/claimsApis";
+import { useRemoveArchiveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
 
 const ClaimsListHeader = ({
@@ -23,11 +23,11 @@ const ClaimsListHeader = ({
 }) => {
   const fileInputRef = useRef(null);
   const [addClaims] = useAddClaimsMutation();
-  const [addArchieveClaims] = useAddArchieveClaimsMutation();
-  const [removeArchieveClaims] = useRemoveArchieveClaimsMutation();
+  const [addArchiveClaims] = useAddArchiveClaimsMutation();
+  const [removeArchiveClaims] = useRemoveArchiveClaimsMutation();
   const [getExportClaims] = useLazyExportClaimsQuery();
 
-  const handleAddArchieveClaims = async (e) => {
+  const handleAddArchiveClaims = async (e) => {
     e.preventDefault();
     let selectedClaimsIds = [];
 
@@ -36,14 +36,14 @@ const ClaimsListHeader = ({
     });
     if (showImportExport) {
       try {
-        await addArchieveClaims(selectedClaimsIds).unwrap();
+        await addArchiveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
       }
     } else {
       try {
-        await removeArchieveClaims(selectedClaimsIds).unwrap();
+        await removeArchiveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
         toast.error(err.data.message, { duration: 3000 });
@@ -99,7 +99,7 @@ const ClaimsListHeader = ({
         {/* Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-end flex-wrap-reverse">
           <Button
-            icon={<ArchievedIcon className="text-xs sm:text-sm" />}
+            icon={<ArchivedIcon className="text-xs sm:text-sm" />}
             text={showImportExport ? "Move To Archive" : "Move Out of Archive"}
             bg="bg-[#04365599] hover:bg-slate-600"
             color="text-white"
@@ -108,7 +108,7 @@ const ClaimsListHeader = ({
               cursor: selectedClaims?.length === 0 ? "not-allowed" : "pointer",
               opacity: selectedClaims?.length === 0 ? 0.6 : 1
             }}
-            onClick={handleAddArchieveClaims}
+            onClick={handleAddArchiveClaims}
             cn="flex !py-2.5 text-xs sm:text-sm justify-center items-center truncate"
           />
 
