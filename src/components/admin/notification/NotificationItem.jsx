@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Trash2, CheckCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { markNotificationRead } from "../../../redux/slices/notificationsSlice";
@@ -13,6 +13,8 @@ import {
 } from "../../../redux/apis/notificationsApis";
 
 const NotificationItem = ({ notification }) => {
+  const { user } = useSelector((state) => state.auth);
+
   const {
     _id: id,
     title,
@@ -20,7 +22,8 @@ const NotificationItem = ({ notification }) => {
     createdAt: time,
     isRead,
     claimId,
-    invoiceNumber
+    invoiceNumber,
+    clientId
   } = notification || {};
 
   const [deleteNotification] = useDeleteNotificationMutation();
@@ -75,9 +78,30 @@ const NotificationItem = ({ notification }) => {
     }
 
     if (claimId) {
-      navigate("/dashboard/actions", {
+      const isArchived =
+        (title?.toLowerCase().includes("archived") ||
+          message?.toLowerCase().includes("archived")) &&
+        !title?.toLowerCase().includes("unarchived") &&
+        !message?.toLowerCase().includes("unarchived");
+
+      let targetPath = isArchived
+        ? "/dashboard/archived/actions"
+        : "/dashboard/actions";
+
+      if (
+        !isArchived &&
+        clientId &&
+        (user?.role === "admin" || user?.role === "superadmin")
+      ) {
+        targetPath = `/dashboard/actions/${clientId}`;
+      }
+
+      const isMessage = title?.toLowerCase().includes("message");
+
+      navigate(targetPath, {
         state: {
-          openChatClaimId: claimId,
+          openChatClaimId: isMessage ? claimId : null,
+          highlightClaimId: claimId,
           fromNotificationId: id
         }
       });
@@ -86,7 +110,22 @@ const NotificationItem = ({ notification }) => {
     }
 
     if (invoiceNumber) {
-      navigate("/dashboard/invoices");
+      const isArchived =
+        (title?.toLowerCase().includes("archived") ||
+          message?.toLowerCase().includes("archived")) &&
+        !title?.toLowerCase().includes("unarchived") &&
+        !message?.toLowerCase().includes("unarchived");
+
+      const targetPath = isArchived
+        ? "/dashboard/archived/invoices"
+        : "/dashboard/invoices";
+
+      navigate(targetPath, {
+        state: {
+          openInvoiceNumber: invoiceNumber,
+          fromNotificationId: id
+        }
+      });
 
       return;
     }

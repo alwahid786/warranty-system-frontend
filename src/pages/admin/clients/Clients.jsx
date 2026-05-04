@@ -21,6 +21,7 @@ import {
 import { useUpdateClientMutation } from "../../../redux/apis/clientsApis";
 import ConfirmationModal from "../../../utils/ConfirmationModal";
 import EditClientsModal from "../../../components/admin/clients/EditClientsModal";
+import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 
 const Clients = () => {
   const [filters, setFilters] = useState({
@@ -119,72 +120,31 @@ const Clients = () => {
   // filters handlers ----------->
   const filteredData = clients.filter((row) => {
     // Search 1
-    if (filters.searchValue) {
-      const val = filters.searchValue.toLowerCase();
-
-      if (
-        filters.searchType === "dealerId" &&
-        !row.dealerId?.toString().toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "name" &&
-        !row.name?.toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "email" &&
-        !row.email?.toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "phone" &&
-        !row.phone?.toLowerCase().includes(val)
-      )
-        return false;
+    if (!matchesSearch(row, filters.searchValue, filters.searchType)) {
+      return false;
     }
 
-    // Search 2
+    // Search 2 (Special case for companyName/storeName)
     if (filters.searchValue2) {
       const val2 = filters.searchValue2.toLowerCase();
 
-      if (
-        filters.searchType2 === "companyName" &&
-        !(
-          row.companyName?.toLowerCase().includes(val2) ||
-          row.storeName?.toLowerCase().includes(val2)
-        )
-      )
+      if (filters.searchType2 === "companyName") {
+        if (
+          !row.companyName?.toLowerCase().includes(val2) &&
+          !row.storeName?.toLowerCase().includes(val2)
+        ) {
+          return false;
+        }
+      } else if (
+        !matchesSearch(row, filters.searchValue2, filters.searchType2)
+      ) {
         return false;
-      if (
-        filters.searchType2 === "accountOwner" &&
-        !row.accountOwner?.toLowerCase().includes(val2)
-      )
-        return false;
-      if (
-        filters.searchType2 === "businessOwner" &&
-        !row.businessOwner?.toLowerCase().includes(val2)
-      )
-        return false;
+      }
     }
 
-    // Date range (inclusive)
-    if (filters.fromDate) {
-      const from = new Date(filters.fromDate);
-
-      from.setHours(0, 0, 0, 0);
-      const rowDate = new Date(row.createdAt);
-
-      if (rowDate < from) return false;
-    }
-
-    if (filters.toDate) {
-      const to = new Date(filters.toDate);
-
-      to.setHours(23, 59, 59, 999);
-      const rowDate = new Date(row.createdAt);
-
-      if (rowDate > to) return false;
+    // Date range filter
+    if (!isDateInRange(row.createdAt, filters.fromDate, filters.toDate)) {
+      return false;
     }
 
     return true;
@@ -271,14 +231,41 @@ const Clients = () => {
 
         <div className="mt-5 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-            {currentClients.map((client) => (
-              <ClientsDetailCard
-                client={client}
-                key={client._id}
-                onEdit={() => handleOnEdit(client)}
-                onDelete={() => handleOnDeleteConfirmation(client._id)}
-              />
-            ))}
+            {currentClients.length > 0 ? (
+              currentClients.map((client) => (
+                <ClientsDetailCard
+                  client={client}
+                  key={client._id}
+                  onEdit={() => handleOnEdit(client)}
+                  onDelete={() => handleOnDeleteConfirmation(client._id)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                <div className="text-gray-400 mb-2">
+                  <svg
+                    className="w-12 h-12"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  No clients found
+                </h3>
+                <p className="text-gray-500 text-center max-w-xs">
+                  Try adjusting your filters or search terms to find what you
+                  are looking for.
+                </p>
+              </div>
+            )}
           </div>
 
           <ClientsPagination
