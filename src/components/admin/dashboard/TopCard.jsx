@@ -15,14 +15,23 @@ const TopCards = ({ usersData, invoiceData }) => {
 
   const formatChange = (value) => {
     const numericValue = parseFloat(value) || 0;
-    const displayValue = numericValue < 0 ? 0 : numericValue;
 
-    if (!displayValue)
+    if (!numericValue)
       return { text: "0% same as last X days", color: "text-gray-500" };
 
-    const sign = displayValue > 0 ? "+" : "";
-    const color = displayValue > 0 ? "text-green-600" : "text-gray-500";
-    const word = displayValue > 0 ? "better" : "same";
+    const sign = numericValue > 0 ? "+" : "";
+
+    const color =
+      numericValue > 0
+        ? "text-green-600"
+        : numericValue < 0
+          ? "text-red-600"
+          : "text-gray-500";
+
+    const word =
+      numericValue > 0 ? "better" : numericValue < 0 ? "worse" : "same";
+
+    const displayValue = Math.abs(numericValue).toFixed(2);
 
     return {
       text: `It's ${sign}${displayValue}% ${word} than last X days`,
@@ -113,21 +122,27 @@ const TopCards = ({ usersData, invoiceData }) => {
                   className={`text-sm px-2 py-0.5 rounded-full ${
                     parseFloat(card.change) > 0
                       ? "bg-green-100 text-green-600"
-                      : "bg-gray-100 text-gray-500"
+                      : parseFloat(card.change) < 0
+                        ? "bg-red-100 text-red-600"
+                        : "bg-gray-100 text-gray-500"
                   }`}
                 >
                   {parseFloat(card.change) > 0
-                    ? card.change.toString().startsWith("+")
-                      ? card.change
-                      : `+${card.change}`
-                    : `0%`}
+                    ? `+${parseFloat(card.change).toFixed(2)}`
+                    : parseFloat(card.change).toFixed(2)}
                 </span>
               )}
             </div>
 
             {/* Percentage description */}
             <div
-              className={`text-xs mt-1 ${parseFloat(card.change) > 0 ? "text-green-600" : "text-gray-500"}`}
+              className={`text-xs mt-1 ${
+                parseFloat(card.change) > 0
+                  ? "text-green-600"
+                  : parseFloat(card.change) < 0
+                    ? "text-red-600"
+                    : "text-gray-500"
+              }`}
             >
               {formatted.text.replace("X", range[card.id])}
             </div>
