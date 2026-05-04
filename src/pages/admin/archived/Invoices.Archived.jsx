@@ -2,11 +2,14 @@
 // import InvoiceCard from "../../../components/admin/invoices/InvoicesCard";
 import { useState } from "react";
 
+import { useLocation, useNavigate } from "react-router-dom";
+
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
 import { useGetArchiveInvoicesQuery } from "../../../redux/apis/invoiceApis";
+import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -23,6 +26,14 @@ const ArchivedInvoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const openInvoiceNumber = location.state?.openInvoiceNumber || null;
+
+  const handleNotificationOpened = () => {
+    if (!openInvoiceNumber) return;
+    navigate(location.pathname, { replace: true, state: {} });
+  };
 
   const handleChatOpen = (invoice) => {
     // Chat functionality not fully implemented in this archived view
@@ -41,49 +52,27 @@ const ArchivedInvoices = () => {
     );
   };
 
-  const totalPages = Math.ceil(allInvoices.length / ITEMS_PER_PAGE) || 1;
-
-  const currentInvoices = allInvoices.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
-  const handleFilterChange = (updated) => {
-    setFilters((prev) => ({ ...prev, ...updated }));
-  };
-
   // Apply all filters
-  const filteredData = currentInvoices.filter((invoice) => {
+  const filteredDataTotal = allInvoices.filter((invoice) => {
     let isMatch = true;
 
-    // 1. Search by field type
-    if (filters.searchValue) {
-      const fieldValue = String(
-        invoice[filters.searchType] || ""
-      ).toLowerCase();
-
-      if (!fieldValue.includes(filters.searchValue.toLowerCase())) {
-        isMatch = false;
-      }
+    // Search filter
+    if (!matchesSearch(invoice, filters.searchValue, filters.searchType)) {
+      isMatch = false;
     }
 
-    // 2. From / To Invoice Date
-    if (filters.fromDate) {
-      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
-
-      if (invDate < new Date(filters.fromDate)) {
-        isMatch = false;
-      }
-    }
-    if (filters.toDate) {
-      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
-
-      if (invDate > new Date(filters.toDate)) {
-        isMatch = false;
-      }
+    // Date range filter
+    if (
+      !isDateInRange(
+        invoice.createdAt || invoice.invoiceDate,
+        filters.fromDate,
+        filters.toDate
+      )
+    ) {
+      isMatch = false;
     }
 
-    // 3. Statement Type
+    // Brand filter
     if (filters.selectedBrand) {
       if (
         invoice.statementType?.toLowerCase() !==
@@ -93,27 +82,48 @@ const ArchivedInvoices = () => {
       }
     }
 
-    // 4. Status
+    // Status filter
     if (filters.status) {
       if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
         isMatch = false;
       }
     }
 
-    // 5. Min / Max Final Total
-    if (filters.minFinalTotal) {
-      if (Number(invoice.finalTotal) < Number(filters.minFinalTotal)) {
-        isMatch = false;
-      }
+    // Price range filters
+    if (
+      filters.minFinalTotal &&
+      Number(invoice.finalTotal) < Number(filters.minFinalTotal)
+    ) {
+      isMatch = false;
     }
-    if (filters.maxFinalTotal) {
-      if (Number(invoice.finalTotal) > Number(filters.maxFinalTotal)) {
-        isMatch = false;
-      }
+    if (
+      filters.maxFinalTotal &&
+      Number(invoice.finalTotal) > Number(filters.maxFinalTotal)
+    ) {
+      isMatch = false;
+    }
+
+    // If this is the invoice we need to show, ALWAYS include it
+    if (
+      openInvoiceNumber &&
+      String(invoice.invoiceNumber) === String(openInvoiceNumber)
+    ) {
+      return true;
     }
 
     return isMatch;
   });
+
+  const handleFilterChange = (updated) => {
+    setFilters((prev) => ({ ...prev, ...updated }));
+  };
+
+  const totalPages = Math.ceil(filteredDataTotal.length / ITEMS_PER_PAGE) || 1;
+
+  const currentInvoices = filteredDataTotal.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="w-full mx-auto flex flex-col min-h-full p-6">
@@ -131,10 +141,12 @@ const ArchivedInvoices = () => {
         </div>
         <h1 className="text-xl font-semibold mb-4">Invoices</h1>
         <InvoicesGrid
-          invoices={filteredData}
+          invoices={currentInvoices}
           selectedIds={selectedIds}
           onSelect={handleSelect}
           onChatOpen={handleChatOpen}
+          openInvoiceNumber={openInvoiceNumber}
+          onNotificationOpened={handleNotificationOpened}
         />
       </div>
       <div className="mt-auto">

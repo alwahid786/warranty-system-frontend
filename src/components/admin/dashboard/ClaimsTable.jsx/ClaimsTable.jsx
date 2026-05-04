@@ -105,6 +105,11 @@ const ClaimsTable = ({ data }) => {
           responsive
           customStyles={customStyles}
           highlightOnHover
+          noDataComponent={
+            <div className="flex flex-col items-center justify-center py-8 px-4 w-full text-gray-500 italic">
+              No recent inquiries found.
+            </div>
+          }
         />
       </div>
       <div className="mt-4 flex justify-center">

@@ -1,6 +1,6 @@
-// import { invoices as allInvoices } from '../../../data/data';
-// import InvoiceCard from "../../../components/admin/invoices/InvoicesCard";
 import { useState } from "react";
+
+import { useLocation, useNavigate } from "react-router-dom";
 
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
@@ -10,6 +10,7 @@ import {
   useGetClientsQuery,
   useGetInvoicesQuery
 } from "../../../redux/apis/invoiceApis";
+import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -28,6 +29,14 @@ const Invoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const openInvoiceNumber = location.state?.openInvoiceNumber || null;
+
+  const handleNotificationOpened = () => {
+    if (!openInvoiceNumber) return;
+    navigate(location.pathname, { replace: true, state: {} });
+  };
 
   const handleChatOpen = (invoice) => {
     // Chat functionality not fully implemented in this view
@@ -58,27 +67,23 @@ const Invoices = () => {
   const filteredDataTotal = allInvoices.filter((invoice) => {
     let isMatch = true;
 
-    if (filters.searchValue) {
-      const fieldValue = String(
-        invoice[filters.searchType] || ""
-      ).toLowerCase();
-
-      if (!fieldValue.includes(filters.searchValue.toLowerCase())) {
-        isMatch = false;
-      }
+    // Search filter
+    if (!matchesSearch(invoice, filters.searchValue, filters.searchType)) {
+      isMatch = false;
     }
 
-    if (filters.fromDate || filters.toDate) {
-      const invDate = new Date(invoice.createdAt || invoice.invoiceDate);
-
-      if (filters.fromDate && invDate < new Date(filters.fromDate)) {
-        isMatch = false;
-      }
-      if (filters.toDate && invDate > new Date(filters.toDate)) {
-        isMatch = false;
-      }
+    // Date range filter
+    if (
+      !isDateInRange(
+        invoice.createdAt || invoice.invoiceDate,
+        filters.fromDate,
+        filters.toDate
+      )
+    ) {
+      isMatch = false;
     }
 
+    // Brand filter
     if (filters.selectedBrand) {
       if (
         invoice.statementType?.toLowerCase() !==
@@ -88,21 +93,33 @@ const Invoices = () => {
       }
     }
 
+    // Status filter
     if (filters.status) {
       if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
         isMatch = false;
       }
     }
 
-    if (filters.minFinalTotal) {
-      if (Number(invoice.finalTotal) < Number(filters.minFinalTotal)) {
-        isMatch = false;
-      }
+    // Price range filters
+    if (
+      filters.minFinalTotal &&
+      Number(invoice.finalTotal) < Number(filters.minFinalTotal)
+    ) {
+      isMatch = false;
     }
-    if (filters.maxFinalTotal) {
-      if (Number(invoice.finalTotal) > Number(filters.maxFinalTotal)) {
-        isMatch = false;
-      }
+    if (
+      filters.maxFinalTotal &&
+      Number(invoice.finalTotal) > Number(filters.maxFinalTotal)
+    ) {
+      isMatch = false;
+    }
+
+    // Notification highlight override
+    if (
+      openInvoiceNumber &&
+      String(invoice.invoiceNumber) === String(openInvoiceNumber)
+    ) {
+      return true;
     }
 
     return isMatch;
@@ -141,6 +158,8 @@ const Invoices = () => {
           onSelect={handleSelect}
           onChatOpen={handleChatOpen}
           clientsData={clientsData}
+          openInvoiceNumber={openInvoiceNumber}
+          onNotificationOpened={handleNotificationOpened}
         />
       </div>
       <div className="mt-auto">

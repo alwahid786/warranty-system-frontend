@@ -29,14 +29,13 @@ import {
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery
 } from "../../../redux/apis/userApis";
+import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 
 const Users = () => {
   const { user } = useSelector((state) => state.auth);
-  // Unused userCount removed to fix linting error
-  // const { userCount } = useSelector((state) => state.user);
 
   const [filters, setFilters] = useState({
-    searchType: "id",
+    searchType: "name",
     searchValue: "",
     fromDate: "",
     toDate: "",
@@ -139,37 +138,14 @@ const Users = () => {
 
   // Filters --------->
   const filteredData = currentUsers.filter((row) => {
-    if (filters.searchValue) {
-      const val = filters.searchValue.toLowerCase();
-
-      if (
-        filters.searchType === "name" &&
-        !row.name?.toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "email" &&
-        !row.email?.toLowerCase().includes(val)
-      )
-        return false;
-      if (
-        filters.searchType === "phone" &&
-        !row.phone?.toLowerCase().includes(val)
-      )
-        return false;
+    // Search filter
+    if (!matchesSearch(row, filters.searchValue, filters.searchType)) {
+      return false;
     }
 
-    if (filters.fromDate) {
-      const from = new Date(filters.fromDate);
-      const userDate = new Date(row.createdAt);
-
-      if (userDate < from) return false;
-    }
-    if (filters.toDate) {
-      const to = new Date(filters.toDate);
-      const userDate = new Date(row.createdAt);
-
-      if (userDate > to) return false;
+    // Date range filter
+    if (!isDateInRange(row.createdAt, filters.fromDate, filters.toDate)) {
+      return false;
     }
 
     return true;
@@ -260,15 +236,42 @@ const Users = () => {
 
         <div className="mt-5 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-            {filteredData.map((user) => (
-              <UsersDetailCard
-                user={user}
-                key={user._id}
-                canManage={canManageUser(user)}
-                onEdit={() => handleOnEdit(user)}
-                onDelete={() => handleOnDeleteConfirmation(user._id)}
-              />
-            ))}
+            {filteredData.length > 0 ? (
+              filteredData.map((user) => (
+                <UsersDetailCard
+                  user={user}
+                  key={user._id}
+                  canManage={canManageUser(user)}
+                  onEdit={() => handleOnEdit(user)}
+                  onDelete={() => handleOnDeleteConfirmation(user._id)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                <div className="text-gray-400 mb-2">
+                  <svg
+                    className="w-12 h-12"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  No users found
+                </h3>
+                <p className="text-gray-500 text-center max-w-xs">
+                  Try adjusting your filters or search terms to find what you
+                  are looking for.
+                </p>
+              </div>
+            )}
           </div>
 
           <UsersPagination
