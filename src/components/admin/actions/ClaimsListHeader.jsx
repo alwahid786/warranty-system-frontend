@@ -39,14 +39,20 @@ const ClaimsListHeader = ({
         await addArchiveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
+        toast.error(
+          err?.data?.message || err?.message || "Something went wrong",
+          { duration: 3000 }
+        );
       }
     } else {
       try {
         await removeArchiveClaims(selectedClaimsIds).unwrap();
         setSelectedClaims([]);
       } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
+        toast.error(
+          err?.data?.message || err?.message || "Something went wrong",
+          { duration: 3000 }
+        );
       }
     }
   };
@@ -65,7 +71,10 @@ const ClaimsListHeader = ({
       try {
         await addClaims(formData).unwrap();
       } catch (err) {
-        toast.error(err.data.message, { duration: 3000 });
+        toast.error(
+          err?.data?.message || err?.message || "Something went wrong",
+          { duration: 3000 }
+        );
       }
     }
   };
@@ -77,7 +86,9 @@ const ClaimsListHeader = ({
       saveAs(blob, "claims_export.csv");
       toast.success("Claims exported successfully", { duration: 3000 });
     } catch (err) {
-      toast.error(err.data.message || "Failed to export", { duration: 3000 });
+      toast.error(err?.data?.message || err?.message || "Failed to export", {
+        duration: 3000
+      });
     }
   };
 
