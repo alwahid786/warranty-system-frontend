@@ -38,166 +38,178 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
   };
 
   return (
-    <div className="w-full rounded-md mt-4 flex flex-col gap-4">
+    <div className="w-full mt-4 flex flex-col gap-4">
       {/* Row 1: Search + Dates */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
-        {/* Search input and toggle */}
+      <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+          {/* Advanced Search */}
+          <div className="lg:col-span-6 flex flex-col gap-1">
+            <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+              ADVANCED SEARCH
+            </label>
+            <div className="relative group">
+              <input
+                type="text"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full lg:pr-72 transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
+                placeholder={`Search by ${searchTypes.find((t) => t.key === filters.searchType)?.label}`}
+                value={filters.searchValue}
+                onChange={(e) =>
+                  onFilterChange({ searchValue: e.target.value })
+                }
+              />
 
-        <div className="flex flex-col gap-1 md:col-span-6">
-          <label className="text-xs font-medium text-secondary">
-            ADVANCED SEARCH
-          </label>
-          <div className="relative w-full">
-            <input
-              type="text"
-              className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full pr-36"
-              placeholder={`Search by invoices ${filters.searchType}`}
-              value={filters.searchValue}
-              onChange={(e) => onFilterChange({ searchValue: e.target.value })}
-            />
-
-            {/* Mobile: Dropdown */}
-            <div className="absolute right-7 top-1/2 -translate-y-1/2 md:hidden">
-              <select
-                className="bg-[#04365530] text-gray-600 text-xs px-2 py-1.5 rounded border"
-                value={filters.searchType}
-                onChange={(e) => onFilterChange({ searchType: e.target.value })}
-              >
+              {/* Desktop Button Group - Hidden on MD and below */}
+              <div className="hidden lg:flex absolute right-1.5 top-1/2 -translate-y-1/2 gap-1 bg-white pl-2">
                 {searchTypes.map((type) => (
-                  <option key={type.key} value={type.key}>
+                  <button
+                    key={type.key}
+                    type="button"
+                    className={`px-2 py-1.5 rounded text-[10px] font-bold border transition-all ${
+                      filters.searchType === type.key
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                    }`}
+                    onClick={() => onFilterChange({ searchType: type.key })}
+                  >
                     {type.label}
-                  </option>
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
-            {/* Desktop: Button group */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 hidden md:flex gap-1">
+            {/* Tablet/Mobile Search Type Toggle */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:hidden gap-2 mt-2">
               {searchTypes.map((type) => (
                 <button
                   key={type.key}
                   type="button"
-                  className={`px-2 py-1.5 rounded text-xs font-medium border ${
+                  className={`py-2 rounded text-[10px] font-bold border transition-all ${
                     filters.searchType === type.key
-                      ? "bg-primary text-white"
-                      : "bg-[#04365530] text-gray-500"
+                      ? "bg-primary text-white border-primary"
+                      : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
                   }`}
                   onClick={() => onFilterChange({ searchType: type.key })}
-                  style={{ minWidth: 40 }}
                 >
                   {type.label}
                 </button>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* From date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary">
-            FROM Invoice Date
-          </label>
-          <input
-            type="date"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
-            value={filters.fromDate}
-            onChange={(e) => onFilterChange({ fromDate: e.target.value })}
-          />
-        </div>
-
-        {/* To date */}
-        <div className="flex flex-col gap-1 md:col-span-3">
-          <label className="text-xs font-medium text-secondary">
-            TO Invoice Date
-          </label>
-          <input
-            type="date"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm"
-            value={filters.toDate}
-            onChange={(e) => onFilterChange({ toDate: e.target.value })}
-          />
+          {/* Date Range */}
+          <div className="lg:col-span-6 grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                FROM Invoice Date
+              </label>
+              <input
+                type="date"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+                value={filters.fromDate}
+                onChange={(e) => onFilterChange({ fromDate: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                TO Invoice Date
+              </label>
+              <input
+                type="date"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+                value={filters.toDate}
+                onChange={(e) => onFilterChange({ toDate: e.target.value })}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Row 2: Statement, Totals, Status, Buttons */}
-      <div className="grid grid-cols-12 gap-2 items-end w-full">
-        {/* Statement Type */}
-        <div className="flex flex-col w-full gap-1 col-span-12 md:col-span-3">
-          <label className="text-xs font-medium text-secondary">
-            Select Statement Type
-          </label>
-          <Dropdown
-            title=""
-            options={statementTypes}
-            defaultValue={filters.selectedBrand}
-            onChange={(val) => onFilterChange({ selectedBrand: val })}
-            width="w-full"
-          />
-        </div>
+      <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
+          {/* Statement Type */}
+          <div className="lg:col-span-3 flex flex-col gap-1">
+            <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+              Statement Type
+            </label>
+            <Dropdown
+              title=""
+              options={statementTypes}
+              defaultValue={filters.selectedBrand}
+              onChange={(val) => onFilterChange({ selectedBrand: val })}
+              width="w-full"
+            />
+          </div>
 
-        {/* Final Total Min */}
-        <div className="flex flex-col w-full gap-1 col-span-6 md:col-span-2">
-          <label className="text-xs font-medium text-secondary">
-            Min Final Total
-          </label>
-          <input
-            type="number"
-            min="0"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full"
-            placeholder="Min"
-            value={filters.minFinalTotal}
-            onChange={(e) => {
-              const value = e.target.value;
+          {/* Totals */}
+          <div className="lg:col-span-4 grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                Min Total
+              </label>
+              <input
+                type="number"
+                min="0"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full"
+                placeholder="Min"
+                value={filters.minFinalTotal}
+                onChange={(e) => {
+                  const value = e.target.value;
 
-              if (value < 0) return;
-              onFilterChange({ minFinalTotal: value });
-            }}
-          />
-        </div>
+                  if (value < 0) return;
 
-        {/* Final Total Max */}
-        <div className="flex flex-col w-full gap-1 col-span-6 md:col-span-2">
-          <label className="text-xs font-medium text-secondary">
-            Max Final Total
-          </label>
-          <input
-            type="number"
-            min="0"
-            className="bg-white shadow-sm rounded px-3 py-2.5 text-sm w-full"
-            placeholder="Max"
-            value={filters.maxFinalTotal}
-            onChange={(e) => {
-              const value = e.target.value;
+                  onFilterChange({ minFinalTotal: value });
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                Max Total
+              </label>
+              <input
+                type="number"
+                min="0"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full"
+                placeholder="Max"
+                value={filters.maxFinalTotal}
+                onChange={(e) => {
+                  const value = e.target.value;
 
-              if (value < 0) return;
-              onFilterChange({ maxFinalTotal: value });
-            }}
-          />
-        </div>
+                  if (value < 0) return;
 
-        {/* Status */}
-        <div className="flex flex-col w-full gap-1 col-span-12 md:col-span-2">
-          <label className="text-xs font-medium text-secondary">Status</label>
-          <Dropdown
-            title=""
-            options={orderStatuses}
-            defaultValue={orderStatuses.find(
-              (opt) => opt.name.toLowerCase() === filters.status?.toLowerCase()
-            )}
-            onChange={(val) => onFilterChange({ status: val?.name || "" })}
-            width="w-full"
-          />
-        </div>
+                  onFilterChange({ maxFinalTotal: value });
+                }}
+              />
+            </div>
+          </div>
 
-        {/* Buttons */}
-        <div className="col-span-12 md:col-span-3 mt-5">
-          <div className="grid grid-cols-2 gap-2">
+          {/* Status */}
+          <div className="lg:col-span-3 flex flex-col gap-1">
+            <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+              Status
+            </label>
+            <Dropdown
+              title=""
+              options={orderStatuses}
+              defaultValue={orderStatuses.find(
+                (opt) =>
+                  opt.name.toLowerCase() === filters.status?.toLowerCase()
+              )}
+              onChange={(val) => onFilterChange({ status: val?.name || "" })}
+              width="w-full"
+            />
+          </div>
+
+          {/* Reset Button */}
+          <div className="lg:col-span-2">
             <Button
               text="Reset Filter"
               bg="bg-[#043655C4]"
               color="text-white"
               icon={<MdFilterAltOff className="text-sm" />}
-              cn={"text-sm !h-[40px]"}
+              cn={
+                "text-sm !py-2.5 w-full px-4 hover:bg-[#043655E0] transition-colors shadow-sm"
+              }
               onClick={handleReset}
             />
           </div>

@@ -81,6 +81,22 @@ const ClientsHeader = () => {
     e.preventDefault();
 
     try {
+      if (
+        !formData.clientName ||
+        !formData.clientEmail ||
+        !formData.clientPassword
+      ) {
+        return toast.error("Client Name, Email, and Password are required");
+      }
+
+      if (!formData.clientPhone) {
+        return toast.error("Client Phone is required");
+      }
+
+      if (!formData.address.city || !formData.address.zip) {
+        return toast.error("City and Zip Code are required in address");
+      }
+
       if (formData.percentage && Number(formData.percentage) > 100) {
         return toast.error("Percentage cannot exceed 100%");
       }
@@ -181,7 +197,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="email"
-                  value={formData.email}
+                  value={formData.clientEmail}
                   onChange={(e) =>
                     setFormData({ ...formData, clientEmail: e.target.value })
                   }
@@ -231,7 +247,7 @@ const ClientsHeader = () => {
                     const digits = value.replace(/\D/g, "");
 
                     const finalValue =
-                      (isPlus ? "+" : "") + digits.slice(0, 11);
+                      (isPlus ? "+" : "") + digits.slice(0, 12);
 
                     setFormData({ ...formData, clientPhone: finalValue });
                   }}
@@ -315,14 +331,24 @@ const ClientsHeader = () => {
                 type="text"
                 placeholder="City"
                 value={formData.address.city}
-                onChange={(e) => handleAddressChange("city", e.target.value)}
+                onChange={(e) =>
+                  handleAddressChange(
+                    "city",
+                    e.target.value.replace(/[^a-zA-Z\s]/g, "")
+                  )
+                }
                 className="w-full border px-3 py-2 rounded"
               />
               <input
                 type="text"
                 placeholder="State"
                 value={formData.address.state}
-                onChange={(e) => handleAddressChange("state", e.target.value)}
+                onChange={(e) =>
+                  handleAddressChange(
+                    "state",
+                    e.target.value.replace(/[^a-zA-Z\s]/g, "")
+                  )
+                }
                 className="w-full border px-3 py-2 rounded"
               />
               <input
@@ -336,7 +362,9 @@ const ClientsHeader = () => {
                 type="text"
                 placeholder="Zip Code"
                 value={formData.address.zip}
-                onChange={(e) => handleAddressChange("zip", e.target.value)}
+                onChange={(e) =>
+                  handleAddressChange("zip", e.target.value.replace(/\D/g, ""))
+                }
                 className="w-full border px-3 py-2 rounded"
               />
             </div>
@@ -359,7 +387,7 @@ const ClientsHeader = () => {
                   const value = e.target.value;
                   const isPlus = value.startsWith("+");
                   const digits = value.replace(/\D/g, "");
-                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 12);
 
                   setFormData({ ...formData, storePhone: finalValue });
                 }}
