@@ -34,14 +34,14 @@ const Notification = lazy(
 );
 
 const Users = lazy(() => import("./pages/admin/users/Users"));
-const Archieved = lazy(() => import("./pages/admin/archieved/Archieved"));
+const Archived = lazy(() => import("./pages/admin/archived/Archived"));
 
-const ArchievedActions = lazy(
-  () => import("./pages/admin/archieved/actions.archieved")
+const ArchivedActions = lazy(
+  () => import("./pages/admin/archived/actions.archived")
 );
 
-const ArchievedInvoices = lazy(
-  () => import("./pages/admin/archieved/Invoices.Archieved")
+const ArchivedInvoices = lazy(
+  () => import("./pages/admin/archived/Invoices.Archived")
 );
 
 const Settings = lazy(() => import("./pages/admin/settings/Settings"));
@@ -259,38 +259,38 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="users/:pageId" element={<Users />} />
               <Route
-                path="archieved"
+                path="archived"
                 element={
                   <ProtectedRoute
                     user={user}
                     redirect="/"
                     allowedRoles={["admin"]}
                   >
-                    <Archieved />
+                    <Archived />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="archieved/actions"
+                path="archived/actions"
                 element={
                   <ProtectedRoute
                     user={user}
                     redirect="/"
                     allowedRoles={["admin"]}
                   >
-                    <ArchievedActions />
+                    <ArchivedActions />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="archieved/invoices"
+                path="archived/invoices"
                 element={
                   <ProtectedRoute
                     user={user}
                     redirect="/"
                     allowedRoles={["admin"]}
                   >
-                    <ArchievedInvoices />
+                    <ArchivedInvoices />
                   </ProtectedRoute>
                 }
               />

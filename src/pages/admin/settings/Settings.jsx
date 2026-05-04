@@ -13,15 +13,14 @@ import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
 import { useUpdateMyProfileMutation } from "../../../redux/apis/authApis";
 import { userExist } from "../../../redux/slices/authSlice";
 import Loader from "../../../components/shared/small/Loader";
+import { getInitials } from "../../../utils/getInitials";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
   const canEditCompanyName = user?.role === "admin" || user?.role === "client";
   const imageInputRef = useRef(null);
 
-  const [imageSrc, setImageSrc] = useState(
-    user?.image?.url || "/profile-pic.png"
-  );
+  const [imageSrc, setImageSrc] = useState(user?.image?.url || "");
 
   const { data, isLoading: isLoadingForGetMyProfile } = useGetMyProfileQuery(
     undefined,
@@ -140,8 +139,19 @@ const Settings = () => {
       {/* Profile Section */}
       <div className="relative -top-19">
         <div className="px-6 flex flex-col gap-4">
-          <div className="w-29 h-29 rounded-full">
-            <img src={imageSrc} alt="" className="w-full h-full rounded-full" />
+          <div className="w-29 h-29 rounded-full overflow-hidden">
+            {user?.image?.url ||
+            (selectedFile && imageSrc !== user?.image?.url) ? (
+              <img
+                src={imageSrc}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-primary flex items-center justify-center text-white text-4xl font-bold">
+                {getInitials(user?.name)}
+              </div>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-5 items-start justify-between">
             <div className="flex flex-col gap-2">
@@ -251,12 +261,18 @@ const Settings = () => {
               <div className="col-span-2 grid grid-cols-12 gap-5 pb-4">
                 <div className="flex flex-col items-center gap-2 col-span-12 md:col-span-4">
                   <p>Change Profile</p>
-                  <div className="rounded-full w-25 h-25">
-                    <img
-                      src={imageSrc}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
+                  <div className="rounded-full w-25 h-25 overflow-hidden">
+                    {imageSrc && imageSrc !== "/profile-pic.png" ? (
+                      <img
+                        src={imageSrc}
+                        className="w-full h-full object-cover"
+                        alt=""
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary flex items-center justify-center text-white text-3xl font-bold">
+                        {getInitials(user?.name)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-12 md:col-span-8">

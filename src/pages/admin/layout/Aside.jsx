@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import {
   DashboardIcon,
   ActionsIcon,
-  ArchievedIcon,
+  ArchivedIcon,
   SettingsIcon,
   NotifictionIcon,
   InvoicesIcon,
@@ -94,20 +94,20 @@ const Aside = () => {
     },
     {
       id: 5,
-      title: "Archieved",
-      link: ["/dashboard/archieved"],
-      icon: <ArchievedIcon />,
+      title: "Archived",
+      link: ["/dashboard/archived"],
+      icon: <ArchivedIcon />,
       children: [
         {
           id: 1,
           title: "Actions",
-          link: "/dashboard/archieved/actions",
+          link: "/dashboard/archived/actions",
           icon: <ActionSubLink />
         },
         {
           id: 2,
           title: "Invoices",
-          link: "/dashboard/archieved/invoices",
+          link: "/dashboard/archived/invoices",
           icon: <InvoicesSubLink />
         }
       ]
@@ -133,7 +133,7 @@ const Aside = () => {
     // },
   ];
 
-  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archieved"];
+  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archived"];
 
   const filteredPages = pages.filter((page) => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {
@@ -261,7 +261,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   }, [hasActiveChild]);
 
   if (
-    page.title === "Archieved" ||
+    page.title === "Archived" ||
     (page.title === "Actions" && page.children?.length)
   ) {
     return (

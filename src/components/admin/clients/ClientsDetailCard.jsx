@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
-import { FaUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import {
   FaPhone,
@@ -13,6 +12,8 @@ import {
 } from "react-icons/fa6";
 import { MdLocationOn } from "react-icons/md";
 import { HiPencil, HiTrash, HiEllipsisHorizontal } from "react-icons/hi2";
+
+import { getInitials } from "../../../utils/getInitials";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -37,15 +38,16 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
       <div className="flex justify-between items-start">
         {/* Avatar + Info */}
         <div className="flex items-center gap-4">
-          {client?.image ? (
+          {client?.image?.url ||
+          (typeof client?.image === "string" && client?.image) ? (
             <img
-              src={client?.image}
+              src={client?.image?.url || client?.image}
               alt="client"
               className="w-14 h-14 rounded-full object-cover border border-gray-200"
             />
           ) : (
-            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-              <FaUserCircle className="text-gray-400 text-3xl" />
+            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center border border-gray-200 text-white font-bold text-xl">
+              {getInitials(client?.name)}
             </div>
           )}
           <div>

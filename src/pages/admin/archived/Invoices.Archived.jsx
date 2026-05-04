@@ -6,7 +6,7 @@ import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
 import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 import InvoicesListHeader from "../../../components/admin/invoices/InvoicesListHeader";
 import InvoicesFilterBar from "../../../components/admin/invoices/InvoicesFilterBar";
-import { useGetArchieveInvoicesQuery } from "../../../redux/apis/invoiceApis";
+import { useGetArchiveInvoicesQuery } from "../../../redux/apis/invoiceApis";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -19,7 +19,7 @@ const defaultFilters = {
   status: ""
 };
 
-const ArchievedInvoices = () => {
+const ArchivedInvoices = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
@@ -29,7 +29,7 @@ const ArchievedInvoices = () => {
     console.log("Chat open for archived invoice:", invoice);
   };
 
-  const { data } = useGetArchieveInvoicesQuery(undefined, {
+  const { data } = useGetArchiveInvoicesQuery(undefined, {
     refetchOnMountOrArgChange: true
   });
 
@@ -41,7 +41,7 @@ const ArchievedInvoices = () => {
     );
   };
 
-  const totalPages = Math.ceil(allInvoices.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(allInvoices.length / ITEMS_PER_PAGE) || 1;
 
   const currentInvoices = allInvoices.slice(
     (page - 1) * ITEMS_PER_PAGE,
@@ -116,30 +116,32 @@ const ArchievedInvoices = () => {
   });
 
   return (
-    <div className="w-full mx-auto ">
-      <>
+    <div className="w-full mx-auto flex flex-col min-h-full p-6">
+      <div className="flex-1">
         <InvoicesListHeader
           selectedIds={selectedIds}
           setSelectedIds={setSelectedIds}
           showImportExport={false}
         />
-      </>
-      <div className="mb-4">
-        <InvoicesFilterBar
-          filters={filters}
-          onFilterChange={handleFilterChange}
+        <div className="mb-4">
+          <InvoicesFilterBar
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
+        <h1 className="text-xl font-semibold mb-4">Invoices</h1>
+        <InvoicesGrid
+          invoices={filteredData}
+          selectedIds={selectedIds}
+          onSelect={handleSelect}
+          onChatOpen={handleChatOpen}
         />
       </div>
-      <h1 className="text-xl font-semibold mb-4">Invoices</h1>
-      <InvoicesGrid
-        invoices={filteredData}
-        selectedIds={selectedIds}
-        onSelect={handleSelect}
-        onChatOpen={handleChatOpen}
-      />
-      <Pagination current={page} total={totalPages} onPageChange={setPage} />
+      <div className="mt-auto">
+        <Pagination current={page} total={totalPages} onPageChange={setPage} />
+      </div>
     </div>
   );
 };
 
-export default ArchievedInvoices;
+export default ArchivedInvoices;

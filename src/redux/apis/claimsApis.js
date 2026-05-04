@@ -80,29 +80,29 @@ const claimsApis = createApi({
       invalidatesTags: ["Claims"]
     }),
 
-    // get Archieve Claims
-    getArchieveClaims: builder.query({
+    // get Archive Claims
+    getArchiveClaims: builder.query({
       query: () => ({
-        url: "/getArchieveClaims",
+        url: "/getArchiveClaims",
         method: "GET"
       }),
       providesTags: ["Claims"]
     }),
 
-    // Add Archieve Claims
-    addArchieveClaims: builder.mutation({
+    // Add Archive Claims
+    addArchiveClaims: builder.mutation({
       query: (data) => ({
-        url: "/createArchieveClaims",
+        url: "/createArchiveClaims",
         method: "POST",
         body: data
       }),
       invalidatesTags: ["Claims"]
     }),
 
-    // move claims out of archieve
-    removeArchieveClaims: builder.mutation({
+    // move claims out of archive
+    removeArchiveClaims: builder.mutation({
       query: (data) => ({
-        url: "/removeArchieveClaims",
+        url: "/removeArchiveClaims",
         method: "POST",
         body: data
       }),
@@ -135,9 +135,9 @@ export const {
   useLazyExportClaimsQuery,
   useUpdateClaimsMutation,
   useGetInvoicesQuery,
-  useGetArchieveClaimsQuery,
-  useAddArchieveClaimsMutation,
-  useRemoveArchieveClaimsMutation,
+  useGetArchiveClaimsQuery,
+  useAddArchiveClaimsMutation,
+  useRemoveArchiveClaimsMutation,
   useGetInvoicesStatQuery,
   useGetClaimsStatQuery,
   useUpdateClaimsAdditionalDataMutation,

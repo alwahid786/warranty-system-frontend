@@ -1,6 +1,4 @@
-import React from "react";
-
-const ArchievedIcon = () => {
+const ArchivedIcon = () => {
   return (
     <svg
       width="16"
@@ -19,4 +17,4 @@ const ArchievedIcon = () => {
   );
 };
 
-export default ArchievedIcon;
+export default ArchivedIcon;

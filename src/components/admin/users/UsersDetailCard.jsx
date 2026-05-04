@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from "react";
 
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
-import { FaUserCircle } from "react-icons/fa";
 import { HiPencil, HiTrash, HiEllipsisVertical } from "react-icons/hi2";
+
+import { getInitials } from "../../../utils/getInitials";
 
 const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,15 +33,16 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
           {/* User Avatar */}
-          {user?.image ? (
+          {user?.image?.url ||
+          (typeof user?.image === "string" && user?.image) ? (
             <img
-              src={user?.image}
+              src={user?.image?.url || user?.image}
               alt="User"
               className="w-14 h-14 rounded-full object-cover border border-gray-200"
             />
           ) : (
-            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-              <FaUserCircle className="text-gray-400 text-3xl" />
+            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center border border-gray-200 text-white font-bold text-xl">
+              {getInitials(user?.name)}
             </div>
           )}
 

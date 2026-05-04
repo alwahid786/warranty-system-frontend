@@ -10,6 +10,7 @@ import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import { SOCKET } from "../../../utils/socket";
 import claimsApis from "../../../redux/apis/claimsApis";
 import notificationsApis from "../../../redux/apis/notificationsApis";
+import { getInitials } from "../../../utils/getInitials";
 
 const normalizeId = (value) => {
   if (!value) return "";
@@ -33,7 +34,7 @@ export default function ChatModal({
   const [file, setFile] = useState(null);
   const [sendMessageMutation] = useSendMessageMutation();
 
-  const { data } = useGetChatQuery(row?._id, {
+  const { data } = useGetChatQuery(forInvoice ? row?.Id : row?._id, {
     refetchOnMountOrArgChange: true
   });
 
@@ -160,7 +161,19 @@ export default function ChatModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b p-4">
           <div className="flex items-center gap-3">
-            <img src="/profile-pic.png" className="w-[48px]" alt="" />
+            <div className="w-[48px] h-[48px] rounded-full overflow-hidden">
+              {row?.customerName ? (
+                <div className="w-full h-full bg-primary flex items-center justify-center text-white font-bold">
+                  {getInitials(row.customerName)}
+                </div>
+              ) : (
+                <img
+                  src="/profile-pic.png"
+                  className="w-full h-full object-cover"
+                  alt=""
+                />
+              )}
+            </div>
           </div>
           <div>
             <p className="text-lg text-green-700">
