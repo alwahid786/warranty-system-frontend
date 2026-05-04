@@ -436,7 +436,6 @@ const ClaimsDataTable = ({
         </div>
       ),
       sortable: false,
-      grow: 2,
       width: "200px"
     },
     {
@@ -530,7 +529,6 @@ const ClaimsDataTable = ({
           )}
         </div>
       ),
-      grow: 3,
       width: "180px"
     },
     {
@@ -558,7 +556,6 @@ const ClaimsDataTable = ({
           )}
         </div>
       ),
-      grow: 2,
       width: "190px"
     }
   ];
@@ -590,7 +587,6 @@ const ClaimsDataTable = ({
           )}
         </div>
       ),
-      grow: 2,
       width: "130px"
     });
   }
