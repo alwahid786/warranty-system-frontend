@@ -69,7 +69,11 @@ const ClaimsListHeader = ({
         formData.append("targetClientId", targetClientId);
       }
       try {
-        await addClaims(formData).unwrap();
+        const response = await addClaims(formData).unwrap();
+
+        toast.success(response.message || "Claims imported successfully", {
+          duration: 3000
+        });
       } catch (err) {
         toast.error(
           err?.data?.message || err?.message || "Something went wrong",
