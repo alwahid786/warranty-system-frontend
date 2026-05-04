@@ -88,7 +88,9 @@ const ArchivedActions = () => {
     <div className="flex flex-col min-h-full p-6">
       <div className="flex-1">
         <ClaimsListHeader
+          claims={claims}
           selectedClaims={selectedClaims}
+          setSelectedClaims={setSelectedClaims}
           showImportExport={false}
         />
         <ClaimsFilterBar
