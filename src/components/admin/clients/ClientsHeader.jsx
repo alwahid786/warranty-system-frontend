@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
 
+import { formatPhoneNumber } from "../../../utils/formatters";
 import {
   useAddClientMutation,
   useGetClientsStatByFiltersQuery,
@@ -77,6 +78,38 @@ const ClientsHeader = () => {
   const { refetch: getClientsActivityStatRefetch } =
     useGetClientsActivityStatsQuery();
 
+  const resetForm = () => {
+    setFormData({
+      clientName: "",
+      clientEmail: "",
+      clientPhone: "",
+      clientPassword: "",
+      storeName: "",
+      dealerId: "",
+      address: {
+        store: "",
+        street: "",
+        area: "",
+        city: "",
+        state: "",
+        country: "",
+        zip: ""
+      },
+      storePhone: "",
+      emails: [""],
+      accountOwner: "",
+      businessOwner: "",
+      businessOwnerView: false,
+      percentage: ""
+    });
+    setShowPassword(false);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    resetForm();
+  };
+
   const handleAddClient = async (e) => {
     e.preventDefault();
 
@@ -112,30 +145,7 @@ const ClientsHeader = () => {
 
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
-        setIsOpen(false);
-        setFormData({
-          clientName: "",
-          clientEmail: "",
-          clientPhone: "",
-          clientPassword: "",
-          storeName: "",
-          dealerId: "",
-          address: {
-            store: "",
-            street: "",
-            area: "",
-            city: "",
-            state: "",
-            country: "",
-            zip: ""
-          },
-          storePhone: "",
-          emails: [""],
-          accountOwner: "",
-          businessOwner: "",
-          businessOwnerView: false,
-          percentage: ""
-        });
+        handleClose();
         await getClientsStatRefetch();
         await getClientsActivityStatRefetch();
       }
@@ -162,11 +172,12 @@ const ClientsHeader = () => {
       </div>
 
       {/* Modal */}
-      <AddClientModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <AddClientModal isOpen={isOpen} onClose={handleClose}>
         <h2 className="text-xl font-semibold mb-4">Add New Client</h2>
         <form
           className="space-y-6 max-h-[80vh] overflow-y-auto pr-2"
           onSubmit={handleAddClient}
+          autoComplete="off"
         >
           {/* Section: Client Credentials */}
           <div>
@@ -187,6 +198,7 @@ const ClientsHeader = () => {
                   }
                   placeholder="Enter Client Name"
                   className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
                 />
               </div>
 
@@ -203,6 +215,7 @@ const ClientsHeader = () => {
                   }
                   placeholder="Enter Client Email"
                   className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
                 />
               </div>
 
@@ -223,6 +236,7 @@ const ClientsHeader = () => {
                     }
                     placeholder="Enter Password"
                     className="w-full border px-3 py-2 rounded pr-10"
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -242,17 +256,13 @@ const ClientsHeader = () => {
                   type="text"
                   value={formData.clientPhone}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    const isPlus = value.startsWith("+");
-                    const digits = value.replace(/\D/g, "");
+                    const formattedValue = formatPhoneNumber(e.target.value);
 
-                    const finalValue =
-                      (isPlus ? "+" : "") + digits.slice(0, 12);
-
-                    setFormData({ ...formData, clientPhone: finalValue });
+                    setFormData({ ...formData, clientPhone: formattedValue });
                   }}
-                  placeholder="Phone Number"
+                  placeholder="(XXX) XXX-XXXX"
                   className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -384,14 +394,11 @@ const ClientsHeader = () => {
                 type="text"
                 value={formData.storePhone}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  const isPlus = value.startsWith("+");
-                  const digits = value.replace(/\D/g, "");
-                  const finalValue = (isPlus ? "+" : "") + digits.slice(0, 12);
+                  const formattedValue = formatPhoneNumber(e.target.value);
 
-                  setFormData({ ...formData, storePhone: finalValue });
+                  setFormData({ ...formData, storePhone: formattedValue });
                 }}
-                placeholder="Phone Number"
+                placeholder="(XXX) XXX-XXXX"
                 className="w-full border px-3 py-2 rounded"
               />
             </div>

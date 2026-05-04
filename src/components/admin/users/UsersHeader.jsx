@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { formatPhoneNumber } from "../../../utils/formatters";
 import AddUserModal from "./AddUserModal";
 import {
   useAddUserMutation,
@@ -41,6 +42,22 @@ const UsersHeader = () => {
   const { refetch: getAttendanceChartDataRefetch } =
     useGetAttendanceChartDataQuery(userQueryParams);
 
+  const resetForm = () => {
+    setformData({
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      gender: ""
+    });
+    setShowPassword(false);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    resetForm();
+  };
+
   const handleAddUser = async (e) => {
     e.preventDefault();
 
@@ -49,17 +66,10 @@ const UsersHeader = () => {
 
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
-        setIsOpen(false);
+        handleClose();
         await getTotalUsersCountRefetch();
         await getAttendanceChartDataRefetch();
         await getUsersStatRefetch();
-        setformData({
-          name: "",
-          email: "",
-          phone: "",
-          password: "",
-          gender: ""
-        });
       }
     } catch (err) {
       toast.error(err.data.message, { duration: 3000 });
@@ -84,9 +94,9 @@ const UsersHeader = () => {
       </div>
 
       {/* Modal */}
-      <AddUserModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <AddUserModal isOpen={isOpen} onClose={handleClose}>
         <h2 className="text-xl font-semibold mb-4">Add New User</h2>
-        <form className="space-y-4" onSubmit={handleAddUser}>
+        <form className="space-y-4" onSubmit={handleAddUser} autoComplete="off">
           <label>Name</label>
           <input
             type="text"
@@ -95,6 +105,7 @@ const UsersHeader = () => {
             placeholder="First Name"
             className="w-full border px-3 py-2 rounded"
             required
+            autoComplete="off"
           />
           <label>Email</label>
           <input
@@ -106,22 +117,21 @@ const UsersHeader = () => {
             placeholder="Email Address"
             className="w-full border px-3 py-2 rounded"
             required
+            autoComplete="off"
           />
           <label>Phone</label>
           <input
             type="tel"
             value={formData.phone}
             onChange={(e) => {
-              const value = e.target.value;
-              const isPlus = value.startsWith("+");
-              const digits = value.replace(/\D/g, "");
-              const finalValue = (isPlus ? "+" : "") + digits.slice(0, 11);
+              const formattedValue = formatPhoneNumber(e.target.value);
 
-              setformData({ ...formData, phone: finalValue });
+              setformData({ ...formData, phone: formattedValue });
             }}
-            placeholder="Phone Number"
+            placeholder="(XXX) XXX-XXXX"
             className="w-full border px-3 py-2 rounded"
             required
+            autoComplete="off"
           />
           <label>Gender</label>
           <select
@@ -149,6 +159,7 @@ const UsersHeader = () => {
               placeholder="Password"
               className="w-full border px-3 py-2 rounded pr-10"
               required
+              autoComplete="new-password"
             />
             <button
               type="button"
