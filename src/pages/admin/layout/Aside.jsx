@@ -67,7 +67,7 @@ const Aside = () => {
       children: isAdminSideUser
         ? clients.map((client) => ({
             id: client._id,
-            title: client.storeName || client.name,
+            title: client.companyName || client.storeName || client.name,
             link: `/dashboard/actions/${client._id}`,
             icon: <ActionSubLink />
           }))

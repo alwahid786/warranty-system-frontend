@@ -78,6 +78,15 @@ export const isDateInRange = (date, fromDate, toDate) => {
 export const matchesSearch = (item, searchValue, searchType) => {
   if (!searchValue) return true;
   const val = searchValue.toLowerCase();
+
+  if (searchType === "companyName") {
+    const comp = String(item.companyName || "").toLowerCase();
+    const store = String(item.storeName || "").toLowerCase();
+    const warranty = String(item.warrantyCompany || "").toLowerCase();
+
+    return comp.includes(val) || store.includes(val) || warranty.includes(val);
+  }
+
   const fieldVal = String(item[searchType] || "").toLowerCase();
 
   return fieldVal.includes(val);

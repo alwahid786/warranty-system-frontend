@@ -489,12 +489,12 @@ const ClaimsDataTable = ({
         const parent = owner.owner;
 
         const displayName =
+          owner.companyName ||
           owner.warrantyCompany ||
           owner.storeName ||
-          owner.companyName ||
+          parent?.companyName ||
           parent?.warrantyCompany ||
           parent?.storeName ||
-          parent?.companyName ||
           parent?.name ||
           owner.name ||
           "Unknown";

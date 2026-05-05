@@ -123,7 +123,10 @@ const Actions = () => {
         showImportExport={true}
         targetClientId={clientId || ""}
         targetClientName={
-          selectedClient?.storeName || selectedClient?.name || ""
+          selectedClient?.companyName ||
+          selectedClient?.storeName ||
+          selectedClient?.name ||
+          ""
         }
       />
       <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
