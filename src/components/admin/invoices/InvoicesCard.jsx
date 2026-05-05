@@ -225,13 +225,13 @@ export default function InvoiceCard({
           )}
         </div>
 
-        <div className="flex justify-between space-x-[14px]">
+        <div className="flex justify-between gap-2">
           {/* Three Dots Menu (only if draft) */}
           {invoice?.status === "draft" && (
             <div className="relative" ref={menuRef}>
               <Button
                 onClick={() => setMenuOpen(!menuOpen)}
-                cn=" text-[14px] !py-2 !font-normal rounded-md truncate"
+                cn="text-[14px] !py-2 !px-3 !font-normal rounded-md truncate"
                 bg="bg-primary"
                 color="text-white"
                 icon={<HiOutlineDotsHorizontal />}
@@ -266,14 +266,14 @@ export default function InvoiceCard({
             bg="bg-primary"
             color="text-white"
             onClick={() => setIsModalOpen(true)}
-            cn=" text-[14px] !py-2 !font-normal rounded-md truncate"
+            cn="flex-1 text-[14px] !py-2 !px-3 !font-normal rounded-md truncate"
           />
           {invoice?.status === "draft" ? (
             <Button
               text="Finalize Invoice"
               bg="bg-[#B1B1B1]"
               color="text-white"
-              cn=" !px-6 !py-2 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
+              cn="flex-1 !py-2 !px-3 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
               onClick={() => handleFinalizeInvoice(invoice)}
             />
           ) : (
@@ -283,7 +283,7 @@ export default function InvoiceCard({
               }
               bg="bg-[#B1B1B1]"
               color="text-white"
-              cn=" !px-6 !py-2 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
+              cn="flex-1 !py-2 !px-3 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
               onClick={() => handleSendInvoice(invoice)}
               badge={invoice?.sentCount}
             />

@@ -129,15 +129,8 @@ const Users = () => {
   const { pageId } = useParams();
   const navigate = useNavigate();
 
-  const currentPage = parseInt(pageId) || 1;
-  const usersPerPage = 8;
-  const totalPages = Math.ceil(users.length / usersPerPage);
-
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const currentUsers = users.slice(startIndex, startIndex + usersPerPage);
-
   // Filters --------->
-  const filteredData = currentUsers.filter((row) => {
+  const filteredData = users.filter((row) => {
     // Search filter
     if (!matchesSearch(row, filters.searchValue, filters.searchType)) {
       return false;
@@ -151,11 +144,23 @@ const Users = () => {
     return true;
   });
 
+  const currentPage = parseInt(pageId) || 1;
+  const usersPerPage = 8;
+  const totalPages = Math.ceil(filteredData.length / usersPerPage) || 1;
+
+  const startIndex = (currentPage - 1) * usersPerPage;
+
+  const currentUsers = filteredData.slice(
+    startIndex,
+    startIndex + usersPerPage
+  );
+
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
+    navigate("/dashboard/users/1");
   };
 
-  const handleResetFilters = () =>
+  const handleResetFilters = () => {
     setFilters({
       searchType: "id",
       searchValue: "",
@@ -163,6 +168,8 @@ const Users = () => {
       toDate: "",
       status: ""
     });
+    navigate("/dashboard/users/1");
+  };
 
   const canManageUser = (managedUser) => {
     return managedUser?.canManage === true;
@@ -236,8 +243,8 @@ const Users = () => {
 
         <div className="mt-5 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-            {filteredData.length > 0 ? (
-              filteredData.map((user) => (
+            {currentUsers.length > 0 ? (
+              currentUsers.map((user) => (
                 <UsersDetailCard
                   user={user}
                   key={user._id}
