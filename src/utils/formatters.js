@@ -8,14 +8,18 @@ export const formatPhoneNumber = (value) => {
 
   // Strip all non-digits
   const phoneNumber = value.replace(/[^\d]/g, "");
-  const phoneNumberLength = phoneNumber.length;
+  const len = phoneNumber.length;
 
-  // Handle formatting based on length
-  if (phoneNumberLength < 4) return phoneNumber;
-
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  // If it's 11 digits and starts with 1, format as +1 (XXX) XXX-XXXX
+  if (len === 11 && phoneNumber.startsWith("1")) {
+    return `+1 (${phoneNumber.slice(1, 4)}) ${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
   }
 
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+  // Fallback to standard US formatting if 10 digits
+  if (len === 10) {
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+  }
+
+  // For other lengths, just return with a + if it looks like an international number
+  return len > 10 ? `+${phoneNumber}` : phoneNumber;
 };

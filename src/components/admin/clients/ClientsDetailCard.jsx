@@ -14,6 +14,7 @@ import { MdLocationOn } from "react-icons/md";
 import { HiPencil, HiTrash, HiEllipsisHorizontal } from "react-icons/hi2";
 
 import { getInitials } from "../../../utils/getInitials";
+import { formatPhoneNumber } from "../../../utils/formatters";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -127,7 +128,8 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         {/* Store Phone + Share */}
         <div className="flex justify-between text-xs text-gray-600">
           <span className="flex items-center gap-1">
-            <FaPhone className="text-gray-500" /> {client.storePhone}
+            <FaPhone className="text-gray-500" />{" "}
+            {formatPhoneNumber(client.storePhone)}
           </span>
           <span className="flex items-center gap-1">
             <FaShareNodes className="text-gray-500" /> {client.percentage}%
@@ -141,7 +143,8 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
             <MdEmail className="text-gray-500" /> {client.email}
           </p>
           <p className="flex items-center gap-2 text-gray-700">
-            <PiPhoneCallFill className="text-gray-500" /> {client.phone}
+            <PiPhoneCallFill className="text-gray-500" />{" "}
+            {formatPhoneNumber(client.phone)}
           </p>
         </div>
 
