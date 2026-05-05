@@ -121,7 +121,7 @@ const ClientsHeader = () => {
         !formData.clientName ||
         !formData.clientEmail ||
         !formData.clientPassword ||
-        !formData.storeName ||
+        !formData.address.store ||
         !formData.dealerId
       ) {
         return toast.error(
