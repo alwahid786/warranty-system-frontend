@@ -103,8 +103,15 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.clientName || !formData.clientEmail) {
-      return toast.error("Client Name and Email are required");
+    if (
+      !formData.clientName ||
+      !formData.clientEmail ||
+      !formData.address.store ||
+      !formData.dealerId
+    ) {
+      return toast.error(
+        "Client Name, Email, Store Name and Dealer ID are required"
+      );
     }
 
     if (!formData.clientPhone) {
