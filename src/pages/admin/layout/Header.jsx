@@ -114,7 +114,12 @@ const Header = () => {
             </div>
           )}
           <div className="flex flex-col gap-1">
-            <h6 className="text-sm font-semibold text-gray-800">{user.name}</h6>
+            <h6 className="text-sm font-semibold text-gray-800">
+              {user.name}{" "}
+              <span className="text-xs font-normal text-gray-500 capitalize">
+                [{user.role}]
+              </span>
+            </h6>
             <p className="text-xs text-gray-600">{user.email}</p>
           </div>
           <div

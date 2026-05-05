@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 
 import { MdClose } from "react-icons/md";
 import { Eye, EyeOff } from "lucide-react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -76,12 +78,12 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium">Phone</label>
-            <input
-              type="text"
-              name="phone"
+            <PhoneInput
+              country={"pk"}
               value={formData.phone}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+              onChange={(value) => setFormData({ ...formData, phone: value })}
+              inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
+              containerClass="!w-full"
             />
           </div>
 

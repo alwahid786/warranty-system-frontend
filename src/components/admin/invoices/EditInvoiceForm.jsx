@@ -209,15 +209,28 @@ const EditInvoiceForm = ({
 
   // Save Handler
   const handleSave = async (finalize = false) => {
+    // Form validation
+    if (!formData.clientId) {
+      return toast.error("Please select a client");
+    }
+    if (!formData.company) {
+      return toast.error("Please select a company");
+    }
+    if (!formData.statementType) {
+      return toast.error("Please select a statement type");
+    }
+    if (!formData.statementNumber) {
+      return toast.error("Please enter a statement number");
+    }
+    if (formData.statementTotal === "" || formData.statementTotal === null) {
+      return toast.error("Please enter a statement total");
+    }
     if (
-      !formData.clientId ||
-      !formData.company ||
-      !formData.statementTotal ||
-      !formData.finalTotal
+      !formData.bypass &&
+      (formData.assignedPercentage === "" ||
+        formData.assignedPercentage === null)
     ) {
-      toast.error("Please fill all required fields");
-
-      return;
+      return toast.error("Please enter an assigned percentage or check bypass");
     }
 
     const payload = {
@@ -277,7 +290,9 @@ const EditInvoiceForm = ({
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Client</label>
+              <label className="font-semibold">
+                Client <span className="text-red-500">*</span>
+              </label>
               <select
                 className="border rounded p-2"
                 value={formData.clientId || ""}
@@ -313,10 +328,14 @@ const EditInvoiceForm = ({
 
         {/* Statement */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h2 className="text-lg font-semibold">Statement</h2>
+          <h2 className="text-lg font-semibold">
+            Statement <span className="text-red-500">*</span>
+          </h2>
 
           <div className="flex flex-col gap-2">
-            <label className="font-semibold">Statement Type</label>
+            <label className="font-semibold">
+              Statement Type <span className="text-red-500">*</span>
+            </label>
             <div className="space-x-4">
               {["Weekly", "Monthly", "Custom"].map((type) => (
                 <label key={type}>
@@ -341,7 +360,9 @@ const EditInvoiceForm = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Statement Number</label>
+              <label className="font-semibold">
+                Statement Number <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 placeholder="Statement Number"
@@ -357,7 +378,9 @@ const EditInvoiceForm = ({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Statement Total</label>
+              <label className="font-semibold">
+                Statement Total <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 placeholder="Statement Total"
@@ -442,7 +465,10 @@ const EditInvoiceForm = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Percentage</label>
+              <label className="font-semibold">
+                Percentage{" "}
+                {!formData.bypass && <span className="text-red-500">*</span>}
+              </label>
               <input
                 type="number"
                 placeholder="Assigned Percentage"
