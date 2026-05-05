@@ -205,10 +205,10 @@ function App() {
               path="/"
               element={
                 user ? (
-                  user.role === "admin" ? (
+                  user.role === "admin" || user.role === "client" ? (
                     <Navigate to="/dashboard" replace />
                   ) : (
-                    <Navigate to="/dashboard" replace />
+                    <Navigate to="/dashboard/actions" replace />
                   )
                 ) : (
                   <AdminLogin />
@@ -240,7 +240,18 @@ function App() {
               }
             >
               {/*  Nested Pages */}
-              <Route index element={<Dashboard />} />
+              <Route
+                index
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/dashboard/actions"
+                    allowedRoles={["admin", "client"]}
+                  >
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="actions" element={<Actions />} />
               <Route path="actions/:clientId" element={<Actions />} />
               <Route

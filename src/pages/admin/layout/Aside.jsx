@@ -151,6 +151,12 @@ const Aside = () => {
       return false;
     }
 
+    if (page.title === "Dashboard") {
+      if (user?.role === "admin" || user?.role === "client") return true;
+
+      return false;
+    }
+
     if (restrictedPages.includes(page.title)) {
       if (user?.role === "admin") return true;
       if (user?.role === "client" && user?.businessOwnerView) return true;
