@@ -19,6 +19,11 @@ const UsersHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const canCreateUsers =
+    user?.role === "admin" ||
+    user?.role === "superadmin" ||
+    user?.role === "client";
+
   const [formData, setformData] = useState({
     name: "",
     email: "",
@@ -87,13 +92,14 @@ const UsersHeader = () => {
           <p className="text-sm text-gray-500">Manage all your Users</p>
         </div>
 
-        {/* Button to open modal */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="w-full rounded-sm bg-primary px-4 py-2 text-base text-white sm:w-auto"
-        >
-          + Add New Users
-        </button>
+        {canCreateUsers && (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-full rounded-sm bg-primary px-4 py-2 text-base text-white sm:w-auto"
+          >
+            + Add New Users
+          </button>
+        )}
       </div>
 
       {/* Modal */}

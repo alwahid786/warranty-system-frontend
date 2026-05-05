@@ -70,6 +70,11 @@ const Users = () => {
 
   const [updateUser] = useUpdateUserMutation();
 
+  const canManageUsers =
+    user?.role === "admin" ||
+    user?.role === "superadmin" ||
+    user?.role === "client";
+
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
     useGetTotalUsersCountQuery(userQueryParams, {
       refetchOnMountOrArgChange: true
@@ -172,7 +177,7 @@ const Users = () => {
   };
 
   const canManageUser = (managedUser) => {
-    return managedUser?.canManage === true;
+    return canManageUsers && managedUser?.canManage === true;
   };
 
   const handlePageChange = (page) => {
