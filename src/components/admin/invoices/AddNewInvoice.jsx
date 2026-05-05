@@ -19,6 +19,30 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
 
   const [files, setFiles] = useState([]);
 
+  const resetForm = () => {
+    setFormData({
+      clientId: "",
+      client: "",
+      company: "",
+      statementType: "",
+      statementNumber: "",
+      statementTotal: "",
+      adjustments: [{ type: "Charge", amount: "", reason: "" }],
+      assignedPercentage: "",
+      finalTotal: "",
+      bypass: false,
+      explanation: ""
+    });
+    setFiles([]);
+  };
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
   // calculation effect must be called before early return
   useEffect(() => {
     if (!isOpen) return;
@@ -167,7 +191,11 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select className="border rounded p-2" onChange={onDealerChange}>
+            <select
+              className="border rounded p-2"
+              onChange={onDealerChange}
+              value={formData.clientId}
+            >
               <option value="">Choose Client</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>
@@ -367,6 +395,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
               rows="10"
               placeholder="Optional explanation..."
               className="border rounded p-2 w-full"
+              value={formData.explanation}
               onChange={(e) =>
                 setFormData({ ...formData, explanation: e.target.value })
               }

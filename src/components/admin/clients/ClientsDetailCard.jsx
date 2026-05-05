@@ -103,7 +103,7 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
       {/* Info Section */}
       <div className="bg-gray-100 p-4 rounded-lg mt-5 text-sm space-y-4">
         {/* Store & Joined */}
-        <div className="flex justify-between items-start">
+        <div className="flex flex-wrap justify-between items-start gap-2">
           <div>
             <p className="font-semibold text-gray-800">{client.storeName}</p>
             <p className="text-xs text-gray-500">
@@ -162,12 +162,17 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         )}
 
         {/* Owners */}
-        <div className="flex justify-between items-center text-xs text-gray-700 border-t pt-3">
-          <span className="flex items-center gap-2">
-            <FaUser className="text-gray-500" /> Account Owner:{" "}
-            {client.accountOwner}
+        <div className="flex flex-wrap justify-between items-center gap-y-2 gap-x-3 text-xs text-gray-700 border-t pt-3">
+          <span className="flex items-center gap-2 min-w-0">
+            <FaUser className="text-gray-500 shrink-0" />
+            <span
+              className="truncate"
+              title={`Account Owner: ${client.accountOwner}`}
+            >
+              Account Owner: {client.accountOwner}
+            </span>
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 shrink-0">
             <FaUserTie className="text-gray-500" /> {client.businessOwner}
             {client.businessOwnerView ? (
               <FaRegEye

@@ -40,8 +40,18 @@ export const parseStringDate = (dateStr) => {
  * Checks if a date is within a given range (inclusive)
  */
 export const isDateInRange = (date, fromDate, toDate) => {
-  const targetDate =
-    typeof date === "string" ? parseStringDate(date) : new Date(date);
+  if (!date) return true;
+
+  let targetDate;
+
+  if (typeof date === "string") {
+    targetDate = parseStringDate(date);
+    if (!targetDate || isNaN(targetDate.getTime())) {
+      targetDate = new Date(date);
+    }
+  } else {
+    targetDate = new Date(date);
+  }
 
   if (!targetDate || isNaN(targetDate.getTime())) return true;
 

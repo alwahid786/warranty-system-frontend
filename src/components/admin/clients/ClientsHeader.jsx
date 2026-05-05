@@ -117,9 +117,13 @@ const ClientsHeader = () => {
       if (
         !formData.clientName ||
         !formData.clientEmail ||
-        !formData.clientPassword
+        !formData.clientPassword ||
+        !formData.storeName ||
+        !formData.dealerId
       ) {
-        return toast.error("Client Name, Email, and Password are required");
+        return toast.error(
+          "Client Name, Email, Password, Store Name and Dealer ID are required"
+        );
       }
 
       if (!formData.clientPhone) {
@@ -188,7 +192,7 @@ const ClientsHeader = () => {
               {/* Name */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Client Name
+                  Client Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -205,7 +209,7 @@ const ClientsHeader = () => {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Client Email
+                  Client Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -222,7 +226,7 @@ const ClientsHeader = () => {
               {/* Password */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Client Password
+                  Client Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -250,7 +254,7 @@ const ClientsHeader = () => {
               {/* Phone */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Client Phone
+                  Client Phone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -277,10 +281,11 @@ const ClientsHeader = () => {
               {/* Store Name */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Store Name
+                  Store Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={formData.storeName}
                   onChange={(e) =>
                     setFormData({ ...formData, storeName: e.target.value })
@@ -293,7 +298,7 @@ const ClientsHeader = () => {
               {/* Dealer ID */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Dealer ID
+                  Dealer ID <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -339,7 +344,7 @@ const ClientsHeader = () => {
               />
               <input
                 type="text"
-                placeholder="City"
+                placeholder="City *"
                 value={formData.address.city}
                 onChange={(e) =>
                   handleAddressChange(
@@ -370,7 +375,7 @@ const ClientsHeader = () => {
               />
               <input
                 type="text"
-                placeholder="Zip Code"
+                placeholder="Zip Code *"
                 value={formData.address.zip}
                 onChange={(e) =>
                   handleAddressChange("zip", e.target.value.replace(/\D/g, ""))

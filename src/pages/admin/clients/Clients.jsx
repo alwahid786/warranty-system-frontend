@@ -168,10 +168,12 @@ const Clients = () => {
       fromDate: "",
       toDate: ""
     });
+    navigate("/dashboard/clients/1");
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
+    navigate("/dashboard/clients/1");
   };
   //---------------------->
 
