@@ -110,7 +110,17 @@ const Aside = () => {
           link: "/dashboard/archived/invoices",
           icon: <InvoicesSubLink />
         }
-      ]
+      ].filter((child) => {
+        if (child.title === "Invoices") {
+          if (user?.role === "admin") return true;
+          if (user?.role === "client" && user?.businessOwnerView) return true;
+          if (user?.role === "user" && user?.canManageInvoices) return true;
+
+          return false;
+        }
+
+        return true;
+      })
     },
 
     {
@@ -133,10 +143,26 @@ const Aside = () => {
     // },
   ];
 
-  const adminOnlyPages = ["Clients", "Dashboard", "Invoices", "Archived"];
+  const adminOnlyPages = ["Clients"];
+  const restrictedPages = ["Dashboard", "Invoices", "Archived"];
 
   const filteredPages = pages.filter((page) => {
     if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {
+      return false;
+    }
+
+    if (page.title === "Dashboard") {
+      if (user?.role === "admin" || user?.role === "client") return true;
+
+      return false;
+    }
+
+    if (restrictedPages.includes(page.title)) {
+      if (user?.role === "admin") return true;
+      if (user?.role === "client" && user?.businessOwnerView) return true;
+      if (user?.role === "user" && user?.canManageInvoices) return true;
+      if (page.title === "Archived" && user?.role === "user") return true;
+
       return false;
     }
 

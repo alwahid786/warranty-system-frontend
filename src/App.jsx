@@ -205,7 +205,7 @@ function App() {
               path="/"
               element={
                 user ? (
-                  user.role === "admin" ? (
+                  user.role === "admin" || user.role === "client" ? (
                     <Navigate to="/dashboard" replace />
                   ) : (
                     <Navigate to="/dashboard/actions" replace />
@@ -240,7 +240,18 @@ function App() {
               }
             >
               {/*  Nested Pages */}
-              <Route index element={<Dashboard />} />
+              <Route
+                index
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/dashboard/actions"
+                    allowedRoles={["admin", "client"]}
+                  >
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="actions" element={<Actions />} />
               <Route path="actions/:clientId" element={<Actions />} />
               <Route
@@ -249,7 +260,15 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={
+                      user?.role === "admin"
+                        ? ["admin"]
+                        : user?.role === "client" && user?.businessOwnerView
+                          ? ["client"]
+                          : user?.role === "user" && user?.canManageInvoices
+                            ? ["user"]
+                            : ["admin"]
+                    }
                   >
                     <Invoices />
                   </ProtectedRoute>
@@ -264,7 +283,15 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={
+                      user?.role === "admin"
+                        ? ["admin"]
+                        : user?.role === "client" && user?.businessOwnerView
+                          ? ["client"]
+                          : user?.role === "user"
+                            ? ["user"]
+                            : ["admin"]
+                    }
                   >
                     <Archived />
                   </ProtectedRoute>
@@ -276,7 +303,15 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={
+                      user?.role === "admin"
+                        ? ["admin"]
+                        : user?.role === "client" && user?.businessOwnerView
+                          ? ["client"]
+                          : user?.role === "user"
+                            ? ["user"]
+                            : ["admin"]
+                    }
                   >
                     <ArchivedActions />
                   </ProtectedRoute>
@@ -288,7 +323,15 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={
+                      user?.role === "admin"
+                        ? ["admin"]
+                        : user?.role === "client" && user?.businessOwnerView
+                          ? ["client"]
+                          : user?.role === "user" && user?.canManageInvoices
+                            ? ["user"]
+                            : ["admin"]
+                    }
                   >
                     <ArchivedInvoices />
                   </ProtectedRoute>

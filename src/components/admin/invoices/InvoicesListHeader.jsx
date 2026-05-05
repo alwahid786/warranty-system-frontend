@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import { LuPlus } from "react-icons/lu";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 import Button from "../../shared/small/Button";
-// import Button from "../../shared/small/Button";
 import { ArchivedIcon } from "../../../assets/icons/icons";
 import { useAddArchiveInvoicesMutation } from "../../../redux/apis/invoiceApis";
 import { useRemoveArchiveInvoicesMutation } from "../../../redux/apis/invoiceApis";
@@ -17,6 +17,12 @@ const InvoicesListHeader = ({
   showImportExport = true,
   clientsData
 }) => {
+  const { user } = useSelector((state) => state.auth);
+
+  const isAdminSide =
+    user?.role === "admin" ||
+    (user?.role === "user" && user?.owner?.role === "admin");
+
   const [addArchiveInvoices] = useAddArchiveInvoicesMutation();
   const [removeArchiveInvoices] = useRemoveArchiveInvoicesMutation();
   const [addInvoice] = useAddInvoiceMutation();
@@ -65,7 +71,7 @@ const InvoicesListHeader = ({
 
         {/* Buttons */}
         <div className="flex flex-wrap items-center gap-2 justify-start lg:justify-end">
-          {showImportExport && (
+          {showImportExport && isAdminSide && (
             <Button
               icon={<LuPlus className="text-xs sm:text-sm" />}
               text="Create New Invoice"
