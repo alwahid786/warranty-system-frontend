@@ -105,7 +105,9 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         {/* Store & Joined */}
         <div className="flex flex-wrap justify-between items-start gap-2">
           <div>
-            <p className="font-semibold text-gray-800">{client.storeName}</p>
+            <p className="font-semibold text-gray-800">
+              {client.companyName || client.storeName || "N/A"}
+            </p>
             <p className="text-xs text-gray-500">
               Dealer ID: {client.dealerId}
             </p>

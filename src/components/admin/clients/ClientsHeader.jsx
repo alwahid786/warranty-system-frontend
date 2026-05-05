@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
-import { formatPhoneNumber } from "../../../utils/formatters";
 import {
   useAddClientMutation,
   useGetClientsStatByFiltersQuery,
@@ -21,6 +22,7 @@ const ClientsHeader = () => {
     clientEmail: "",
     clientPhone: "",
     clientPassword: "",
+    companyName: "",
     storeName: "",
     dealerId: "",
     address: {
@@ -84,6 +86,7 @@ const ClientsHeader = () => {
       clientEmail: "",
       clientPhone: "",
       clientPassword: "",
+      companyName: "",
       storeName: "",
       dealerId: "",
       address: {
@@ -256,41 +259,38 @@ const ClientsHeader = () => {
                 <label className="block text-sm font-medium mb-1">
                   Client Phone <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <PhoneInput
+                  country={"pk"}
                   value={formData.clientPhone}
-                  onChange={(e) => {
-                    const formattedValue = formatPhoneNumber(e.target.value);
-
-                    setFormData({ ...formData, clientPhone: formattedValue });
-                  }}
-                  placeholder="(XXX) XXX-XXXX"
-                  className="w-full border px-3 py-2 rounded"
-                  autoComplete="off"
+                  onChange={(value) =>
+                    setFormData({ ...formData, clientPhone: value })
+                  }
+                  inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
+                  containerClass="!w-full"
                 />
               </div>
             </div>
           </div>
 
-          {/* Section: Store Info */}
+          {/* Section: Company Info */}
           <div>
             <h3 className="text-lg font-semibold mb-3 border-b pb-1">
-              Store Info
+              Company Info
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Store Name */}
+              {/* Company Name */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Store Name <span className="text-red-500">*</span>
+                  Company Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  value={formData.storeName}
+                  value={formData.companyName}
                   onChange={(e) =>
-                    setFormData({ ...formData, storeName: e.target.value })
+                    setFormData({ ...formData, companyName: e.target.value })
                   }
-                  placeholder="Enter Store Name"
+                  placeholder="Enter Company Name"
                   className="w-full border px-3 py-2 rounded"
                 />
               </div>
@@ -302,6 +302,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
+                  required
                   value={formData.dealerId}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
@@ -323,7 +324,7 @@ const ClientsHeader = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Store"
+                placeholder="Store Name"
                 value={formData.address.store}
                 onChange={(e) => handleAddressChange("store", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -395,16 +396,14 @@ const ClientsHeader = () => {
               <label className="block text-sm font-medium mb-1">
                 Store Phone
               </label>
-              <input
-                type="text"
+              <PhoneInput
+                country={"pk"}
                 value={formData.storePhone}
-                onChange={(e) => {
-                  const formattedValue = formatPhoneNumber(e.target.value);
-
-                  setFormData({ ...formData, storePhone: formattedValue });
-                }}
-                placeholder="(XXX) XXX-XXXX"
-                className="w-full border px-3 py-2 rounded"
+                onChange={(value) =>
+                  setFormData({ ...formData, storePhone: value })
+                }
+                inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
+                containerClass="!w-full"
               />
             </div>
 

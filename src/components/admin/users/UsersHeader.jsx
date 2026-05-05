@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import PhoneInput from "react-phone-input-2";
 
-import { formatPhoneNumber } from "../../../utils/formatters";
+import "react-phone-input-2/lib/style.css";
 import AddUserModal from "./AddUserModal";
 import {
   useAddUserMutation,
@@ -120,18 +121,12 @@ const UsersHeader = () => {
             autoComplete="off"
           />
           <label>Phone</label>
-          <input
-            type="tel"
+          <PhoneInput
+            country={"pk"}
             value={formData.phone}
-            onChange={(e) => {
-              const formattedValue = formatPhoneNumber(e.target.value);
-
-              setformData({ ...formData, phone: formattedValue });
-            }}
-            placeholder="(XXX) XXX-XXXX"
-            className="w-full border px-3 py-2 rounded"
-            required
-            autoComplete="off"
+            onChange={(value) => setformData({ ...formData, phone: value })}
+            inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
+            containerClass="!w-full"
           />
           <label>Gender</label>
           <select

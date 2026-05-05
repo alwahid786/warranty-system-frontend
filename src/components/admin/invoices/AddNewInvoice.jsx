@@ -143,11 +143,28 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   // Save Handler
 
   const handleSave = async (finalize = false) => {
-    // Basic validation
-    if (!formData.client || !formData.company || !formData.statementTotal) {
-      toast.error("Please fill all required fields");
-
-      return;
+    // Form validation
+    if (!formData.clientId) {
+      return toast.error("Please select a client");
+    }
+    if (!formData.company) {
+      return toast.error("Please select a company");
+    }
+    if (!formData.statementType) {
+      return toast.error("Please select a statement type");
+    }
+    if (!formData.statementNumber) {
+      return toast.error("Please enter a statement number");
+    }
+    if (formData.statementTotal === "" || formData.statementTotal === null) {
+      return toast.error("Please enter a statement total");
+    }
+    if (
+      !formData.bypass &&
+      (formData.assignedPercentage === "" ||
+        formData.assignedPercentage === null)
+    ) {
+      return toast.error("Please enter an assigned percentage or check bypass");
     }
 
     const payload = {
@@ -191,39 +208,51 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Basic Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select
-              className="border rounded p-2"
-              onChange={onDealerChange}
-              value={formData.clientId}
-            >
-              <option value="">Choose Client</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="border rounded p-2"
-              value={formData.company}
-              onChange={onCompanyChange}
-            >
-              <option value="">Choose Company</option>
-              {clients
-                .filter((c) => c.name === formData.client)
-                .map((c) => (
-                  <option key={c.id} value={c.companyName}>
-                    {c.companyName}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">
+                Choose Client <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="border rounded p-2"
+                onChange={onDealerChange}
+                value={formData.clientId}
+              >
+                <option value="">Choose Client</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
                   </option>
                 ))}
-            </select>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">
+                Choose Company <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="border rounded p-2"
+                value={formData.company}
+                onChange={onCompanyChange}
+              >
+                <option value="">Choose Company</option>
+                {clients
+                  .filter((c) => c.name === formData.client)
+                  .map((c) => (
+                    <option key={c.id} value={c.companyName}>
+                      {c.companyName}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Statement Section */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h2 className="text-lg font-semibold">Statement</h2>
+          <h2 className="text-lg font-semibold">
+            Statement <span className="text-red-500">*</span>
+          </h2>
           <div className="space-x-4">
             {["Weekly", "Monthly", "Custom"].map((type) => (
               <label key={type}>
@@ -241,24 +270,34 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
             ))}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Statement Number"
-              className="border rounded p-2"
-              value={formData.statementNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, statementNumber: e.target.value })
-              }
-            />
-            <input
-              type="number"
-              placeholder="Statement Total"
-              className="border rounded p-2"
-              value={formData.statementTotal}
-              onChange={(e) =>
-                setFormData({ ...formData, statementTotal: e.target.value })
-              }
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">
+                Statement Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Statement Number"
+                className="border rounded p-2"
+                value={formData.statementNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, statementNumber: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">
+                Statement Total <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                placeholder="Statement Total"
+                className="border rounded p-2"
+                value={formData.statementTotal}
+                onChange={(e) =>
+                  setFormData({ ...formData, statementTotal: e.target.value })
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -326,22 +365,28 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Calculation</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="number"
-              placeholder="Assigned Percentage"
-              className={`border rounded p-2 ${
-                formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
-              }`}
-              disabled={formData.bypass}
-              value={formData.assignedPercentage}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  assignedPercentage: e.target.value
-                })
-              }
-            />
-            <label className="flex items-center space-x-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">
+                Assigned Percentage{" "}
+                {!formData.bypass && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="number"
+                placeholder="Assigned Percentage"
+                className={`border rounded p-2 ${
+                  formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
+                }`}
+                disabled={formData.bypass}
+                value={formData.assignedPercentage}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    assignedPercentage: e.target.value
+                  })
+                }
+              />
+            </div>
+            <label className="flex items-center space-x-2 mt-6">
               <input
                 type="checkbox"
                 checked={formData.bypass}

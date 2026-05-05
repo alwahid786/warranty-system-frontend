@@ -46,7 +46,7 @@ function AdminLogin() {
         navigate("/dashboard");
       }
     } catch (err) {
-      toast.error("Login failed", err);
+      toast.error(err?.data?.message || "Login failed");
     }
   };
 
