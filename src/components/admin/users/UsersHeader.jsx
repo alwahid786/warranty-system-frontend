@@ -24,7 +24,8 @@ const UsersHeader = () => {
     email: "",
     phone: "",
     password: "",
-    gender: ""
+    gender: "",
+    canManageInvoices: false
   });
 
   const userQueryParams =
@@ -49,7 +50,8 @@ const UsersHeader = () => {
       email: "",
       phone: "",
       password: "",
-      gender: ""
+      gender: "",
+      canManageInvoices: false
     });
     setShowPassword(false);
   };
@@ -163,6 +165,28 @@ const UsersHeader = () => {
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+          </div>
+
+          {/* Permission Checkbox */}
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              type="checkbox"
+              id="canManageInvoices"
+              checked={formData.canManageInvoices}
+              onChange={(e) =>
+                setformData({
+                  ...formData,
+                  canManageInvoices: e.target.checked
+                })
+              }
+              className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
+            />
+            <label
+              htmlFor="canManageInvoices"
+              className="text-sm font-medium text-gray-700 cursor-pointer"
+            >
+              User can manage invoices
+            </label>
           </div>
 
           <button

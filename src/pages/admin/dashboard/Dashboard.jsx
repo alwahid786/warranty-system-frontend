@@ -34,7 +34,12 @@ const Dashboard = () => {
 
   const user = useSelector((state) => state.auth.user);
 
-  if (user?.role !== "admin") {
+  const isAllowed =
+    user?.role === "admin" ||
+    (user?.role === "client" && user?.businessOwnerView) ||
+    (user?.role === "user" && user?.canManageInvoices);
+
+  if (!isAllowed) {
     return <Navigate to="/dashboard/actions" replace />;
   }
 

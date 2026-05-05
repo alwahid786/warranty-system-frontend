@@ -10,7 +10,8 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
     name: "",
     email: "",
     phone: "",
-    password: ""
+    password: "",
+    canManageInvoices: false
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +23,8 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
-        password: ""
+        password: "",
+        canManageInvoices: user.canManageInvoices || false
       });
     }
   }, [user]);
@@ -45,6 +47,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-black"
           onClick={onClose}
+          type="button"
         >
           <MdClose size={22} />
         </button>
@@ -109,7 +112,29 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 mt-4">
+          {/* Permission Checkbox */}
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              type="checkbox"
+              id="canManageInvoices"
+              checked={formData.canManageInvoices}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  canManageInvoices: e.target.checked
+                })
+              }
+              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+            />
+            <label
+              htmlFor="canManageInvoices"
+              className="text-sm font-medium text-gray-700 cursor-pointer"
+            >
+              User can manage invoices
+            </label>
+          </div>
+
+          <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"
               className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
