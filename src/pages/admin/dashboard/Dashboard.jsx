@@ -36,7 +36,7 @@ const Dashboard = () => {
 
   const isAllowed =
     user?.role === "admin" ||
-    (user?.role === "client" && user?.businessOwnerView) ||
+    user?.role === "client" ||
     (user?.role === "user" && user?.canManageInvoices);
 
   if (!isAllowed) {
