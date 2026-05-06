@@ -81,6 +81,10 @@ const ClaimsListHeader = ({
         );
       }
     }
+
+    if (e.target) {
+      e.target.value = null;
+    }
   };
 
   const handleExportClaims = async () => {
