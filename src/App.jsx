@@ -200,7 +200,7 @@ function App() {
                 )
               }
             /> */}
-
+            {console.log(user)}
             <Route
               path="/"
               element={
