@@ -107,8 +107,6 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
         )}
       </div>
 
-      {console.log("users", user)}
-
       {/* Card Details */}
       <div className="mt-5 space-y-3 rounded-xl bg-gray-100 p-4 text-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
