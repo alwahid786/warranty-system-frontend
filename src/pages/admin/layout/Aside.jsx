@@ -38,8 +38,9 @@ const Aside = () => {
   const { user } = useSelector((state) => state.auth);
 
   const isAdminSideUser =
-    user?.role === "admin" ||
-    (user?.role === "user" && user?.owner?.role === "admin");
+    ["admin", "superadmin"].includes(user?.role) ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
 
   const { data: clientsData } = useGetClientsQuery(undefined, {
     skip: !isAdminSideUser
@@ -112,9 +113,14 @@ const Aside = () => {
         }
       ].filter((child) => {
         if (child.title === "Invoices") {
-          if (user?.role === "admin") return true;
+          if (["admin", "superadmin"].includes(user?.role)) return true;
           if (user?.role === "client" && user?.businessOwnerView) return true;
-          if (user?.role === "user" && user?.canManageInvoices) return true;
+          if (
+            user?.role === "user" &&
+            (user?.canManageInvoices ||
+              ["admin", "superadmin"].includes(user?.owner?.role))
+          )
+            return true;
 
           return false;
         }
@@ -134,35 +140,54 @@ const Aside = () => {
       title: "Clients",
       link: ["/dashboard/clients"],
       icon: <UsersIcon />
+    },
+    {
+      id: 8,
+      title: "Admins",
+      link: ["/dashboard/admins"],
+      icon: <UsersIcon />
     }
-    // {
-    //   id: 8,
-    //   title: "Donate Us",
-    //   link: ["/dashboard/donate-us"],
-    //   icon: <DonationIcon />,
-    // },
   ];
 
+  const superAdminOnlyPages = ["Admins"];
   const adminOnlyPages = ["Clients"];
   const restrictedPages = ["Dashboard", "Invoices", "Archived"];
 
   const filteredPages = pages.filter((page) => {
-    if (adminOnlyPages.includes(page.title) && user?.role !== "admin") {
+    if (
+      superAdminOnlyPages.includes(page.title) &&
+      user?.role !== "superadmin"
+    ) {
+      return false;
+    }
+
+    if (
+      adminOnlyPages.includes(page.title) &&
+      !["admin", "superadmin"].includes(user?.role)
+    ) {
       return false;
     }
 
     if (page.title === "Dashboard") {
-      if (user?.role === "admin" || user?.role === "client") return true;
+      if (
+        ["admin", "superadmin"].includes(user?.role) ||
+        user?.role === "client"
+      )
+        return true;
 
       return false;
     }
 
     if (restrictedPages.includes(page.title)) {
-      if (user?.role === "admin") return true;
+      if (["admin", "superadmin"].includes(user?.role)) return true;
       if (user?.role === "client" && user?.businessOwnerView) return true;
       if (user?.role === "user" && user?.canManageInvoices) return true;
       if (page.title === "Archived" && user?.role === "user") return true;
 
+      return false;
+    }
+
+    if (page.title === "Users" && user?.role === "superadmin") {
       return false;
     }
 

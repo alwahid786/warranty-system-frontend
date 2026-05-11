@@ -107,12 +107,25 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
         )}
       </div>
 
+      {console.log("users", user)}
+
       {/* Card Details */}
       <div className="mt-5 space-y-3 rounded-xl bg-gray-100 p-4 text-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="font-semibold text-gray-800">Claims Rate</p>
-            <p className="text-xs text-gray-600">{user?.claimsRate}</p>
+            <p className="font-semibold text-gray-800">
+              {user?.role === "admin" || user?.role === "superadmin"
+                ? "Designation"
+                : "Claims Rate"}
+            </p>
+            <p className="text-xs text-gray-600">
+              {user?.role === "admin" || user?.role === "superadmin"
+                ? user?.designation || "N/A"
+                : (user?.role === "user"
+                    ? user?.owner?.percentage
+                    : user?.percentage) || 0}
+              {user?.role !== "admin" && user?.role !== "superadmin" && "%"}
+            </p>
           </div>
           <div className="sm:text-right">
             <p className="font-semibold text-gray-800">Joining Date</p>

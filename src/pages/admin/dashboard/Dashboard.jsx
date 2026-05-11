@@ -36,6 +36,7 @@ const Dashboard = () => {
 
   const isAllowed =
     user?.role === "admin" ||
+    user?.role === "superadmin" ||
     user?.role === "client" ||
     (user?.role === "user" && user?.canManageInvoices);
 

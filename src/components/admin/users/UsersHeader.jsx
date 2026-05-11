@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
@@ -14,7 +14,7 @@ import {
   useGetUsersStatQuery
 } from "../../../redux/apis/userApis";
 
-const UsersHeader = () => {
+const UsersHeader = ({ role }) => {
   const { user } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +30,14 @@ const UsersHeader = () => {
     phone: "",
     password: "",
     gender: "",
-    canManageInvoices: false
+    canManageInvoices: false,
+    role: role || "user"
   });
+
+  // Update role in formData when prop changes
+  useEffect(() => {
+    setformData((prev) => ({ ...prev, role: role || "user" }));
+  }, [role]);
 
   const userQueryParams =
     user?.role === "admin" || user?.role === "superadmin"
@@ -56,7 +62,8 @@ const UsersHeader = () => {
       phone: "",
       password: "",
       gender: "",
-      canManageInvoices: false
+      canManageInvoices: false,
+      role: role || "user"
     });
     setShowPassword(false);
   };
@@ -97,14 +104,16 @@ const UsersHeader = () => {
             onClick={() => setIsOpen(true)}
             className="w-full rounded-sm bg-primary px-4 py-2 text-base text-white sm:w-auto"
           >
-            + Add New Users
+            + Add New {role === "admin" ? "Admins" : "Users"}
           </button>
         )}
       </div>
 
       {/* Modal */}
       <AddUserModal isOpen={isOpen} onClose={handleClose}>
-        <h2 className="text-xl font-semibold mb-4">Add New User</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Add New {role === "admin" ? "Admin" : "User"}
+        </h2>
         <form className="space-y-4" onSubmit={handleAddUser} autoComplete="off">
           <label>Name</label>
           <input
@@ -173,27 +182,29 @@ const UsersHeader = () => {
             </button>
           </div>
 
-          {/* Permission Checkbox */}
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="checkbox"
-              id="canManageInvoices"
-              checked={formData.canManageInvoices}
-              onChange={(e) =>
-                setformData({
-                  ...formData,
-                  canManageInvoices: e.target.checked
-                })
-              }
-              className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
-            />
-            <label
-              htmlFor="canManageInvoices"
-              className="text-sm font-medium text-gray-700 cursor-pointer"
-            >
-              User can manage invoices
-            </label>
-          </div>
+          {/* Permission Checkbox - Only for non-admin users */}
+          {role !== "admin" && (
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="canManageInvoices"
+                checked={formData.canManageInvoices}
+                onChange={(e) =>
+                  setformData({
+                    ...formData,
+                    canManageInvoices: e.target.checked
+                  })
+                }
+                className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
+              />
+              <label
+                htmlFor="canManageInvoices"
+                className="text-sm font-medium text-gray-700 cursor-pointer"
+              >
+                User can manage invoices
+              </label>
+            </div>
+          )}
 
           <button
             type="submit"

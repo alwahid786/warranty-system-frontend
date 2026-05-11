@@ -31,7 +31,7 @@ import {
 } from "../../../redux/apis/userApis";
 import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 
-const Users = () => {
+const Admins = () => {
   const { user } = useSelector((state) => state.auth);
 
   const [filters, setFilters] = useState({
@@ -54,7 +54,7 @@ const Users = () => {
   const { selectedUser } = useSelector((state) => state.user);
 
   const userQueryParams = {
-    role: "user",
+    role: "admin",
     onlyAdminSubusers: true
   };
 
@@ -162,7 +162,7 @@ const Users = () => {
 
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
-    navigate("/dashboard/users/1");
+    navigate("/dashboard/admins/1");
   };
 
   const handleResetFilters = () => {
@@ -173,7 +173,7 @@ const Users = () => {
       toDate: "",
       status: ""
     });
-    navigate("/dashboard/users/1");
+    navigate("/dashboard/admins/1");
   };
 
   const canManageUser = (managedUser) => {
@@ -182,7 +182,7 @@ const Users = () => {
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
-      navigate(`/dashboard/users/${page}`);
+      navigate(`/dashboard/admins/${page}`);
     }
   };
 
@@ -200,7 +200,7 @@ const Users = () => {
 
   return (
     <div className="p-1 bg-gray-50 min-h-screen">
-      <UsersHeader role="user" />
+      <UsersHeader role="admin" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">
           <TotalUsersCard
@@ -238,7 +238,7 @@ const Users = () => {
 
       <div className="bg-white py-6 px-5 rounded-[10px] shadow-sm mt-5">
         <p className="font-inter font-medium text-[22px] text-dark-text">
-          Users List
+          Admins List
         </p>
         <UsersFilterBar
           filters={filters}
@@ -310,4 +310,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Admins;

@@ -11,6 +11,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
     email: "",
     phone: "",
     password: "",
+    gender: "",
     canManageInvoices: false
   });
 
@@ -24,6 +25,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
         email: user.email || "",
         phone: user.phone || "",
         password: "",
+        gender: user.gender || "",
         canManageInvoices: user.canManageInvoices || false
       });
     }
@@ -90,6 +92,23 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
             />
           </div>
 
+          {/* Gender */}
+          <div>
+            <label className="block text-sm font-medium">Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
           {/* Password */}
           <div>
             <label className="block text-sm font-medium">Password</label>
@@ -112,27 +131,29 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Permission Checkbox */}
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="checkbox"
-              id="canManageInvoices"
-              checked={formData.canManageInvoices}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  canManageInvoices: e.target.checked
-                })
-              }
-              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-            />
-            <label
-              htmlFor="canManageInvoices"
-              className="text-sm font-medium text-gray-700 cursor-pointer"
-            >
-              User can manage invoices
-            </label>
-          </div>
+          {/* Permission Checkbox - Only for non-admin users */}
+          {user?.role !== "admin" && (
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="canManageInvoices"
+                checked={formData.canManageInvoices}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    canManageInvoices: e.target.checked
+                  })
+                }
+                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label
+                htmlFor="canManageInvoices"
+                className="text-sm font-medium text-gray-700 cursor-pointer"
+              >
+                User can manage invoices
+              </label>
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3 mt-6">
             <button
