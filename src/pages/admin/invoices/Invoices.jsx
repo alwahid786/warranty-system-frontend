@@ -22,7 +22,8 @@ const defaultFilters = {
   selectedBrand: null,
   minFinalTotal: "",
   maxFinalTotal: "",
-  status: ""
+  status: "",
+  company: null
 };
 
 const Invoices = () => {
@@ -52,6 +53,10 @@ const Invoices = () => {
   });
 
   const allInvoices = Array.isArray(data) ? data : (data?.data ?? []);
+
+  const companies = Array.from(
+    new Set(allInvoices.map((inv) => inv.warrantyCompany).filter(Boolean))
+  ).map((company, index) => ({ id: index + 1, name: company }));
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -96,6 +101,13 @@ const Invoices = () => {
     // Status filter
     if (filters.status) {
       if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
+        isMatch = false;
+      }
+    }
+
+    // Company filter
+    if (filters.company) {
+      if (invoice.warrantyCompany !== filters.company.name) {
         isMatch = false;
       }
     }
@@ -149,6 +161,7 @@ const Invoices = () => {
           <InvoicesFilterBar
             filters={filters}
             onFilterChange={handleFilterChange}
+            companies={companies}
           />
         </div>
         <h1 className="text-xl font-semibold mb-4">Invoices</h1>

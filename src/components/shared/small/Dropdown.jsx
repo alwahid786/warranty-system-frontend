@@ -18,7 +18,7 @@ export default function Dropdown({
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (defaultValue) setSelected(defaultValue);
+    setSelected(defaultValue || null);
   }, [defaultValue]);
 
   useEffect(() => {

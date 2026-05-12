@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { MdFilterAltOff } from "react-icons/md";
 
 import Dropdown from "../../shared/small/Dropdown";
@@ -5,7 +6,7 @@ import Button from "../../shared/small/Button";
 
 const searchTypes = [
   { key: "invoiceNumber", label: "INV-#" },
-  { key: "warrantyCompany", label: "Company" },
+  { key: "companyName", label: "Company" },
   { key: "clientName", label: "Client" },
   { key: "statementNumber", label: "Statement-#" }
 ];
@@ -29,10 +30,22 @@ const defaultLocalFilters = {
   selectedBrand: null,
   minFinalTotal: "",
   maxFinalTotal: "",
-  status: ""
+  status: "",
+  company: null
 };
 
-const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
+const InvoicesFilterBar = ({
+  filters = {},
+  onFilterChange,
+  companies = []
+}) => {
+  const { user } = useSelector((state) => state.auth);
+
+  const showCompanyFilter =
+    ["superadmin", "admin"].includes(user?.role) ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
+
   const handleReset = () => {
     onFilterChange(defaultLocalFilters);
   };
@@ -127,8 +140,26 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
       {/* Row 2: Statement, Totals, Status, Buttons */}
       <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
+          {/* Company */}
+          {showCompanyFilter && (
+            <div className="lg:col-span-2 flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                Company
+              </label>
+              <Dropdown
+                title=""
+                options={companies}
+                defaultValue={filters.company || "Select Company"}
+                onChange={(val) => onFilterChange({ company: val })}
+                width="w-full"
+              />
+            </div>
+          )}
+
           {/* Statement Type */}
-          <div className="lg:col-span-3 flex flex-col gap-1">
+          <div
+            className={`${showCompanyFilter ? "lg:col-span-2" : "lg:col-span-3"} flex flex-col gap-1`}
+          >
             <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
               Statement Type
             </label>
@@ -184,7 +215,9 @@ const InvoicesFilterBar = ({ filters = {}, onFilterChange }) => {
           </div>
 
           {/* Status */}
-          <div className="lg:col-span-3 flex flex-col gap-1">
+          <div
+            className={`${showCompanyFilter ? "lg:col-span-2" : "lg:col-span-3"} flex flex-col gap-1`}
+          >
             <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
               Status
             </label>
