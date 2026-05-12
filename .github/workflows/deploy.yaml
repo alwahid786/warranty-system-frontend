@@ -29,13 +29,13 @@ jobs:
             set -e
 
             echo "🔹 Load NVM and Node"
-            export NVM_DIR="/root/.nvm"   # replace with actual NVM path
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
             nvm install 22
             nvm use 22
 
             echo "🔹 Go to frontend folder"
-            cd /root/warranty/frontend     # replace with actual path
+            cd /root/warranty/frontend || exit 1
 
             echo "🔹 Ensure .env exists"
             if [ ! -f .env ]; then

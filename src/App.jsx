@@ -34,6 +34,7 @@ const Notification = lazy(
 );
 
 const Users = lazy(() => import("./pages/admin/users/Users"));
+const Admins = lazy(() => import("./pages/admin/admins/Admins"));
 const Archived = lazy(() => import("./pages/admin/archived/Archived"));
 
 const ArchivedActions = lazy(
@@ -157,7 +158,9 @@ function App() {
     };
 
     SOCKET.on("connect", () => {
-      console.log("Connected to server with userId:", user._id);
+      if (user?._id) {
+        console.log("Connected to server with userId:", user._id);
+      }
     });
 
     SOCKET.off("notification:insert");
@@ -176,7 +179,8 @@ function App() {
   if (isLoading) return <Loader />;
 
   const showTermsModal =
-    ["client", "user"].includes(user?.role) && !user?.termsAccepted;
+    ["client", "user", "admin", "superadmin"].includes(user?.role) &&
+    !user?.termsAccepted;
 
   return (
     <>
@@ -200,11 +204,14 @@ function App() {
                 )
               }
             /> */}
+
             <Route
               path="/"
               element={
                 user ? (
-                  user.role === "admin" || user.role === "client" ? (
+                  user.role === "admin" ||
+                  user.role === "superadmin" ||
+                  user.role === "client" ? (
                     <Navigate to="/dashboard" replace />
                   ) : (
                     <Navigate to="/dashboard/actions" replace />
@@ -245,7 +252,7 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/dashboard/actions"
-                    allowedRoles={["admin", "client"]}
+                    allowedRoles={["admin", "superadmin", "client"]}
                   >
                     <Dashboard />
                   </ProtectedRoute>
@@ -260,13 +267,13 @@ function App() {
                     user={user}
                     redirect="/"
                     allowedRoles={
-                      user?.role === "admin"
-                        ? ["admin"]
+                      ["admin", "superadmin"].includes(user?.role)
+                        ? ["admin", "superadmin"]
                         : user?.role === "client" && user?.businessOwnerView
                           ? ["client"]
                           : user?.role === "user" && user?.canManageInvoices
                             ? ["user"]
-                            : ["admin"]
+                            : ["admin", "superadmin"]
                     }
                   >
                     <Invoices />
@@ -277,19 +284,43 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="users/:pageId" element={<Users />} />
               <Route
+                path="admins"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["superadmin"]}
+                  >
+                    <Admins />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="admins/:pageId"
+                element={
+                  <ProtectedRoute
+                    user={user}
+                    redirect="/"
+                    allowedRoles={["superadmin"]}
+                  >
+                    <Admins />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="archived"
                 element={
                   <ProtectedRoute
                     user={user}
                     redirect="/"
                     allowedRoles={
-                      user?.role === "admin"
-                        ? ["admin"]
+                      ["admin", "superadmin"].includes(user?.role)
+                        ? ["admin", "superadmin"]
                         : user?.role === "client" && user?.businessOwnerView
                           ? ["client"]
                           : user?.role === "user"
                             ? ["user"]
-                            : ["admin"]
+                            : ["admin", "superadmin"]
                     }
                   >
                     <Archived />
@@ -303,13 +334,13 @@ function App() {
                     user={user}
                     redirect="/"
                     allowedRoles={
-                      user?.role === "admin"
-                        ? ["admin"]
+                      ["admin", "superadmin"].includes(user?.role)
+                        ? ["admin", "superadmin"]
                         : user?.role === "client" && user?.businessOwnerView
                           ? ["client"]
                           : user?.role === "user"
                             ? ["user"]
-                            : ["admin"]
+                            : ["admin", "superadmin"]
                     }
                   >
                     <ArchivedActions />
@@ -323,13 +354,13 @@ function App() {
                     user={user}
                     redirect="/"
                     allowedRoles={
-                      user?.role === "admin"
-                        ? ["admin"]
+                      ["admin", "superadmin"].includes(user?.role)
+                        ? ["admin", "superadmin"]
                         : user?.role === "client" && user?.businessOwnerView
                           ? ["client"]
                           : user?.role === "user" && user?.canManageInvoices
                             ? ["user"]
-                            : ["admin"]
+                            : ["admin", "superadmin"]
                     }
                   >
                     <ArchivedInvoices />
@@ -343,7 +374,7 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={["admin", "superadmin"]}
                   >
                     <CompaniesResponseTime />
                   </ProtectedRoute>
@@ -355,7 +386,7 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={["admin", "superadmin"]}
                   >
                     <Clients />
                   </ProtectedRoute>
@@ -367,7 +398,7 @@ function App() {
                   <ProtectedRoute
                     user={user}
                     redirect="/"
-                    allowedRoles={["admin"]}
+                    allowedRoles={["admin", "superadmin"]}
                   >
                     <Clients />
                   </ProtectedRoute>

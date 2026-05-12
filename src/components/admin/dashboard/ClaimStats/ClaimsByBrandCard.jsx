@@ -17,7 +17,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
   const end = Math.min(start + currentBrands.length - 1, brands.length);
 
   return (
-    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full">
+    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full min-h-[400px]">
       <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
         Claims by Warranty Company
       </h2>
