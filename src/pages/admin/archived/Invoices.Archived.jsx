@@ -14,12 +14,15 @@ import { isDateInRange, matchesSearch } from "../../../utils/filterUtils";
 const ITEMS_PER_PAGE = 6;
 
 const defaultFilters = {
-  searchType: "id",
+  searchType: "invoiceNumber",
   searchValue: "",
   fromDate: "",
   toDate: "",
   selectedBrand: null,
-  status: ""
+  minFinalTotal: "",
+  maxFinalTotal: "",
+  status: "",
+  company: null
 };
 
 const ArchivedInvoices = () => {
@@ -45,6 +48,10 @@ const ArchivedInvoices = () => {
   });
 
   const allInvoices = Array.isArray(data) ? data : (data?.data ?? []);
+
+  const companies = Array.from(
+    new Set(allInvoices.map((inv) => inv.warrantyCompany).filter(Boolean))
+  ).map((company, index) => ({ id: index + 1, name: company }));
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -85,6 +92,13 @@ const ArchivedInvoices = () => {
     // Status filter
     if (filters.status) {
       if (invoice.status?.toLowerCase() !== filters.status.toLowerCase()) {
+        isMatch = false;
+      }
+    }
+
+    // Company filter
+    if (filters.company) {
+      if (invoice.warrantyCompany !== filters.company.name) {
         isMatch = false;
       }
     }
@@ -137,6 +151,7 @@ const ArchivedInvoices = () => {
           <InvoicesFilterBar
             filters={filters}
             onFilterChange={handleFilterChange}
+            companies={companies}
           />
         </div>
         <h1 className="text-xl font-semibold mb-4">Invoices</h1>

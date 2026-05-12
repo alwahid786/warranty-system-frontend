@@ -77,7 +77,7 @@ export const isDateInRange = (date, fromDate, toDate) => {
  */
 export const matchesSearch = (item, searchValue, searchType) => {
   if (!searchValue) return true;
-  const val = searchValue.toLowerCase();
+  const val = searchValue.toLowerCase().trim().replace(/^#/, "");
 
   if (searchType === "companyName") {
     const comp = String(item.companyName || "").toLowerCase();
@@ -85,6 +85,24 @@ export const matchesSearch = (item, searchValue, searchType) => {
     const warranty = String(item.warrantyCompany || "").toLowerCase();
 
     return comp.includes(val) || store.includes(val) || warranty.includes(val);
+  }
+
+  if (searchType === "invoiceNumber") {
+    const rawValue = String(item.invoiceNumber || "").toLowerCase();
+    // Normalize by ensuring we have a version with the prefix for comparison
+
+    const fullInvoiceWithPrefix = rawValue.startsWith("inv-")
+      ? rawValue
+      : `inv-${rawValue}`;
+
+    const numericPart = rawValue.replace(/^inv-/, "");
+
+    const cleanSearch = val.replace(/^i(nv?)?-?/, "");
+
+    return (
+      fullInvoiceWithPrefix.includes(val) ||
+      (cleanSearch !== "" && numericPart.includes(cleanSearch))
+    );
   }
 
   const fieldVal = String(item[searchType] || "").toLowerCase();
