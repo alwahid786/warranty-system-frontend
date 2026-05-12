@@ -13,7 +13,7 @@ const CompaniesResponseTimeCard = (data) => {
   }, [data?.data]);
 
   return (
-    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full">
+    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full min-h-[400px]">
       <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
         Companies Average Response Time
       </h2>

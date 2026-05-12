@@ -11,6 +11,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
     email: "",
     phone: "",
     password: "",
+    gender: "",
     canManageInvoices: false
   });
 
@@ -24,6 +25,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
         email: user.email || "",
         phone: user.phone || "",
         password: "",
+        gender: user.gender || "",
         canManageInvoices: user.canManageInvoices || false
       });
     }
@@ -88,6 +90,23 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
               inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
               containerClass="!w-full"
             />
+          </div>
+
+          {/* Gender */}
+          <div>
+            <label className="block text-sm font-medium">Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
 
           {/* Password */}

@@ -52,7 +52,7 @@ const TotalClaimsCard = ({ data }) => {
   );
 
   return (
-    <div className="bg-white rounded-xl border shadow flex-1">
+    <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full min-h-[400px]">
       <div className="flex items-center justify-between mb-4 px-4 mt-4">
         <h2 className="font-medium text-[14px] leading-5 text-primary">
           Total Claims By Statuses

@@ -79,7 +79,8 @@ const clientApis = createApi({
       query: () => ({
         url: "/getClientsStatsByFilters",
         method: "GET"
-      })
+      }),
+      providesTags: ["Clients"]
     }),
 
     // Get Clients Activity Stats

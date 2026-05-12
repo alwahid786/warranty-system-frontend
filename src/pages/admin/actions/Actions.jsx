@@ -40,22 +40,23 @@ const Actions = () => {
     ...filtersFromState
   });
 
+  const isAdminSide =
+    ["admin", "superadmin"].includes(user?.role) ||
+    ["admin", "superadmin"].includes(user?.owner?.role);
+
   const { data } = useGetClaimsQuery(
-    user?.role === "user" || user?.role === "client"
-      ? { clientId: user?._id }
-      : clientId
+    isAdminSide
+      ? clientId
         ? { clientId: clientId }
-        : undefined,
+        : undefined
+      : { clientId: user?._id },
     {
       refetchOnMountOrArgChange: true
     }
   );
 
   const { data: clientsData } = useGetClientsQuery(undefined, {
-    skip: !(
-      user?.role === "admin" ||
-      (user?.role === "user" && user?.owner?.role === "admin")
-    )
+    skip: !isAdminSide
   });
 
   const [selectedClaims, setSelectedClaims] = useState([]);
