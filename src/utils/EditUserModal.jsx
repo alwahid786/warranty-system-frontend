@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
+const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -113,26 +113,28 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
           </div>
 
           {/* Permission Checkbox */}
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="checkbox"
-              id="canManageInvoices"
-              checked={formData.canManageInvoices}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  canManageInvoices: e.target.checked
-                })
-              }
-              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-            />
-            <label
-              htmlFor="canManageInvoices"
-              className="text-sm font-medium text-gray-700 cursor-pointer"
-            >
-              User can manage invoices
-            </label>
-          </div>
+          {currentUserRole !== "user" && (
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="canManageInvoices"
+                checked={formData.canManageInvoices}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    canManageInvoices: e.target.checked
+                  })
+                }
+                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label
+                htmlFor="canManageInvoices"
+                className="text-sm font-medium text-gray-700 cursor-pointer"
+              >
+                User can manage invoices
+              </label>
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3 mt-6">
             <button
