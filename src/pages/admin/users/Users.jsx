@@ -73,7 +73,8 @@ const Users = () => {
   const canManageUsers =
     user?.role === "admin" ||
     user?.role === "superadmin" ||
-    user?.role === "client";
+    user?.role === "client" ||
+    user?.role === "user";
 
   const { data: totalUsersCount, refetch: getTotalUsersCountRefetch } =
     useGetTotalUsersCountQuery(userQueryParams, {
