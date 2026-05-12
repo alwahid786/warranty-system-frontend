@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
+const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -131,8 +131,8 @@ const EditUserModal = ({ user, isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Permission Checkbox - Only for non-admin users */}
-          {user?.role !== "admin" && (
+          {/* Permission Checkbox */}
+          {currentUserRole !== "user" && (
             <div className="flex items-center gap-2 pt-2">
               <input
                 type="checkbox"
