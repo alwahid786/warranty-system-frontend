@@ -77,7 +77,8 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   const clients = (clientsData?.data || []).map((client) => ({
     id: client?._id,
     name: client?.name,
-    companyName: client?.companyName || client?.storeName
+    companyName: client?.companyName || client?.storeName,
+    percentage: client?.percentage || 0
   }));
 
   // Dealer Change
@@ -88,7 +89,8 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       ...formData,
       clientId: selectedClient?.id || "",
       client: selectedClient?.name || "",
-      company: ""
+      company: "",
+      assignedPercentage: selectedClient?.percentage || ""
     });
   };
 

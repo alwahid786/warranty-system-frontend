@@ -118,7 +118,8 @@ const EditInvoiceForm = ({
     const clients_local = (clientsData?.data || []).map((c) => ({
       id: String(c._id),
       name: c.name || "",
-      companyName: c.companyName || c.storeName || ""
+      companyName: c.companyName || c.storeName || "",
+      percentage: c.percentage || 0
     }));
 
     // normalize formData.clientId to string for comparison
@@ -150,13 +151,17 @@ const EditInvoiceForm = ({
   const clients = (clientsData?.data || []).map((c) => ({
     id: String(c._id),
     name: c.name || "",
-    companyName: c.companyName || c.storeName || ""
+    companyName: c.companyName || c.storeName || "",
+    percentage: c.percentage || 0
   }));
 
   const onDealerChange = (e) => {
+    const selected = clients.find((c) => c.id === e.target.value);
+
     setFormData((prev) => ({
       ...prev,
-      clientId: e.target.value
+      clientId: e.target.value,
+      assignedPercentage: selected?.percentage || ""
     }));
     setManualEdit(true);
   };
