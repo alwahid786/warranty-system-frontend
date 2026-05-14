@@ -81,7 +81,7 @@ function App() {
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
 
   const { data: notifications } = useGetNotificationsQuery(undefined, {
-    skip: !isSuccess,
+    skip: !user?._id,
     refetchOnMountOrArgChange: false,
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -89,33 +89,34 @@ function App() {
   });
 
   useEffect(() => {
-    if (!isSuccess || !data?.data) return;
-    // Only set the user from the profile query if the store doesn't already
-    // contain a user, or if the returned profile is different from the
-    // currently stored user.
-    if (
-      !user?._id ||
-      data?.data._id !== user?._id ||
-      data?.data.termsAccepted !== user?.termsAccepted ||
-      data?.data.activeStatus !== user?.activeStatus
-    ) {
-      dispatch(userExist(data?.data));
+    // 1. Synchronize user profile from query if successful
+    if (isSuccess && data?.data) {
+      if (
+        !user?._id ||
+        data?.data._id !== user?._id ||
+        data?.data.termsAccepted !== user?.termsAccepted ||
+        data?.data.activeStatus !== user?.activeStatus
+      ) {
+        dispatch(userExist(data?.data));
+      }
     }
 
-    dispatch(setNotifications(notifications?.data || []));
-    if ((notifications?.unReadCount || 0) > 0) {
-      dispatch(unReadNotifications(notifications?.unReadCount || 0));
-    } else {
-      dispatch(noUnReadNotifications());
+    // 2. Synchronize notifications if user is logged in and notifications data is available
+    if (user?._id && notifications) {
+      dispatch(setNotifications(notifications?.data || []));
+      if ((notifications?.unReadCount || 0) > 0) {
+        dispatch(unReadNotifications(notifications?.unReadCount || 0));
+      } else {
+        dispatch(noUnReadNotifications());
+      }
     }
   }, [
     isSuccess,
     data?.data,
-    notifications?.data,
+    notifications,
     user?._id,
     user?.activeStatus,
     user?.termsAccepted,
-    notifications?.unReadCount,
     dispatch
   ]);
 
