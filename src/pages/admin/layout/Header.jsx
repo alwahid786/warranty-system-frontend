@@ -27,10 +27,11 @@ const Header = () => {
   const pathSegment = pathname.split("/").filter(Boolean);
   let path = pathSegment[pathSegment.length - 1] || "Dashboard";
 
-  // If the last segment is an ID (24-character hex), use the previous segment if available
+  // If the last segment is an ID (24-character hex) or a number (pagination), use the previous segment
   const isId = /^[0-9a-fA-F]{24}$/.test(path);
+  const isNumeric = /^\d+$/.test(path);
 
-  if (isId && pathSegment.length > 1) {
+  if ((isId || isNumeric) && pathSegment.length > 1) {
     path = pathSegment[pathSegment.length - 2];
   }
   const menuRef = useRef(null);
