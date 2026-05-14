@@ -13,14 +13,15 @@ const searchTypes = [
 export default function UsersFilterBar({
   filters = {},
   onFilterChange,
-  onReset
+  onReset,
+  parents = []
 }) {
   return (
     <div className="w-full mt-4 flex flex-col gap-4">
       <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
           {/* Advanced Search Group */}
-          <div className="lg:col-span-6 flex flex-col gap-1">
+          <div className="lg:col-span-4 flex flex-col gap-1">
             <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
               Advanced Search
             </label>
@@ -72,9 +73,31 @@ export default function UsersFilterBar({
               ))}
             </div>
           </div>
+          {parents.length > 0 && (
+            <div className="lg:col-span-4 flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+                Company / Parent Account
+              </label>
+              <select
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none appearance-none cursor-pointer"
+                value={filters.owner || ""}
+                onChange={(e) => onFilterChange({ owner: e.target.value })}
+              >
+                <option value="">All Users</option>
+                {parents.map((parent) => (
+                  <option key={parent._id} value={parent._id}>
+                    {parent.companyName || parent.storeName || parent.name} (
+                    {parent.role})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Date Range Group */}
-          <div className="lg:col-span-6 grid grid-cols-2 gap-2">
+          <div
+            className={`${parents.length > 0 ? "lg:col-span-4" : "lg:col-span-6"} grid grid-cols-2 gap-2`}
+          >
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
                 From

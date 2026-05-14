@@ -109,6 +109,30 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
             </select>
           </div>
 
+          {/* Parent Account (Read-only) - Only for admins/superadmins */}
+          {(currentUserRole === "admin" || currentUserRole === "superadmin") &&
+            user?.owner && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Company / Parent Account
+                </label>
+                <div className="w-full border rounded px-3 py-2 text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
+                  {user.owner.companyName ||
+                  user.owner.storeName ||
+                  user.owner.name ? (
+                    <>
+                      {user.owner.companyName ||
+                        user.owner.storeName ||
+                        user.owner.name}{" "}
+                      ({user.owner.role})
+                    </>
+                  ) : (
+                    "System / No Parent"
+                  )}
+                </div>
+              </div>
+            )}
+
           {/* Password */}
           <div>
             <label className="block text-sm font-medium">Password</label>

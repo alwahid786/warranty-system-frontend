@@ -15,7 +15,8 @@ import UsersHeader from "../../../components/admin/users/UsersHeader";
 import UsersPagination from "../../../components/admin/users/UsersPaginations";
 import {
   useDeleteUserMutation,
-  useGetUsersQuery
+  useGetUsersQuery,
+  useGetAllParentsQuery
 } from "../../../redux/apis/userApis";
 import {
   clearSelectedUser,
@@ -39,7 +40,8 @@ const Users = () => {
     searchValue: "",
     fromDate: "",
     toDate: "",
-    status: ""
+    status: "",
+    owner: ""
   });
 
   const [selectedFilter, setSelectedFilter] = useState("This Month");
@@ -55,7 +57,8 @@ const Users = () => {
 
   const userQueryParams = {
     role: "user",
-    onlyAdminSubusers: true
+    onlyAdminSubusers: false,
+    owner: filters.owner
   };
 
   const users = Array.isArray(selectedUser)
@@ -85,6 +88,11 @@ const Users = () => {
     useGetAttendanceChartDataQuery(userQueryParams, {
       refetchOnMountOrArgChange: true
     });
+
+  const { data: parentsData } = useGetAllParentsQuery(undefined, {
+    skip: user?.role !== "admin" && user?.role !== "superadmin",
+    refetchOnMountOrArgChange: true
+  });
 
   useEffect(() => {
     if (isSuccess && data?.success) {
@@ -172,7 +180,8 @@ const Users = () => {
       searchValue: "",
       fromDate: "",
       toDate: "",
-      status: ""
+      status: "",
+      owner: ""
     });
     navigate("/dashboard/users/1");
   };
@@ -245,6 +254,7 @@ const Users = () => {
           filters={filters}
           onFilterChange={handleFilterChange}
           onReset={handleResetFilters}
+          parents={parentsData?.data}
         />
 
         <div className="mt-5 ">

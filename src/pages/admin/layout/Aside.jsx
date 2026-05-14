@@ -187,10 +187,6 @@ const Aside = () => {
       return false;
     }
 
-    if (page.title === "Users" && user?.role === "superadmin") {
-      return false;
-    }
-
     return true;
   });
 

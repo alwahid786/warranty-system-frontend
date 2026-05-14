@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 
+import { useSelector } from "react-redux";
 import { MdEmail } from "react-icons/md";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { HiPencil, HiTrash, HiEllipsisVertical } from "react-icons/hi2";
 
 import { getInitials } from "../../../utils/getInitials";
+import { formatPhoneNumber } from "../../../utils/formatters";
 
 const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -63,7 +66,16 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
                 {user?.activeStatus ? "Active" : "Inactive"}
               </span>
             </div>
-            <p className="text-gray-500 text-xs">ID #{user?._id}</p>
+            {user?.owner && (
+              <p className="text-[10px] text-blue-500 font-medium">
+                Company Name:{" "}
+                {user.owner.companyName ||
+                  user.owner.storeName ||
+                  user.owner.name ||
+                  user.owner.email ||
+                  "Unknown"}
+              </p>
+            )}
           </div>
         </div>
 
@@ -108,26 +120,36 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
       </div>
 
       {/* Card Details */}
-      <div className="mt-5 space-y-3 rounded-xl bg-gray-100 p-4 text-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="font-semibold text-gray-800">
-              {user?.role === "admin" || user?.role === "superadmin"
+      <div className="mt-5 space-y-4">
+        {/* Metrics Box */}
+        <div className="grid grid-cols-2 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden">
+          <div className="p-4 border-r border-gray-100">
+            <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">
+              {user?.role === "admin" ||
+              user?.role === "superadmin" ||
+              user?.owner?.role === "admin"
                 ? "Designation"
                 : "Claims Rate"}
             </p>
-            <p className="text-xs text-gray-600">
-              {user?.role === "admin" || user?.role === "superadmin"
+            <p className="text-sm font-semibold text-gray-900">
+              {user?.role === "admin" ||
+              user?.role === "superadmin" ||
+              user?.owner?.role === "admin"
                 ? user?.designation || "N/A"
                 : (user?.role === "user"
                     ? user?.owner?.percentage
                     : user?.percentage) || 0}
-              {user?.role !== "admin" && user?.role !== "superadmin" && "%"}
+              {user?.role !== "admin" &&
+                user?.role !== "superadmin" &&
+                user?.owner?.role !== "admin" &&
+                "%"}
             </p>
           </div>
-          <div className="sm:text-right">
-            <p className="font-semibold text-gray-800">Joining Date</p>
-            <p className="text-xs text-gray-600">
+          <div className="p-4 text-right">
+            <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">
+              Joining Date
+            </p>
+            <p className="text-sm font-semibold text-gray-900">
               {new Date(user?.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -136,15 +158,43 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
             </p>
           </div>
         </div>
-        <div className="flex min-w-0 items-start gap-2 text-gray-700">
-          <MdEmail className="text-gray-500" />
-          <span className="min-w-0 break-all sm:break-normal sm:truncate">
-            {user?.email}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-gray-700">
-          <PiPhoneCallFill className="text-gray-500" />
-          <span className="break-all">{user?.phone}</span>
+        <div className="space-y-2.5 px-1">
+          {["admin", "superadmin", "client"].includes(currentUser?.role) && (
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <span className="font-medium text-gray-600 shrink-0">
+                Last Login:
+              </span>
+              <span className="truncate">
+                {user?.lastLogin
+                  ? new Date(user?.lastLogin).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true
+                    })
+                  : "Never Logged In"}
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 text-gray-700">
+            <MdEmail className="flex-shrink-0 text-gray-400" size={16} />
+            <span className="min-w-0 truncate text-xs font-medium">
+              {user?.email}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-gray-700">
+            <PiPhoneCallFill
+              className="flex-shrink-0 text-gray-400"
+              size={16}
+            />
+            <span className="truncate text-xs font-medium">
+              {formatPhoneNumber(user?.phone)}
+            </span>
+          </div>
         </div>
       </div>
     </div>

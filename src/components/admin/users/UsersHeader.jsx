@@ -11,7 +11,8 @@ import {
   useAddUserMutation,
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery,
-  useGetUsersStatQuery
+  useGetUsersStatQuery,
+  useGetAllParentsQuery
 } from "../../../redux/apis/userApis";
 
 const UsersHeader = ({ role }) => {
@@ -31,7 +32,8 @@ const UsersHeader = ({ role }) => {
     password: "",
     gender: "",
     canManageInvoices: false,
-    role: role || "user"
+    role: role || "user",
+    owner: ""
   });
 
   // Update role in formData when prop changes
@@ -55,6 +57,11 @@ const UsersHeader = ({ role }) => {
   const { refetch: getAttendanceChartDataRefetch } =
     useGetAttendanceChartDataQuery(userQueryParams);
 
+  const { data: parentsData } = useGetAllParentsQuery(undefined, {
+    skip: user?.role !== "admin" && user?.role !== "superadmin",
+    refetchOnMountOrArgChange: true
+  });
+
   const resetForm = () => {
     setformData({
       name: "",
@@ -63,7 +70,8 @@ const UsersHeader = ({ role }) => {
       password: "",
       gender: "",
       canManageInvoices: false,
-      role: role || "user"
+      role: role || "user",
+      owner: ""
     });
     setShowPassword(false);
   };
@@ -159,6 +167,30 @@ const UsersHeader = ({ role }) => {
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
+
+          {(user?.role === "admin" || user?.role === "superadmin") && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Company / Parent Account
+              </label>
+              <select
+                value={formData.owner}
+                onChange={(e) =>
+                  setformData({ ...formData, owner: e.target.value })
+                }
+                className="w-full border px-3 py-2 rounded"
+                required
+              >
+                <option value="">Select Parent Account</option>
+                {parentsData?.data?.map((parent) => (
+                  <option key={parent._id} value={parent._id}>
+                    {parent.companyName || parent.storeName || parent.name} (
+                    {parent.role})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <label>Password</label>
           <div className="relative">

@@ -13,7 +13,7 @@ const TopCards = ({ usersData, invoiceData }) => {
     invoices: "7"
   });
 
-  const formatChange = (value) => {
+  const formatChange = (value, inverse = false) => {
     const numericValue = parseFloat(value) || 0;
 
     if (!numericValue)
@@ -21,15 +21,19 @@ const TopCards = ({ usersData, invoiceData }) => {
 
     const sign = numericValue > 0 ? "+" : "";
 
-    const color =
-      numericValue > 0
-        ? "text-green-600"
-        : numericValue < 0
-          ? "text-red-600"
-          : "text-gray-500";
+    const isPositive = numericValue > 0;
+    const isNegative = numericValue < 0;
 
-    const word =
-      numericValue > 0 ? "better" : numericValue < 0 ? "worse" : "same";
+    const isBetter = inverse ? isNegative : isPositive;
+    const isWorse = inverse ? isPositive : isNegative;
+
+    const color = isBetter
+      ? "text-green-600"
+      : isWorse
+        ? "text-red-600"
+        : "text-gray-500";
+
+    const word = isBetter ? "better" : isWorse ? "worse" : "same";
 
     const displayValue = Math.abs(numericValue).toFixed(2);
 
@@ -42,7 +46,7 @@ const TopCards = ({ usersData, invoiceData }) => {
   const cards = [
     {
       id: "users",
-      title: "Total Users",
+      title: "Total New Users",
       icon: (
         <FaUsers className="text-3xl text-[#043655] bg-[#EBF7FF] rounded-md p-1" />
       ),
@@ -66,7 +70,8 @@ const TopCards = ({ usersData, invoiceData }) => {
       ),
       value: usersData?.inactiveCount?.[`totalInactive${range.inactive}`] ?? 0,
       change:
-        usersData?.inactiveCount?.[`percentInactive${range.inactive}`] ?? 0
+        usersData?.inactiveCount?.[`percentInactive${range.inactive}`] ?? 0,
+      inverse: true
     },
     {
       id: "invoices",
@@ -82,7 +87,7 @@ const TopCards = ({ usersData, invoiceData }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => {
-        const formatted = formatChange(card.change);
+        const formatted = formatChange(card.change, card.inverse);
 
         return (
           <div
@@ -107,6 +112,7 @@ const TopCards = ({ usersData, invoiceData }) => {
                   <option value="7">Last 7 Days</option>
                   <option value="30">Last 30 Days</option>
                   <option value="90">Last 90 Days</option>
+                  <option value="all">All Time</option>
                 </select>
               </div>
             </div>
@@ -120,9 +126,9 @@ const TopCards = ({ usersData, invoiceData }) => {
               {card.change !== undefined && (
                 <span
                   className={`text-sm px-2 py-0.5 rounded-full ${
-                    parseFloat(card.change) > 0
+                    formatted.color === "text-green-600"
                       ? "bg-green-100 text-green-600"
-                      : parseFloat(card.change) < 0
+                      : formatted.color === "text-red-600"
                         ? "bg-red-100 text-red-600"
                         : "bg-gray-100 text-gray-500"
                   }`}
@@ -135,15 +141,7 @@ const TopCards = ({ usersData, invoiceData }) => {
             </div>
 
             {/* Percentage description */}
-            <div
-              className={`text-xs mt-1 ${
-                parseFloat(card.change) > 0
-                  ? "text-green-600"
-                  : parseFloat(card.change) < 0
-                    ? "text-red-600"
-                    : "text-gray-500"
-              }`}
-            >
+            <div className={`text-xs mt-1 ${formatted.color}`}>
               {formatted.text.replace("X", range[card.id])}
             </div>
           </div>

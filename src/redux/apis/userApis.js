@@ -92,6 +92,12 @@ const userApis = createApi({
         method: "GET",
         params
       })
+    }),
+    getAllParents: builder.query({
+      query: () => ({
+        url: "/getAllParents",
+        method: "GET"
+      })
     })
   })
 });
@@ -105,7 +111,8 @@ export const {
   useGetActiveInactiveCountQuery,
   useGetUsersStatQuery,
   useGetTotalUsersCountQuery,
-  useGetAttendanceChartDataQuery
+  useGetAttendanceChartDataQuery,
+  useGetAllParentsQuery
 } = userApis;
 
 export default userApis;
