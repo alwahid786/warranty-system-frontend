@@ -46,6 +46,14 @@ const chatApis = createApi({
         method: "GET"
       }),
       providesTags: ["chat"]
+    }),
+
+    // Get Mention Suggestions
+    getMentionSuggestions: builder.query({
+      query: (claimId) => ({
+        url: `/mention-suggestions?claimId=${claimId?.toString()}`,
+        method: "GET"
+      })
     })
   })
 });
@@ -54,7 +62,8 @@ export const {
   useGetChatQuery,
   useSendMessageMutation,
   useGetCompaniesAvgResponseTimeQuery,
-  useGetCompaniesAvgResponseTimeAllQuery
+  useGetCompaniesAvgResponseTimeAllQuery,
+  useGetMentionSuggestionsQuery
 } = chatApis;
 
 export default chatApis;
