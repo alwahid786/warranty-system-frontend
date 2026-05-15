@@ -4,8 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { MdCancel } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Users } from "lucide-react";
 
-import { useGetChatQuery } from "../../../redux/apis/chatApis";
+import {
+  useGetChatQuery,
+  useGetMentionSuggestionsQuery
+} from "../../../redux/apis/chatApis";
 import { useSendMessageMutation } from "../../../redux/apis/chatApis";
 import { SOCKET } from "../../../utils/socket";
 import claimsApis from "../../../redux/apis/claimsApis";
@@ -38,12 +43,129 @@ export default function ChatModal({
     refetchOnMountOrArgChange: true
   });
 
+  const activeClaimId = normalizeId(forInvoice ? row?.Id : row?._id);
+
+  const { data: suggestionData } = useGetMentionSuggestionsQuery(
+    activeClaimId,
+    {
+      skip: !activeClaimId
+    }
+  );
+
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionSearch, setMentionSearch] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [mentionsMap, setMentionsMap] = useState({});
+
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const inputRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const activeClaimId = normalizeId(forInvoice ? row?.Id : row?._id);
+
+  const filteredSuggestions = (suggestionData?.data || []).filter((u) =>
+    u.name.toLowerCase().includes(mentionSearch.toLowerCase())
+  );
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+
+    setNewMessage(value);
+
+    const cursorPosition = e.target.selectionStart;
+    const textBeforeCursor = value.substring(0, cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+
+    if (lastAtIndex !== -1) {
+      const query = textBeforeCursor.substring(lastAtIndex + 1);
+
+      if (!query.includes(" ")) {
+        setMentionSearch(query);
+        setShowMentions(true);
+        setSelectedIndex(0);
+      } else {
+        setShowMentions(false);
+      }
+    } else {
+      setShowMentions(false);
+    }
+  };
+
+  const insertMention = (mentionedUser) => {
+    const cursorPosition = inputRef.current.selectionStart;
+    const textBeforeCursor = newMessage.substring(0, cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+    const textAfterCursor = newMessage.substring(cursorPosition);
+
+    const displayName = `@${mentionedUser.name}`;
+
+    setMentionsMap((prev) => ({
+      ...prev,
+      [displayName]: normalizeId(mentionedUser._id)
+    }));
+
+    const updatedMessage =
+      newMessage.substring(0, lastAtIndex) +
+      displayName +
+      " " +
+      textAfterCursor;
+
+    setNewMessage(updatedMessage);
+    setShowMentions(false);
+    inputRef.current.focus();
+  };
+
+  const handleKeyDown = (e) => {
+    if (showMentions) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev + 1) % filteredSuggestions.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex(
+          (prev) =>
+            (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length
+        );
+      } else if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        if (filteredSuggestions[selectedIndex]) {
+          insertMention(filteredSuggestions[selectedIndex]);
+        }
+      } else if (e.key === "Escape") {
+        setShowMentions(false);
+      }
+    } else if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const renderMessageContent = (content, isOwn) => {
+    if (!content) return null;
+    const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts = content.split(mentionRegex);
+    const result = [];
+
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 3 === 0) {
+        result.push(<span key={i}>{parts[i]}</span>);
+      } else if (i % 3 === 1) {
+        result.push(
+          <span
+            key={i}
+            className={`font-bold px-1 rounded mx-0.5 ${
+              isOwn ? "bg-white/20 text-white" : "bg-blue-600/10 text-blue-700"
+            }`}
+          >
+            @{parts[i]}
+          </span>
+        );
+      }
+    }
+
+    return result;
+  };
 
   useEffect(() => {
     if (data) {
@@ -137,9 +259,25 @@ export default function ChatModal({
   const sendMessage = async () => {
     if (!newMessage.trim() && !file) return;
 
+    // Convert short-hand mentions (@Name) back to full markdown format (@[Name](ID))
+    let finalMessage = newMessage;
+
+    const sortedTags = Object.keys(mentionsMap).sort(
+      (a, b) => b.length - a.length
+    );
+
+    sortedTags.forEach((tag) => {
+      const name = tag.substring(1);
+      const id = mentionsMap[tag];
+      const escapedTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedTag + "(?![\\w])", "g");
+
+      finalMessage = finalMessage.replace(regex, `@[${name}](${id})`);
+    });
+
     const formData = new FormData();
 
-    if (newMessage.trim()) formData.append("message", newMessage);
+    if (finalMessage.trim()) formData.append("message", finalMessage);
     if (file) formData.append("file", file);
     formData.append("claimId", forInvoice ? row?.Id : row?._id);
     if (user?._id) formData.append("senderId", user?._id);
@@ -230,7 +368,14 @@ export default function ChatModal({
                     : "bg-gray-200 text-gray-900"
                 }`}
               >
-                {msg.type === "text" && <p>{msg.content}</p>}
+                {msg.type === "text" && (
+                  <p className="whitespace-pre-wrap break-words">
+                    {renderMessageContent(
+                      msg.content,
+                      normalizeId(msg.senderId) === normalizeId(user?._id)
+                    )}
+                  </p>
+                )}
 
                 {msg.type === "file" && msg.fileData && (
                   <>
@@ -295,16 +440,73 @@ export default function ChatModal({
             </span>
           )}
 
-          <input
-            type="text"
-            className="flex-1 border rounded px-3 py-2 text-sm outline-none"
-            placeholder="Type a message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
+          <div className="flex-1 relative">
+            <AnimatePresence>
+              {showMentions && filteredSuggestions.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute bottom-full left-0 w-64 bg-white border rounded-lg shadow-2xl mb-2 overflow-hidden z-50"
+                >
+                  <div className="bg-gray-50 px-3 py-2 border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    Suggestions
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {filteredSuggestions.map((u, idx) => (
+                      <div
+                        key={u._id}
+                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                          idx === selectedIndex
+                            ? "bg-blue-50"
+                            : "hover:bg-gray-50"
+                        }`}
+                        onClick={() => insertMention(u)}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {u.isSpecial ? (
+                            <Users size={16} className="text-blue-600" />
+                          ) : u.image?.url ? (
+                            <img
+                              src={u.image.url}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <User size={16} className="text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {u.name}
+                          </p>
+                          <p className="text-[10px] text-gray-500 capitalize">
+                            {u.displayRole}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <textarea
+              ref={inputRef}
+              className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none min-h-[40px] max-h-[120px]"
+              placeholder="Type a message... (Use @ to mention, Shift+Enter for new line)"
+              rows={1}
+              value={newMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+            />
+          </div>
           <button
-            className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-700 transition-colors font-medium"
             onClick={sendMessage}
           >
             Send
