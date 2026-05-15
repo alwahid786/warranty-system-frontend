@@ -114,6 +114,17 @@ export default function ChatModal({
 
     if (!selectedFile) return;
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      toast.error("File size is too large. Max limit is 10MB.", {
+        duration: 3000
+      });
+      e.target.value = "";
+
+      return;
+    }
+
     if (selectedFile.type === "image/gif") {
       toast.error("GIFs are not supported", { duration: 3000 });
 
@@ -142,7 +153,16 @@ export default function ChatModal({
         duration: 2000
       });
     } catch (err) {
-      toast.error(err.data.message, { duration: 3000 });
+      if (err.status === 413) {
+        toast.error("File is too large. Please upload a smaller file.", {
+          duration: 4000
+        });
+      } else {
+        toast.error(
+          err.data?.message || "An error occurred while sending the message",
+          { duration: 3000 }
+        );
+      }
     }
   };
 
