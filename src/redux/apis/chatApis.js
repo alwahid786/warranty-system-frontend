@@ -26,8 +26,7 @@ const chatApis = createApi({
         url: "/sendMessage",
         method: "POST",
         body: data
-      }),
-      invalidatesTags: ["chat"]
+      })
     }),
 
     // Get Companies Avg Response Time
