@@ -80,9 +80,9 @@ function App() {
   const { user } = useSelector((state) => state.auth);
   const { data, isSuccess, isError, isLoading } = useGetMyProfileQuery();
 
-  const { data: notifications } = useGetNotificationsQuery(undefined, {
+  const { data: notifications } = useGetNotificationsQuery(user?._id, {
     skip: !user?._id,
-    refetchOnMountOrArgChange: false,
+    refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,
     pollingInterval: 15000
