@@ -299,8 +299,10 @@ export default function ChatModal({
                       : "bg-gray-200 text-gray-900"
                   }`}
                 >
-                  {msg.type === "text" && (
-                    <p className="whitespace-pre-wrap break-words">
+                  {msg.content && (
+                    <p
+                      className={`whitespace-pre-wrap break-words ${msg.type === "file" ? "mb-2" : ""}`}
+                    >
                       {renderMessageContent(
                         msg.content,
                         normalizeId(msg.senderId) === normalizeId(user?._id)
