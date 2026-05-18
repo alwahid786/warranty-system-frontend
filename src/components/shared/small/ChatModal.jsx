@@ -1,13 +1,13 @@
 // components/ChatModal.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 import { MdCancel } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
+import { MentionsInput, Mention } from "react-mentions";
 import { User, Users } from "lucide-react";
 
-import {
+import chatApis, {
   useGetChatQuery,
   useGetMentionSuggestionsQuery
 } from "../../../redux/apis/chatApis";
@@ -34,10 +34,10 @@ export default function ChatModal({
   row,
   forInvoice = false
 }) {
-  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState(null);
-  const [sendMessageMutation] = useSendMessageMutation();
+  const [expandedImage, setExpandedImage] = useState(null);
+  const [sendMessageMutation, { isLoading }] = useSendMessageMutation();
 
   const { data } = useGetChatQuery(forInvoice ? row?.Id : row?._id, {
     refetchOnMountOrArgChange: true
@@ -52,94 +52,19 @@ export default function ChatModal({
     }
   );
 
-  const [showMentions, setShowMentions] = useState(false);
-  const [mentionSearch, setMentionSearch] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [mentionsMap, setMentionsMap] = useState({});
-
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
-  const inputRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const filteredSuggestions = (suggestionData?.data || []).filter((u) =>
-    u.name.toLowerCase().includes(mentionSearch.toLowerCase())
-  );
+  const messages = useMemo(() => data?.data ?? [], [data?.data]);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-
-    setNewMessage(value);
-
-    const cursorPosition = e.target.selectionStart;
-    const textBeforeCursor = value.substring(0, cursorPosition);
-    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
-
-    if (lastAtIndex !== -1) {
-      const query = textBeforeCursor.substring(lastAtIndex + 1);
-
-      if (!query.includes(" ")) {
-        setMentionSearch(query);
-        setShowMentions(true);
-        setSelectedIndex(0);
-      } else {
-        setShowMentions(false);
-      }
-    } else {
-      setShowMentions(false);
-    }
-  };
-
-  const insertMention = (mentionedUser) => {
-    const cursorPosition = inputRef.current.selectionStart;
-    const textBeforeCursor = newMessage.substring(0, cursorPosition);
-    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
-    const textAfterCursor = newMessage.substring(cursorPosition);
-
-    const displayName = `@${mentionedUser.name}`;
-
-    setMentionsMap((prev) => ({
-      ...prev,
-      [displayName]: normalizeId(mentionedUser._id)
-    }));
-
-    const updatedMessage =
-      newMessage.substring(0, lastAtIndex) +
-      displayName +
-      " " +
-      textAfterCursor;
-
-    setNewMessage(updatedMessage);
-    setShowMentions(false);
-    inputRef.current.focus();
-  };
-
-  const handleKeyDown = (e) => {
-    if (showMentions) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % filteredSuggestions.length);
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setSelectedIndex(
-          (prev) =>
-            (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length
-        );
-      } else if (e.key === "Enter" || e.key === "Tab") {
-        e.preventDefault();
-        if (filteredSuggestions[selectedIndex]) {
-          insertMention(filteredSuggestions[selectedIndex]);
-        }
-      } else if (e.key === "Escape") {
-        setShowMentions(false);
-      }
-    } else if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+  const suggestionsData = (suggestionData?.data || []).map((u) => ({
+    id: normalizeId(u._id),
+    display: `${u.name},`,
+    ...u
+  }));
 
   const renderMessageContent = (content, isOwn) => {
     if (!content) return null;
@@ -167,12 +92,6 @@ export default function ChatModal({
     return result;
   };
 
-  useEffect(() => {
-    if (data) {
-      setMessages(data?.data ?? []);
-    }
-  }, [data]);
-
   // Scroll to bottom on new message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -191,37 +110,52 @@ export default function ChatModal({
       SOCKET.emit("join:chat", activeClaimId);
     }
 
+    let timeoutId;
+
     const handleNewMessage = (payload) => {
       const payloadClaimId = normalizeId(payload?.claimId);
 
       if (payloadClaimId === activeClaimId) {
-        setMessages((prev) => {
-          // Prevent duplicates
-          const incomingMessage = payload?.message;
-          const incomingId = normalizeId(incomingMessage?._id);
+        dispatch(
+          chatApis.util.updateQueryData(
+            "getChat",
+            forInvoice ? row?.Id : row?._id,
+            (draft) => {
+              const incomingMessage = payload?.message;
 
-          const alreadyExists = prev.some(
-            (m) => normalizeId(m?._id) === incomingId
-          );
+              if (!incomingMessage) return;
+              const incomingId = normalizeId(incomingMessage?._id);
 
-          if (alreadyExists) return prev;
+              if (!draft.data) draft.data = [];
 
-          return [...prev, incomingMessage];
-        });
+              const alreadyExists = draft.data.some(
+                (m) => normalizeId(m?._id) === incomingId
+              );
+
+              if (!alreadyExists) {
+                draft.data.push(incomingMessage);
+              }
+            }
+          )
+        );
       }
 
-      dispatch(claimsApis.util.invalidateTags(["Claims"]));
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        dispatch(claimsApis.util.invalidateTags(["Claims"]));
+      }, 500);
     };
 
     SOCKET.on("chat:message", handleNewMessage);
 
     return () => {
+      if (timeoutId) clearTimeout(timeoutId);
       if (activeClaimId) {
         SOCKET.emit("leave:chat", activeClaimId);
       }
       SOCKET.off("chat:message", handleNewMessage);
     };
-  }, [activeClaimId, dispatch, isOpen]);
+  }, [activeClaimId, dispatch, isOpen, forInvoice, row?.Id, row?._id]);
 
   useEffect(() => {
     if (!isOpen || !data) return;
@@ -259,25 +193,9 @@ export default function ChatModal({
   const sendMessage = async () => {
     if (!newMessage.trim() && !file) return;
 
-    // Convert short-hand mentions (@Name) back to full markdown format (@[Name](ID))
-    let finalMessage = newMessage;
-
-    const sortedTags = Object.keys(mentionsMap).sort(
-      (a, b) => b.length - a.length
-    );
-
-    sortedTags.forEach((tag) => {
-      const name = tag.substring(1);
-      const id = mentionsMap[tag];
-      const escapedTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(escapedTag + "(?![\\w])", "g");
-
-      finalMessage = finalMessage.replace(regex, `@[${name}](${id})`);
-    });
-
     const formData = new FormData();
 
-    if (finalMessage.trim()) formData.append("message", finalMessage);
+    if (newMessage.trim()) formData.append("message", newMessage);
     if (file) formData.append("file", file);
     formData.append("claimId", forInvoice ? row?.Id : row?._id);
     if (user?._id) formData.append("senderId", user?._id);
@@ -345,76 +263,91 @@ export default function ChatModal({
 
         {/* Chat Messages ---------- */}
         <div className="p-4 flex-1 overflow-y-auto space-y-4">
-          {messages.map((msg, idx) => (
-            <div
-              key={msg._id || idx}
-              className={`flex flex-col ${
-                normalizeId(msg.senderId) === normalizeId(user?._id)
-                  ? "items-end"
-                  : "items-start"
-              }`}
-            >
-              <p className="text-[11px] font-semibold text-gray-500 mb-1 px-1">
-                {msg.senderName ||
-                  (normalizeId(msg.senderId) === normalizeId(user?._id)
-                    ? user?.name || "You"
-                    : "User")}
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-6">
+              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                <Users size={28} className="text-blue-500" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-800">
+                No messages yet
+              </h3>
+              <p className="text-xs text-gray-400 mt-1 max-w-[220px]">
+                Start the conversation! Send a message or attach a file below.
               </p>
-
+            </div>
+          ) : (
+            messages.map((msg, idx) => (
               <div
-                className={`p-3 rounded-lg max-w-xs ${
+                key={msg._id || idx}
+                className={`flex flex-col ${
                   normalizeId(msg.senderId) === normalizeId(user?._id)
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-900"
+                    ? "items-end"
+                    : "items-start"
                 }`}
               >
-                {msg.type === "text" && (
-                  <p className="whitespace-pre-wrap break-words">
-                    {renderMessageContent(
-                      msg.content,
-                      normalizeId(msg.senderId) === normalizeId(user?._id)
-                    )}
-                  </p>
-                )}
-
-                {msg.type === "file" && msg.fileData && (
-                  <>
-                    {msg.fileData.format === "jpg" ||
-                    msg.fileData.format === "jpeg" ||
-                    msg.fileData.format === "png" ? (
-                      <img
-                        src={msg.fileData.url}
-                        alt="attachment"
-                        className="max-w-[200px] rounded-md"
-                      />
-                    ) : (
-                      <>
-                        <p>{msg.fileData.filename}</p>
-                        <a
-                          href={msg.fileData.url}
-                          download={msg.fileData.filename}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Download{" "}
-                          {msg.fileData.format?.toUpperCase() || "File"}
-                        </a>
-                      </>
-                    )}
-                  </>
-                )}
-
-                {/* Timestamp inside the bubble */}
-                <p className="text-[10px] mt-1 opacity-70">
-                  {new Date(msg.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })}
+                <p className="text-[11px] font-semibold text-gray-500 mb-1 px-1">
+                  {msg.senderName ||
+                    (normalizeId(msg.senderId) === normalizeId(user?._id)
+                      ? user?.name || "You"
+                      : "User")}
                 </p>
+
+                <div
+                  className={`p-3 rounded-lg max-w-xs ${
+                    normalizeId(msg.senderId) === normalizeId(user?._id)
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-900"
+                  }`}
+                >
+                  {msg.type === "text" && (
+                    <p className="whitespace-pre-wrap break-words">
+                      {renderMessageContent(
+                        msg.content,
+                        normalizeId(msg.senderId) === normalizeId(user?._id)
+                      )}
+                    </p>
+                  )}
+
+                  {msg.type === "file" && msg.fileData && (
+                    <>
+                      {msg.fileData.format === "jpg" ||
+                      msg.fileData.format === "jpeg" ||
+                      msg.fileData.format === "png" ? (
+                        <img
+                          src={msg.fileData.url}
+                          alt="attachment"
+                          className="max-w-[200px] rounded-md cursor-pointer hover:brightness-90 transition-all active:scale-95"
+                          onClick={() => setExpandedImage(msg.fileData.url)}
+                        />
+                      ) : (
+                        <>
+                          <p>{msg.fileData.filename}</p>
+                          <a
+                            href={msg.fileData.url}
+                            download={msg.fileData.filename}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            Download{" "}
+                            {msg.fileData.format?.toUpperCase() || "File"}
+                          </a>
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {/* Timestamp inside the bubble */}
+                  <p className="text-[10px] mt-1 opacity-70">
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
           <div ref={chatEndRef}></div>
         </div>
 
@@ -435,84 +368,167 @@ export default function ChatModal({
           </button>
 
           {file && (
-            <span className="text-xs text-gray-600 truncate max-w-[100px]">
-              {file.name}
-            </span>
+            <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded border">
+              <span
+                className="text-xs text-gray-600 truncate max-w-[100px]"
+                title={file.name}
+              >
+                {file.name}
+              </span>
+              <button
+                onClick={() => {
+                  setFile(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="text-gray-500 hover:text-red-500 flex-shrink-0"
+                title="Remove file"
+              >
+                <MdCancel size={14} />
+              </button>
+            </div>
           )}
 
-          <div className="flex-1 relative">
-            <AnimatePresence>
-              {showMentions && filteredSuggestions.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute bottom-full left-0 w-64 bg-white border rounded-lg shadow-2xl mb-2 overflow-hidden z-50"
-                >
-                  <div className="bg-gray-50 px-3 py-2 border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-                    Suggestions
-                  </div>
-                  <div className="max-h-60 overflow-y-auto">
-                    {filteredSuggestions.map((u, idx) => (
-                      <div
-                        key={u._id}
-                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
-                          idx === selectedIndex
-                            ? "bg-blue-50"
-                            : "hover:bg-gray-50"
-                        }`}
-                        onClick={() => insertMention(u)}
-                      >
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                          {u.isSpecial ? (
-                            <Users size={16} className="text-blue-600" />
-                          ) : u.image?.url ? (
-                            <img
-                              src={u.image.url}
-                              alt=""
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <User size={16} className="text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-800 truncate">
-                            {u.name}
-                          </p>
-                          <p className="text-[10px] text-gray-500 capitalize">
-                            {u.displayRole}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <textarea
-              ref={inputRef}
-              className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none min-h-[40px] max-h-[120px]"
-              placeholder="Type a message... (Use @ to mention, Shift+Enter for new line)"
-              rows={1}
+          <div className="flex-1 relative mentions-wrapper">
+            <MentionsInput
               value={newMessage}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onInput={(e) => {
-                e.target.style.height = "auto";
-                e.target.style.height = e.target.scrollHeight + "px";
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message... (Use @ to mention, Shift+Enter for new line)"
+              style={{
+                control: {
+                  fontSize: 14,
+                  fontWeight: "normal",
+                  fontFamily: "inherit",
+                  lineHeight: "1.5"
+                },
+                highlighter: {
+                  padding: "8px 12px",
+                  border: "1px solid transparent",
+                  boxSizing: "border-box"
+                },
+                input: {
+                  margin: 0,
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "0.25rem",
+                  padding: "8px 12px",
+                  outline: "none",
+                  minHeight: "40px",
+                  maxHeight: "120px",
+                  overflowY: "auto",
+                  boxSizing: "border-box"
+                },
+                suggestions: {
+                  list: {
+                    backgroundColor: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                    fontSize: 14,
+                    maxHeight: "240px",
+                    overflowY: "auto",
+                    bottom: "100%",
+                    position: "absolute",
+                    marginBottom: "8px",
+                    width: "256px",
+                    zIndex: 100
+                  },
+                  item: {
+                    padding: "0",
+                    borderBottom: "1px solid #f3f4f6"
+                  }
+                }
               }}
-            />
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  // react-mentions prevents default when selecting a suggestion.
+                  if (!e.defaultPrevented) {
+                    e.preventDefault();
+                    setTimeout(() => sendMessage(), 0);
+                  }
+                }
+              }}
+            >
+              <Mention
+                trigger="@"
+                markup="@[__display__](__id__)"
+                data={suggestionsData}
+                displayTransform={(id, display) => `@${display}`}
+                appendSpaceOnAdd={true}
+                renderSuggestion={(
+                  suggestion,
+                  search,
+                  highlightedDisplay,
+                  index,
+                  focused
+                ) => (
+                  <div
+                    className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                      focused ? "bg-blue-50" : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {suggestion.isSpecial ? (
+                        <Users size={16} className="text-blue-600" />
+                      ) : suggestion.image?.url ? (
+                        <img
+                          src={suggestion.image.url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User size={16} className="text-gray-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">
+                        {suggestion.name}
+                      </p>
+                      <p className="text-[10px] text-gray-500 capitalize">
+                        {suggestion.displayRole}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                style={{
+                  backgroundColor: "rgba(37, 99, 235, 0.2)",
+                  borderRadius: "4px"
+                }}
+              />
+            </MentionsInput>
           </div>
           <button
-            className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-700 transition-colors font-medium"
+            className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={sendMessage}
+            disabled={isLoading || (!newMessage.trim() && !file)}
           >
-            Send
+            {isLoading ? "Sending..." : "Send"}
           </button>
         </div>
       </div>
+
+      {/* Expanded Image Modal / Lightbox */}
+      {expandedImage && (
+        <div
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/85 backdrop-blur-sm transition-opacity duration-300"
+          onClick={() => setExpandedImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 hover:bg-black/60 p-2.5 rounded-full transition-all duration-200"
+            onClick={() => setExpandedImage(null)}
+          >
+            <MdCancel size={28} />
+          </button>
+          <div
+            className="relative max-w-[90%] max-h-[90%] flex items-center justify-center p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={expandedImage}
+              alt="Expanded preview"
+              className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain animate-in fade-in zoom-in duration-200"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
