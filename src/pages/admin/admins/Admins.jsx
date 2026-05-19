@@ -298,6 +298,7 @@ const Admins = () => {
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
         onSave={handleSaveUser}
+        currentUserRole={user?.role}
       />
       <ConfirmationModal
         isOpen={isDeleteOpen}

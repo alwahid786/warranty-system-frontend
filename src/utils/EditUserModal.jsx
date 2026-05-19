@@ -156,7 +156,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
           </div>
 
           {/* Permission Checkbox */}
-          {currentUserRole !== "user" && (
+          {currentUserRole !== "user" && user?.role === "user" && (
             <div className="flex items-center gap-2 pt-2">
               <input
                 type="checkbox"
