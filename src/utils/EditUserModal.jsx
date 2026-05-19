@@ -84,7 +84,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
           <div>
             <label className="block text-sm font-medium">Phone</label>
             <PhoneInput
-              country={"pk"}
+              country={"us"}
               value={formData.phone}
               onChange={(value) => setFormData({ ...formData, phone: value })}
               inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"

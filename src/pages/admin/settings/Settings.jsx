@@ -204,7 +204,7 @@ const Settings = () => {
               <label className="text-sm text-dark-text">Phone No</label>
               <PhoneInput
                 value={formData.phone}
-                country={"pk"}
+                country={"us"}
                 onChange={(value) => handleChange("phone", value)}
                 disabled={!isEditing}
                 inputClass={`!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white ${

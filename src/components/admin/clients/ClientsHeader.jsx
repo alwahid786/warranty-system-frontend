@@ -260,7 +260,7 @@ const ClientsHeader = () => {
                   Client Phone <span className="text-red-500">*</span>
                 </label>
                 <PhoneInput
-                  country={"pk"}
+                  country={"us"}
                   value={formData.clientPhone}
                   onChange={(value) =>
                     setFormData({ ...formData, clientPhone: value })
@@ -397,7 +397,7 @@ const ClientsHeader = () => {
                 Store Phone
               </label>
               <PhoneInput
-                country={"pk"}
+                country={"us"}
                 value={formData.storePhone}
                 onChange={(value) =>
                   setFormData({ ...formData, storePhone: value })

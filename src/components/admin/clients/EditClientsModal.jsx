@@ -234,7 +234,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   Client Phone
                 </label>
                 <PhoneInput
-                  country={"pk"}
+                  country={"us"}
                   value={formData.clientPhone}
                   onChange={(value) =>
                     setFormData({ ...formData, clientPhone: value })
@@ -329,7 +329,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 Store Phone
               </label>
               <PhoneInput
-                country={"pk"}
+                country={"us"}
                 value={formData.storePhone}
                 onChange={(value) =>
                   setFormData({ ...formData, storePhone: value })

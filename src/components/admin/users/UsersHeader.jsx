@@ -152,7 +152,7 @@ const UsersHeader = ({ role }) => {
           />
           <label>Phone</label>
           <PhoneInput
-            country={"pk"}
+            country={"us"}
             value={formData.phone}
             onChange={(value) => setformData({ ...formData, phone: value })}
             inputClass="!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white"
