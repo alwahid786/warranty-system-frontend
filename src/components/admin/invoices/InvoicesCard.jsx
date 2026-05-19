@@ -56,7 +56,7 @@ export default function InvoiceCard({
   const [updateInvoice] = useUpdateInvoiceMutation();
   const [deleteInvoice] = useDeleteInvoiceMutation();
   const [changeInvoiceStatus] = useChangeInvoiceStatusMutation();
-  const [sendInvoice] = useSendInvoiceMutation();
+  const [sendInvoice, { isLoading: isSending }] = useSendInvoiceMutation();
 
   const onEdit = () => {
     setIsEditOpen(true);
@@ -287,13 +287,18 @@ export default function InvoiceCard({
             ) : (
               <Button
                 text={
-                  invoice?.sentCount === 0 ? "Send Invoice" : "Resend Invoice"
+                  isSending
+                    ? "Sending..."
+                    : invoice?.sentCount === 0
+                      ? "Send Invoice"
+                      : "Resend Invoice"
                 }
-                bg="bg-[#B1B1B1]"
+                bg={isSending ? "bg-gray-400" : "bg-[#B1B1B1]"}
                 color="text-white"
                 cn="flex-1 !py-2 !px-3 text-[14px] !font-normal rounded-md truncate hover:!bg-[#6c757d]"
                 onClick={() => handleSendInvoice(invoice)}
                 badge={invoice?.sentCount}
+                disabled={isSending}
               />
             ))}
         </div>

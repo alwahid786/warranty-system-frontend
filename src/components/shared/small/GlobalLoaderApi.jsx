@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
 // Use SKIP_GLOBAL_LOADER_ENDPOINTS for endpoints where a global loader would be disruptive.
-const SKIP_GLOBAL_LOADER_ENDPOINTS = new Set(["sendMessage"]);
+const SKIP_GLOBAL_LOADER_ENDPOINTS = new Set(["sendMessage", "sendInvoice"]);
 
 const GlobalAPILoader = () => {
   const isAnyTaskBlocking = useSelector((state) => {
