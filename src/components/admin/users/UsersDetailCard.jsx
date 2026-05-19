@@ -26,6 +26,8 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const showDelete = currentUser?.role !== "user";
+
   return (
     <div
       className={`bg-white rounded-2xl shadow-md p-5 relative hover:shadow-lg transition-all duration-300 ${
@@ -106,15 +108,17 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
                 >
                   <HiPencil className="text-gray-600" /> Edit
                 </button>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onDelete(user?._id);
-                  }}
-                  className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-red-600 border-t border-gray-50 transition-colors"
-                >
-                  <HiTrash /> Delete
-                </button>
+                {showDelete && (
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onDelete(user?._id);
+                    }}
+                    className="flex items-center font-bold gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-red-600 border-t border-gray-50 transition-colors"
+                  >
+                    <HiTrash /> Delete
+                  </button>
+                )}
               </div>
             )}
           </div>
