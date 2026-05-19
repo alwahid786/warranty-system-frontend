@@ -115,11 +115,7 @@ const Aside = () => {
         if (child.title === "Invoices") {
           if (["admin", "superadmin"].includes(user?.role)) return true;
           if (user?.role === "client" && user?.businessOwnerView) return true;
-          if (
-            user?.role === "user" &&
-            (user?.canManageInvoices ||
-              ["admin", "superadmin"].includes(user?.owner?.role))
-          )
+          if (user?.role === "user" && user?.canManageInvoices)
             return true;
 
           return false;
