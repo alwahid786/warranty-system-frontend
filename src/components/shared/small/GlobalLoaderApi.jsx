@@ -17,7 +17,7 @@ const GlobalAPILoader = () => {
 
         Object.entries(collection).forEach(([key, q]) => {
           if (q?.status === "pending") {
-            const endpoint = key.split("(")[0];
+            const endpoint = q?.endpointName || key.split("(")[0];
 
             if (SKIP_GLOBAL_LOADER_ENDPOINTS.has(endpoint)) return;
 
