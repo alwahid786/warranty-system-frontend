@@ -85,7 +85,12 @@ const UsersHeader = ({ role }) => {
     e.preventDefault();
 
     try {
-      const res = await addUser(formData).unwrap();
+      const payload = {
+        ...formData,
+        owner: role === "admin" ? user?._id : formData.owner
+      };
+
+      const res = await addUser(payload).unwrap();
 
       toast.success(res.message, { duration: 3000 });
       if (res.success) {
@@ -168,29 +173,30 @@ const UsersHeader = ({ role }) => {
             <option value="Other">Other</option>
           </select>
 
-          {(user?.role === "admin" || user?.role === "superadmin") && (
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
-                Company / Parent Account
-              </label>
-              <select
-                value={formData.owner}
-                onChange={(e) =>
-                  setformData({ ...formData, owner: e.target.value })
-                }
-                className="w-full border px-3 py-2 rounded"
-                required
-              >
-                <option value="">Select Parent Account</option>
-                {parentsData?.data?.map((parent) => (
-                  <option key={parent._id} value={parent._id}>
-                    {parent.companyName || parent.storeName || parent.name} (
-                    {parent.role})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {(user?.role === "admin" || user?.role === "superadmin") &&
+            role !== "admin" && (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Company / Parent Account
+                </label>
+                <select
+                  value={formData.owner}
+                  onChange={(e) =>
+                    setformData({ ...formData, owner: e.target.value })
+                  }
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                >
+                  <option value="">Select Parent Account</option>
+                  {parentsData?.data?.map((parent) => (
+                    <option key={parent._id} value={parent._id}>
+                      {parent.companyName || parent.storeName || parent.name} (
+                      {parent.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
           <label>Password</label>
           <div className="relative">

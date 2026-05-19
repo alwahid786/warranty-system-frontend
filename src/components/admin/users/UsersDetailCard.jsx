@@ -66,13 +66,15 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
                 {user?.activeStatus ? "Active" : "Inactive"}
               </span>
             </div>
-            {user?.owner && (
+            {(user?.companyName || user?.storeName || user?.owner) && (
               <p className="text-[10px] text-blue-500 font-medium">
                 Company Name:{" "}
-                {user.owner.companyName ||
-                  user.owner.storeName ||
-                  user.owner.name ||
-                  user.owner.email ||
+                {user.companyName ||
+                  user.storeName ||
+                  user.owner?.companyName ||
+                  user.owner?.storeName ||
+                  user.owner?.name ||
+                  user.owner?.email ||
                   "Unknown"}
               </p>
             )}

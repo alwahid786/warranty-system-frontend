@@ -241,8 +241,11 @@ const Aside = () => {
                 />
               )}
               {!isMenuOpen && (
-                <h3 className="text-white font-semibold text-lg">
-                  Precision Warranty
+                <h3
+                  className="text-white font-semibold text-lg truncate px-2"
+                  title={user?.companyName || "Precision Warranty"}
+                >
+                  {user?.companyName || "Precision Warranty"}
                 </h3>
               )}
             </div>
