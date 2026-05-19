@@ -158,7 +158,7 @@ const Settings = () => {
               <p className="font-bold text-3xl text-[#1E293B]">
                 {formData.name}
               </p>
-              <p className="text-[18px] text-[#475569]">{formData.email}</p>
+              {/* <p className="text-[18px] text-[#475569]">{formData.email}</p> */}
             </div>
           </div>
         </div>
