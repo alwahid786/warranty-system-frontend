@@ -139,12 +139,15 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
 
         {/* Contact */}
         <div className="space-y-1 text-sm">
-          <p className="flex items-center gap-2 text-gray-700">
-            <MdEmail className="text-gray-500" /> {client.email}
+          <p className="flex items-center gap-2 text-gray-700 min-w-0">
+            <MdEmail className="text-gray-500 shrink-0" />{" "}
+            <span className="truncate" title={client.email}>
+              {client.email}
+            </span>
           </p>
-          <p className="flex items-center gap-2 text-gray-700">
-            <PiPhoneCallFill className="text-gray-500" />{" "}
-            {formatPhoneNumber(client.phone)}
+          <p className="flex items-center gap-2 text-gray-700 min-w-0">
+            <PiPhoneCallFill className="text-gray-500 shrink-0" />{" "}
+            <span className="truncate">{formatPhoneNumber(client.phone)}</span>
           </p>
         </div>
 
@@ -203,7 +206,8 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
               {client.emails.map((em, i) => (
                 <span
                   key={i}
-                  className="bg-white border text-gray-600 text-xs px-2 py-1 rounded-full shadow-sm"
+                  title={em}
+                  className="inline-block max-w-full truncate bg-white border text-gray-600 text-xs px-2.5 py-1 rounded-full shadow-sm"
                 >
                   {em}
                 </span>

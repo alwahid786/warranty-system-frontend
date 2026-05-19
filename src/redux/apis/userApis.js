@@ -73,7 +73,8 @@ const userApis = createApi({
         url: "/getUserStats",
         method: "GET",
         params
-      })
+      }),
+      providesTags: ["Users"]
     }),
 
     // Get Total Users Count Today, This week and this month
@@ -82,7 +83,8 @@ const userApis = createApi({
         url: "/getUserStatsByFilters",
         method: "GET",
         params
-      })
+      }),
+      providesTags: ["Users"]
     }),
 
     // Get Attendance Chart Data
@@ -91,7 +93,8 @@ const userApis = createApi({
         url: "/getUserActivityStats",
         method: "GET",
         params
-      })
+      }),
+      providesTags: ["Users"]
     }),
     getAllParents: builder.query({
       query: () => ({
