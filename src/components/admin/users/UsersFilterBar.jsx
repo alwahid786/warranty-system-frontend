@@ -84,12 +84,14 @@ export default function UsersFilterBar({
                 onChange={(e) => onFilterChange({ owner: e.target.value })}
               >
                 <option value="">All Users</option>
-                {parents.map((parent) => (
-                  <option key={parent._id} value={parent._id}>
-                    {parent.companyName || parent.storeName || parent.name} (
-                    {parent.role})
-                  </option>
-                ))}
+                {parents
+                  .filter((parent) => parent.role !== "client" || (parent.userCount && parent.userCount > 0))
+                  .map((parent) => (
+                    <option key={parent._id} value={parent._id}>
+                      {parent.companyName || parent.storeName || parent.name} (
+                      {parent.role})
+                    </option>
+                  ))}
               </select>
             </div>
           )}

@@ -89,8 +89,15 @@ const Users = () => {
       refetchOnMountOrArgChange: true
     });
 
+  const isAdminSubuser =
+    user?.role === "user" &&
+    ["admin", "superadmin"].includes(user?.owner?.role);
+
   const { data: parentsData } = useGetAllParentsQuery(undefined, {
-    skip: user?.role !== "admin" && user?.role !== "superadmin",
+    skip:
+      user?.role !== "admin" &&
+      user?.role !== "superadmin" &&
+      !isAdminSubuser,
     refetchOnMountOrArgChange: true
   });
 
