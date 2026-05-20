@@ -42,9 +42,10 @@ const InvoicesFilterBar = ({
   const { user } = useSelector((state) => state.auth);
 
   const showCompanyFilter =
-    ["superadmin", "admin"].includes(user?.role) ||
-    (user?.role === "user" &&
-      ["admin", "superadmin"].includes(user?.owner?.role));
+    (["superadmin", "admin"].includes(user?.role) ||
+      (user?.role === "user" &&
+        ["admin", "superadmin"].includes(user?.owner?.role))) &&
+    companies.length > 0;
 
   const handleReset = () => {
     onFilterChange(defaultLocalFilters);
