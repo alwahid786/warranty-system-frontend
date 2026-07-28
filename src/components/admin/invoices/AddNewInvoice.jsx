@@ -292,12 +292,22 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
               </label>
               <input
                 type="number"
+                min="0"
+                step="any"
                 placeholder="Statement Total"
                 className="border rounded p-2"
                 value={formData.statementTotal}
-                onChange={(e) =>
-                  setFormData({ ...formData, statementTotal: e.target.value })
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) >= 0) {
+                    setFormData({ ...formData, statementTotal: value });
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+") {
+                    e.preventDefault();
+                  }
+                }}
               />
             </div>
           </div>
@@ -327,12 +337,22 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
               </select>
               <input
                 type="number"
+                min="0"
+                step="any"
                 placeholder="Amount"
                 className="border rounded p-2"
                 value={adj.amount}
-                onChange={(e) =>
-                  handleAdjustmentChange(idx, "amount", e.target.value)
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || Number(value) >= 0) {
+                    handleAdjustmentChange(idx, "amount", value);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+") {
+                    e.preventDefault();
+                  }
+                }}
               />
               <input
                 type="text"
