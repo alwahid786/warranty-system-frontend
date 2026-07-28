@@ -238,17 +238,38 @@ export default function ChatModal({
         <div className="flex items-center justify-between border-b p-4">
           <div className="flex items-center gap-3">
             <div className="w-[48px] h-[48px] rounded-full overflow-hidden">
-              {row?.customerName ? (
-                <div className="w-full h-full bg-primary flex items-center justify-center text-white font-bold">
-                  {getInitials(row.customerName)}
-                </div>
-              ) : (
-                <img
-                  src="/profile-pic.png"
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
-              )}
+              {(() => {
+                const ownerImage =
+                  row?.owner?.image?.url || row?.owner?.owner?.image?.url;
+
+                const displayName =
+                  row?.owner?.companyName ||
+                  row?.owner?.owner?.companyName ||
+                  row?.owner?.storeName ||
+                  row?.owner?.name;
+
+                if (ownerImage) {
+                  return (
+                    <img
+                      src={ownerImage}
+                      className="w-full h-full object-cover"
+                      alt={displayName || "avatar"}
+                    />
+                  );
+                }
+
+                return displayName ? (
+                  <div className="w-full h-full bg-primary flex items-center justify-center text-white font-bold">
+                    {getInitials(displayName)}
+                  </div>
+                ) : (
+                  <img
+                    src="/profile-pic.png"
+                    className="w-full h-full object-cover"
+                    alt=""
+                  />
+                );
+              })()}
             </div>
           </div>
           <div>
