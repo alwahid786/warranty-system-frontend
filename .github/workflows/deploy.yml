@@ -1,0 +1,61 @@
+name: Deploy Warranty Frontend to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.WARRANTY_SSH_PRIVATE_KEY }}
+
+      - name: 🧪 Test SSH Connection
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "echo ✅ SSH Connected Successfully"
+
+      - name: 📦 Sync project to VPS
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='.git' \
+            --exclude='.env' \
+            ./ ${{ secrets.USER }}@${{ secrets.HOST }}:/root/warranty-system/frontend
+
+      - name: ⚙️ Build and Set Permissions on VPS
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
+            set -e
+
+            echo "📁 Moving to project directory..."
+            cd /root/warranty-system/frontend
+
+            echo "📦 Installing dependencies..."
+            npm install --legacy-peer-deps
+
+            echo "🏗️ Building the production bundle..."
+            npm run build
+
+            echo "🔒 Ensuring Nginx permissions..."
+            chmod +x /root
+            chmod -R o+rx /root/warranty-system
+
+            echo "🔄 Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            echo "✅ Frontend deployment successful!"
+          EOF
