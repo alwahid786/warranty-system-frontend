@@ -33,7 +33,7 @@ const UsersHeader = ({ role, adminCount }) => {
     (user?.role === "admin" ||
       user?.role === "superadmin" ||
       user?.role === "client") &&
-    !(role === "admin" && currentAdminCount > 1);
+    !(role === "admin" && currentAdminCount >= 1);
 
   const [formData, setformData] = useState({
     name: "",
