@@ -48,6 +48,7 @@ jobs:
 
             echo "📦 Installing dependencies..."
             npm install --legacy-peer-deps
+            npm install @fortawesome/fontawesome-svg-core --legacy-peer-deps
 
             echo "🏗️ Building the production bundle..."
             npm run build
