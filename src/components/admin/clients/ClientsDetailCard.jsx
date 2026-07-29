@@ -18,6 +18,7 @@ import { formatPhoneNumber } from "../../../utils/formatters";
 
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAddressExpanded, setIsAddressExpanded] = useState(false);
   const menuRef = useRef(null);
 
   // Close menu when clicking outside
@@ -152,22 +153,61 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         </div>
 
         {/* Address */}
-        {client.address && (
-          <p className="flex items-center gap-2 text-xs text-gray-600 leading-4">
-            <MdLocationOn className="text-gray-500 text-base" />
-            {[
-              client.address.store,
-              client.address.street,
-              client.address.area,
-              client.address.city,
-              client.address.state,
-              client.address.country,
-              client.address.zip
-            ]
-              .filter(Boolean)
-              .join(", ")}
-          </p>
-        )}
+        {(() => {
+          const formattedAddress = client.address
+            ? [
+                client.address.store,
+                client.address.street,
+                client.address.area,
+                client.address.city,
+                client.address.state,
+                client.address.country,
+                client.address.zip
+              ]
+                .filter(Boolean)
+                .join(", ")
+            : "";
+
+          if (!formattedAddress) return null;
+
+          const isLongAddress = formattedAddress.length > 35;
+
+          return (
+            <div className="text-xs text-gray-600 leading-4">
+              <div
+                className={`flex items-start gap-2 ${
+                  isLongAddress ? "cursor-pointer select-none group" : ""
+                }`}
+                onClick={() => {
+                  if (isLongAddress) {
+                    setIsAddressExpanded((prev) => !prev);
+                  }
+                }}
+                title={
+                  isLongAddress
+                    ? isAddressExpanded
+                      ? "Click to collapse address"
+                      : "Click to expand address"
+                    : undefined
+                }
+              >
+                <MdLocationOn className="text-gray-500 text-base shrink-0 mt-0.5" />
+                <p
+                  className={`min-w-0 flex-1 ${
+                    !isAddressExpanded && isLongAddress ? "line-clamp-1" : ""
+                  }`}
+                >
+                  {formattedAddress}
+                </p>
+                {isLongAddress && (
+                  <span className="text-[11px] text-blue-600 hover:text-blue-700 font-medium shrink-0 ml-1 self-start opacity-80 group-hover:opacity-100 transition-opacity">
+                    {isAddressExpanded ? "Less" : "More"}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Owners */}
         <div className="flex flex-wrap justify-between items-center gap-y-2 gap-x-3 text-xs text-gray-700 border-t pt-3">
