@@ -192,18 +192,20 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
                 }
               >
                 <MdLocationOn className="text-gray-500 text-base shrink-0 mt-0.5" />
-                <p
-                  className={`min-w-0 flex-1 ${
-                    !isAddressExpanded && isLongAddress ? "line-clamp-1" : ""
-                  }`}
-                >
-                  {formattedAddress}
-                </p>
-                {isLongAddress && (
-                  <span className="text-[11px] text-blue-600 hover:text-blue-700 font-medium shrink-0 ml-1 self-start opacity-80 group-hover:opacity-100 transition-opacity">
-                    {isAddressExpanded ? "Less" : "More"}
-                  </span>
-                )}
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`break-words ${
+                      !isAddressExpanded && isLongAddress ? "line-clamp-1" : ""
+                    }`}
+                  >
+                    {formattedAddress}
+                  </p>
+                  {isLongAddress && (
+                    <span className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold cursor-pointer block mt-1">
+                      {isAddressExpanded ? "Show less" : "Show more"}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );
