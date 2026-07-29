@@ -42,14 +42,16 @@ const AdminDashboard = () => {
   //   };
 
   return (
-    <section className="bg-[#F8F9FC] w-full h-svh lg:h-screen flex items-center justify-center overflow-hidden">
-      <section className="h-[calc(100vh-16px)] w-full flex gap-3 lg:gap-5 px-2 md:px-4">
+    <section className="bg-[#F8F9FC] w-full h-screen h-[100dvh] flex items-center justify-center overflow-hidden">
+      <section className="h-full w-full flex gap-3 lg:gap-5 p-2 md:px-4 md:py-3">
         <div className="hidden xl:block shrink-0">
           <Aside />
         </div>
-        <div className="flex-1 min-w-0 pr-1 md:pr-3 overflow-hidden flex flex-col">
-          <Header />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden scroll-0 mt-5 rounded-lg">
+        <div className="flex-1 min-w-0 pr-1 md:pr-3 overflow-hidden flex flex-col h-full">
+          <div className="shrink-0">
+            <Header />
+          </div>
+          <main className="flex-1 overflow-y-auto overflow-x-hidden scroll-0 mt-3 lg:mt-5 rounded-lg pb-6 sm:pb-8">
             <Outlet />
           </main>
         </div>

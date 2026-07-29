@@ -78,7 +78,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     id: client?._id,
     name: client?.name,
     companyName: client?.companyName || client?.storeName,
-    percentage: client?.percentage || 0
+    percentage: client?.percentage ?? ""
   }));
 
   // Dealer Change

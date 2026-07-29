@@ -214,7 +214,7 @@ const Users = () => {
   */
 
   return (
-    <div className="p-1 bg-gray-50 min-h-screen">
+    <div className="p-1 bg-gray-50 min-h-full pb-8">
       <UsersHeader role="user" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="">

@@ -131,7 +131,7 @@ const EditInvoiceForm = ({
       id: String(c._id),
       name: c.name || "",
       companyName: c.companyName || c.storeName || "",
-      percentage: c.percentage || 0
+      percentage: c.percentage ?? ""
     }));
 
     // normalize formData.clientId to string for comparison
@@ -164,7 +164,7 @@ const EditInvoiceForm = ({
     id: String(c._id),
     name: c.name || "",
     companyName: c.companyName || c.storeName || "",
-    percentage: c.percentage || 0
+    percentage: c.percentage ?? ""
   }));
 
   const onDealerChange = (e) => {

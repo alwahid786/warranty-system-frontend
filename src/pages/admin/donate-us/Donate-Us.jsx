@@ -118,7 +118,7 @@ export default function DonateDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">
+    <div className="min-h-full bg-gray-50 flex flex-col items-center px-4 py-10 pb-12">
       {/* Top Section */}
       <Motion.div
         initial={{ y: -30, opacity: 0 }}
