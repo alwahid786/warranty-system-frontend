@@ -13,7 +13,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
     adjustments: [{ type: "Charge", amount: "", reason: "" }],
     assignedPercentage: "",
     finalTotal: "",
-    bypass: false,
+    bypass: true,
     explanation: ""
   });
 
@@ -30,7 +30,7 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
       adjustments: [{ type: "Charge", amount: "", reason: "" }],
       assignedPercentage: "",
       finalTotal: "",
-      bypass: false,
+      bypass: true,
       explanation: ""
     });
     setFiles([]);
@@ -84,13 +84,16 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   // Dealer Change
   const onDealerChange = (e) => {
     const selectedClient = clients.find((c) => c.id === e.target.value);
+    const perc = selectedClient?.percentage ?? "";
+    const isEmptyPerc = perc === "" || perc === null || perc === undefined;
 
     setFormData({
       ...formData,
       clientId: selectedClient?.id || "",
       client: selectedClient?.name || "",
       company: "",
-      assignedPercentage: selectedClient?.percentage || ""
+      assignedPercentage: perc,
+      bypass: isEmptyPerc ? true : false
     });
   };
 
@@ -101,6 +104,10 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
 
   // Adjustments handler
   const handleAdjustmentChange = (index, field, value) => {
+    if (field === "amount" && value !== "" && !/^\d*\.?\d*$/.test(value)) {
+      return;
+    }
+
     const newAdjustments = [...formData.adjustments];
 
     newAdjustments[index][field] = value;
@@ -291,21 +298,16 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                 Statement Total <span className="text-red-500">*</span>
               </label>
               <input
-                type="number"
-                min="0"
-                step="any"
+                type="text"
+                inputMode="decimal"
                 placeholder="Statement Total"
                 className="border rounded p-2"
                 value={formData.statementTotal}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) >= 0) {
+
+                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
                     setFormData({ ...formData, statementTotal: value });
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+") {
-                    e.preventDefault();
                   }
                 }}
               />
@@ -336,21 +338,16 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                 <option>Deduction</option>
               </select>
               <input
-                type="number"
-                min="0"
-                step="any"
+                type="text"
+                inputMode="decimal"
                 placeholder="Amount"
                 className="border rounded p-2"
                 value={adj.amount}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value === "" || Number(value) >= 0) {
+
+                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
                     handleAdjustmentChange(idx, "amount", value);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+") {
-                    e.preventDefault();
                   }
                 }}
               />
@@ -393,19 +390,28 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                 {!formData.bypass && <span className="text-red-500">*</span>}
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 placeholder="Assigned Percentage"
                 className={`border rounded p-2 ${
                   formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
                 }`}
                 disabled={formData.bypass}
                 value={formData.assignedPercentage}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    assignedPercentage: e.target.value
-                  })
-                }
+                onChange={(e) => {
+                  const val = e.target.value;
+
+                  if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                    const isEmpty =
+                      val === "" || val === null || val === undefined;
+
+                    setFormData({
+                      ...formData,
+                      assignedPercentage: val,
+                      bypass: isEmpty ? true : formData.bypass
+                    });
+                  }
+                }}
               />
             </div>
             <label className="flex items-center space-x-2 mt-6">

@@ -95,9 +95,7 @@ const Users = () => {
 
   const { data: parentsData } = useGetAllParentsQuery(undefined, {
     skip:
-      user?.role !== "admin" &&
-      user?.role !== "superadmin" &&
-      !isAdminSubuser,
+      user?.role !== "admin" && user?.role !== "superadmin" && !isAdminSubuser,
     refetchOnMountOrArgChange: true
   });
 

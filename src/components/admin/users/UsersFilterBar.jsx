@@ -85,7 +85,11 @@ export default function UsersFilterBar({
               >
                 <option value="">All Users</option>
                 {parents
-                  .filter((parent) => parent.role !== "client" || (parent.userCount && parent.userCount > 0))
+                  .filter(
+                    (parent) =>
+                      parent.role !== "client" ||
+                      (parent.userCount && parent.userCount > 0)
+                  )
                   .map((parent) => (
                     <option key={parent._id} value={parent._id}>
                       {parent.companyName || parent.storeName || parent.name} (

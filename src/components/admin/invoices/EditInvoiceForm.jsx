@@ -47,14 +47,26 @@ const EditInvoiceForm = ({
       statementTotal: invoiceData.statementTotal ?? "",
       adjustments:
         Array.isArray(invoiceData.adjustments) && invoiceData.adjustments.length
-          ? invoiceData.adjustments
+          ? invoiceData.adjustments.map((adj) => ({
+              ...adj,
+              type: /charge|add/i.test(adj.type || "") ? "Charge" : "Deduction",
+              amount:
+                adj.amount !== undefined && adj.amount !== null
+                  ? String(adj.amount).replace(/-/g, "")
+                  : ""
+            }))
           : [{ type: "Charge", amount: "", reason: "" }],
       assignedPercentage: invoiceData.assignedPercentage ?? "",
       finalTotal:
         invoiceData.finalTotal !== undefined && invoiceData.finalTotal !== null
           ? Number(invoiceData.finalTotal).toFixed(2)
           : "",
-      bypass: !!invoiceData.bypassPercentage || !!invoiceData.bypass,
+      bypass:
+        !!invoiceData.bypassPercentage ||
+        !!invoiceData.bypass ||
+        invoiceData.assignedPercentage === "" ||
+        invoiceData.assignedPercentage === null ||
+        invoiceData.assignedPercentage === undefined,
       explanation: invoiceData.freeTextExplanation || ""
     });
 
@@ -157,16 +169,23 @@ const EditInvoiceForm = ({
 
   const onDealerChange = (e) => {
     const selected = clients.find((c) => c.id === e.target.value);
+    const perc = selected?.percentage ?? "";
+    const isEmpty = perc === "" || perc === null || perc === undefined;
 
     setFormData((prev) => ({
       ...prev,
       clientId: e.target.value,
-      assignedPercentage: selected?.percentage || ""
+      assignedPercentage: perc,
+      bypass: isEmpty ? true : false
     }));
     setManualEdit(true);
   };
 
   const handleAdjustmentChange = (index, field, value) => {
+    if (field === "amount" && value !== "" && !/^\d*\.?\d*$/.test(value)) {
+      return;
+    }
+
     const newAdjustments = [...formData.adjustments];
 
     newAdjustments[index][field] = value;
@@ -387,16 +406,21 @@ const EditInvoiceForm = ({
                 Statement Total <span className="text-red-500">*</span>
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 placeholder="Statement Total"
                 className="border rounded p-2"
                 value={formData.statementTotal}
                 onChange={(e) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    statementTotal: e.target.value
-                  }));
-                  setManualEdit(true);
+                  const value = e.target.value;
+
+                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      statementTotal: value
+                    }));
+                    setManualEdit(true);
+                  }
                 }}
               />
             </div>
@@ -414,7 +438,9 @@ const EditInvoiceForm = ({
             >
               <select
                 className="border rounded p-2"
-                value={adj.type === "add" ? "Charge" : "Deduction"}
+                value={
+                  /charge|add/i.test(adj.type || "") ? "Charge" : "Deduction"
+                }
                 onChange={(e) =>
                   handleAdjustmentChange(idx, "type", e.target.value)
                 }
@@ -424,13 +450,18 @@ const EditInvoiceForm = ({
               </select>
 
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 placeholder="Amount"
                 className="border rounded p-2"
                 value={adj.amount}
-                onChange={(e) =>
-                  handleAdjustmentChange(idx, "amount", e.target.value)
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                    handleAdjustmentChange(idx, "amount", value);
+                  }
+                }}
               />
 
               <input
@@ -475,7 +506,8 @@ const EditInvoiceForm = ({
                 {!formData.bypass && <span className="text-red-500">*</span>}
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 placeholder="Assigned Percentage"
                 className={`border rounded p-2 ${
                   formData.bypass ? "bg-gray-300 cursor-not-allowed" : ""
@@ -483,11 +515,19 @@ const EditInvoiceForm = ({
                 disabled={formData.bypass}
                 value={formData.assignedPercentage}
                 onChange={(e) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    assignedPercentage: e.target.value
-                  }));
-                  setManualEdit(true);
+                  const val = e.target.value;
+
+                  if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                    const isEmpty =
+                      val === "" || val === null || val === undefined;
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      assignedPercentage: val,
+                      bypass: isEmpty ? true : prev.bypass
+                    }));
+                    setManualEdit(true);
+                  }
                 }}
               />
             </div>
