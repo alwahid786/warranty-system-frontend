@@ -12,18 +12,28 @@ import {
   useGetTotalUsersCountQuery,
   useGetAttendanceChartDataQuery,
   useGetUsersStatQuery,
-  useGetAllParentsQuery
+  useGetAllParentsQuery,
+  useGetUsersQuery
 } from "../../../redux/apis/userApis";
 
-const UsersHeader = ({ role }) => {
+const UsersHeader = ({ role, adminCount }) => {
   const { user } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const { data: adminUsersData } = useGetUsersQuery(
+    { role: "admin", onlyAdminSubusers: true },
+    { skip: role !== "admin" }
+  );
+
+  const currentAdminCount =
+    adminCount !== undefined ? adminCount : adminUsersData?.data?.length || 0;
+
   const canCreateUsers =
-    user?.role === "admin" ||
-    user?.role === "superadmin" ||
-    user?.role === "client";
+    (user?.role === "admin" ||
+      user?.role === "superadmin" ||
+      user?.role === "client") &&
+    !(role === "admin" && currentAdminCount > 1);
 
   const [formData, setformData] = useState({
     name: "",
