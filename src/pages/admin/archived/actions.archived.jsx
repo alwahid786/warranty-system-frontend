@@ -1,6 +1,6 @@
 import { useState } from "react";
-
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import {
   normalizeId,
@@ -8,6 +8,7 @@ import {
   matchesSearch
 } from "../../../utils/filterUtils";
 import { useGetArchiveClaimsQuery } from "../../../redux/apis/claimsApis";
+import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
 import ClaimsListHeader from "../../../components/admin/actions/ClaimsListHeader";
 import ClaimsDataTable from "../../../components/admin/actions/ClaimsDataTable";
 import ClaimsFilterBar from "../../../components/admin/actions/ClaimsFilterBar";
@@ -20,22 +21,35 @@ const defaultFilters = {
   entryFromDate: "",
   entryToDate: "",
   selectedBrand: null,
-  status: ""
+  status: "",
+  company: ""
 };
 
 const ArchivedActions = () => {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const highlightClaimId = location.state?.highlightClaimId || null;
+
+  const isAdminSide =
+    user?.role === "superadmin" ||
+    user?.role === "admin" ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
+
   const { data } = useGetArchiveClaimsQuery(undefined, {
     refetchOnMountOrArgChange: true
   });
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const highlightClaimId = location.state?.highlightClaimId || null;
+  const { data: clientsData } = useGetClientsQuery(undefined, {
+    skip: !isAdminSide
+  });
 
   const [filters, setFilters] = useState(defaultFilters);
   const [selectedClaims, setSelectedClaims] = useState([]);
 
   const claims = Array.isArray(data) ? data : (data?.data ?? []);
+  const clients = clientsData?.data ?? [];
 
   const handleNotificationOpened = () => {
     if (!highlightClaimId) return;
@@ -48,6 +62,40 @@ const ArchivedActions = () => {
 
     if (highlightClaimId && rowId === normalizeId(highlightClaimId)) {
       return true;
+    }
+
+    // Company filter
+    if (filters.company) {
+      const rowOwnerId = row.owner?._id || row.owner;
+      const rowClientId =
+        row.clientId?._id ||
+        row.clientId ||
+        row.owner?.owner?._id ||
+        row.owner?.owner;
+
+      const ownerComp =
+        row.owner?.companyName ||
+        row.owner?.warrantyCompany ||
+        row.owner?.storeName ||
+        row.owner?.owner?.companyName ||
+        row.owner?.owner?.warrantyCompany ||
+        row.owner?.owner?.storeName ||
+        "";
+
+      const selectedComp = clients.find((c) => c._id === filters.company);
+      const targetId = filters.company;
+      const targetName =
+        selectedComp?.companyName ||
+        selectedComp?.storeName ||
+        selectedComp?.name ||
+        filters.company;
+
+      const isMatch =
+        rowOwnerId === targetId ||
+        rowClientId === targetId ||
+        (ownerComp && ownerComp.toLowerCase() === targetName.toLowerCase());
+
+      if (!isMatch) return false;
     }
 
     // Search filter
@@ -96,6 +144,8 @@ const ArchivedActions = () => {
         <ClaimsFilterBar
           filters={filters}
           onFilterChange={handleFilterChange}
+          companies={clients}
+          showCompanyFilter={isAdminSide}
         />
         <ClaimsDataTable
           data={filteredData}
