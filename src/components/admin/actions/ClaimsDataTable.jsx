@@ -483,26 +483,45 @@ const ClaimsDataTable = ({
         const owner = row.owner;
 
         if (!owner) return <span className="text-xs">Unknown</span>;
-        if (owner.role === "admin")
-          return <span className="text-xs font-semibold">Admin</span>;
+        if (owner.role === "admin") {
+          const adminText = owner.name ? `Admin - (${owner.name})` : "Admin";
+
+          return (
+            <span className="text-xs font-semibold truncate" title={adminText}>
+              {adminText}
+            </span>
+          );
+        }
 
         const parent = owner.owner;
 
-        const displayName =
+        const companyName =
           owner.companyName ||
           owner.warrantyCompany ||
           owner.storeName ||
           parent?.companyName ||
           parent?.warrantyCompany ||
           parent?.storeName ||
-          parent?.name ||
-          owner.name ||
-          "Unknown";
+          "";
 
-        return <span className="text-xs">{displayName}</span>;
+        const userName = owner.name || "";
+
+        let displayName = "Unknown";
+
+        if (companyName && userName) {
+          displayName = `${companyName} - (${userName})`;
+        } else {
+          displayName = companyName || userName || "Unknown";
+        }
+
+        return (
+          <span className="text-xs truncate" title={displayName}>
+            {displayName}
+          </span>
+        );
       },
       sortable: true,
-      width: "129px"
+      minWidth: "160px"
     },
     {
       name: "Error Description",
