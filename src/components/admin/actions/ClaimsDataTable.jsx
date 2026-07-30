@@ -477,6 +477,42 @@ const ClaimsDataTable = ({
       width: "110px"
     },
     {
+      name: "Company",
+      selector: (row) => {
+        const owner = row?.owner;
+        const parent = owner?.owner;
+        return (
+          owner?.companyName ||
+          owner?.warrantyCompany ||
+          owner?.storeName ||
+          parent?.companyName ||
+          parent?.warrantyCompany ||
+          parent?.storeName ||
+          "N/A"
+        );
+      },
+      cell: (row) => {
+        const owner = row?.owner;
+        const parent = owner?.owner;
+        const compName =
+          owner?.companyName ||
+          owner?.warrantyCompany ||
+          owner?.storeName ||
+          parent?.companyName ||
+          parent?.warrantyCompany ||
+          parent?.storeName ||
+          "N/A";
+
+        return (
+          <span className="text-xs font-medium text-dark truncate" title={compName}>
+            {compName}
+          </span>
+        );
+      },
+      sortable: true,
+      minWidth: "140px"
+    },
+    {
       name: "Created By",
       selector: (row) => row.owner,
       cell: (row) => {

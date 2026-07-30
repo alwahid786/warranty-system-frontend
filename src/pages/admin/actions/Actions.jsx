@@ -22,7 +22,8 @@ const defaultFilters = {
   entryFromDate: "",
   entryToDate: "",
   selectedBrand: null,
-  status: ""
+  status: "",
+  company: ""
 };
 
 const Actions = () => {
@@ -41,8 +42,10 @@ const Actions = () => {
   });
 
   const isAdminSide =
-    ["admin", "superadmin"].includes(user?.role) ||
-    ["admin", "superadmin"].includes(user?.owner?.role);
+    user?.role === "superadmin" ||
+    user?.role === "admin" ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
 
   const { data } = useGetClaimsQuery(
     isAdminSide
@@ -74,6 +77,40 @@ const Actions = () => {
       (highlightClaimId && rowId === normalizeId(highlightClaimId))
     ) {
       return true;
+    }
+
+    // Company filter
+    if (filters.company) {
+      const rowOwnerId = row.owner?._id || row.owner;
+      const rowClientId =
+        row.clientId?._id ||
+        row.clientId ||
+        row.owner?.owner?._id ||
+        row.owner?.owner;
+
+      const ownerComp =
+        row.owner?.companyName ||
+        row.owner?.warrantyCompany ||
+        row.owner?.storeName ||
+        row.owner?.owner?.companyName ||
+        row.owner?.owner?.warrantyCompany ||
+        row.owner?.owner?.storeName ||
+        "";
+
+      const selectedComp = clients.find((c) => c._id === filters.company);
+      const targetId = filters.company;
+      const targetName =
+        selectedComp?.companyName ||
+        selectedComp?.storeName ||
+        selectedComp?.name ||
+        filters.company;
+
+      const isMatch =
+        rowOwnerId === targetId ||
+        rowClientId === targetId ||
+        (ownerComp && ownerComp.toLowerCase() === targetName.toLowerCase());
+
+      if (!isMatch) return false;
     }
 
     // Search filter
@@ -130,7 +167,12 @@ const Actions = () => {
           ""
         }
       />
-      <ClaimsFilterBar filters={filters} onFilterChange={handleFilterChange} />
+      <ClaimsFilterBar
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        companies={clients}
+        showCompanyFilter={isAdminSide}
+      />
       <ClaimsDataTable
         data={filteredData}
         selectedClaims={selectedClaims}

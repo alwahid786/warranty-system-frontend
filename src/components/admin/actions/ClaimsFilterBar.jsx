@@ -27,13 +27,27 @@ const defaultFilters = {
   toDate: "",
   entryFromDate: "",
   entryToDate: "",
-  status: ""
+  status: "",
+  company: ""
 };
 
-export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
+export default function ClaimsFilterBar({
+  filters = {},
+  onFilterChange,
+  companies = [],
+  showCompanyFilter = false
+}) {
   const handleReset = () => {
     onFilterChange(defaultFilters);
   };
+
+  const companyOptions = [
+    { id: "", name: "All Companies" },
+    ...companies.map((c) => ({
+      id: c._id || c.id || c.name,
+      name: c.companyName || c.storeName || c.name || "Unknown"
+    }))
+  ];
 
   return (
     <div className="w-full mt-4 flex flex-col gap-4">
@@ -41,7 +55,13 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
       <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
           {/* Advanced Search */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-1">
+          <div
+            className={`${
+              showCompanyFilter
+                ? "lg:col-span-6 xl:col-span-6"
+                : "lg:col-span-7 xl:col-span-8"
+            } flex flex-col gap-1`}
+          >
             <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
               Advanced Search
             </label>
@@ -94,8 +114,39 @@ export default function ClaimsFilterBar({ filters = {}, onFilterChange }) {
             </div>
           </div>
 
+          {/* Company Filter Dropdown */}
+          {showCompanyFilter && (
+            <div className="lg:col-span-3 xl:col-span-3 flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
+                Company
+              </label>
+              <Dropdown
+                title=""
+                options={companyOptions}
+                defaultValue={
+                  companyOptions.find(
+                    (opt) =>
+                      opt.id === filters.company || opt.name === filters.company
+                  ) || companyOptions[0]
+                }
+                onChange={(val) => {
+                  onFilterChange({
+                    company: val?.id === "" ? "" : val?.id || val?.name || ""
+                  });
+                }}
+                width="w-full"
+              />
+            </div>
+          )}
+
           {/* Status Dropdown */}
-          <div className="lg:col-span-5 xl:col-span-4">
+          <div
+            className={`${
+              showCompanyFilter
+                ? "lg:col-span-3 xl:col-span-3"
+                : "lg:col-span-5 xl:col-span-4"
+            }`}
+          >
             <label className="text-[10px] font-bold text-secondary mb-1 block uppercase tracking-widest">
               Status
             </label>
