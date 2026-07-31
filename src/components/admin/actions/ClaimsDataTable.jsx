@@ -481,6 +481,7 @@ const ClaimsDataTable = ({
       selector: (row) => {
         const owner = row?.owner;
         const parent = owner?.owner;
+
         return (
           owner?.companyName ||
           owner?.warrantyCompany ||
@@ -494,6 +495,7 @@ const ClaimsDataTable = ({
       cell: (row) => {
         const owner = row?.owner;
         const parent = owner?.owner;
+
         const compName =
           owner?.companyName ||
           owner?.warrantyCompany ||
@@ -504,7 +506,10 @@ const ClaimsDataTable = ({
           "N/A";
 
         return (
-          <span className="text-xs font-medium text-dark truncate" title={compName}>
+          <span
+            className="text-xs font-medium text-dark truncate"
+            title={compName}
+          >
             {compName}
           </span>
         );
@@ -514,12 +519,72 @@ const ClaimsDataTable = ({
     },
     {
       name: "Created By",
-      selector: (row) => row.owner,
+      selector: (row) => row.createdBy || row.owner,
       cell: (row) => {
+        const creator = row.createdBy;
+
+        // If createdBy is populated (for newly created claims)
+        if (creator) {
+          if (creator.role === "admin" || creator.role === "superadmin") {
+            const adminText = creator.name
+              ? `Admin - (${creator.name})`
+              : "Admin";
+
+            return (
+              <span
+                className="text-xs font-semibold truncate"
+                title={adminText}
+              >
+                {adminText}
+              </span>
+            );
+          }
+
+          if (
+            creator.role === "user" &&
+            (creator.owner?.role === "admin" ||
+              creator.owner?.role === "superadmin")
+          ) {
+            const adminUserText = creator.name
+              ? `Admin - (${creator.name})`
+              : "Admin";
+
+            return (
+              <span
+                className="text-xs font-semibold truncate"
+                title={adminUserText}
+              >
+                {adminUserText}
+              </span>
+            );
+          }
+
+          const storeName =
+            creator.storeName ||
+            creator.companyName ||
+            creator.warrantyCompany ||
+            "";
+
+          const name = creator.name || "";
+
+          const clientText =
+            storeName && name
+              ? `${storeName} - (${name})`
+              : storeName || name || "Client";
+
+          return (
+            <span className="text-xs truncate" title={clientText}>
+              {clientText}
+            </span>
+          );
+        }
+
+        // Fallback for legacy claims where createdBy is not set
         const owner = row.owner;
 
         if (!owner) return <span className="text-xs">Unknown</span>;
-        if (owner.role === "admin") {
+
+        if (owner.role === "admin" || owner.role === "superadmin") {
           const adminText = owner.name ? `Admin - (${owner.name})` : "Admin";
 
           return (
@@ -529,26 +594,15 @@ const ClaimsDataTable = ({
           );
         }
 
-        const parent = owner.owner;
-
         const companyName =
-          owner.companyName ||
-          owner.warrantyCompany ||
-          owner.storeName ||
-          parent?.companyName ||
-          parent?.warrantyCompany ||
-          parent?.storeName ||
-          "";
+          owner.companyName || owner.warrantyCompany || owner.storeName || "";
 
         const userName = owner.name || "";
 
-        let displayName = "Unknown";
-
-        if (companyName && userName) {
-          displayName = `${companyName} - (${userName})`;
-        } else {
-          displayName = companyName || userName || "Unknown";
-        }
+        const displayName =
+          companyName && userName
+            ? `${companyName} - (${userName})`
+            : companyName || userName || "Unknown";
 
         return (
           <span className="text-xs truncate" title={displayName}>
