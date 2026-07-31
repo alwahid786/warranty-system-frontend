@@ -481,6 +481,7 @@ const ClaimsDataTable = ({
       selector: (row) => {
         const owner = row?.owner;
         const parent = owner?.owner;
+
         return (
           owner?.companyName ||
           owner?.warrantyCompany ||
@@ -494,6 +495,7 @@ const ClaimsDataTable = ({
       cell: (row) => {
         const owner = row?.owner;
         const parent = owner?.owner;
+
         const compName =
           owner?.companyName ||
           owner?.warrantyCompany ||
@@ -504,7 +506,10 @@ const ClaimsDataTable = ({
           "N/A";
 
         return (
-          <span className="text-xs font-medium text-dark truncate" title={compName}>
+          <span
+            className="text-xs font-medium text-dark truncate"
+            title={compName}
+          >
             {compName}
           </span>
         );
@@ -514,13 +519,15 @@ const ClaimsDataTable = ({
     },
     {
       name: "Created By",
-      selector: (row) => row.owner,
+      selector: (row) => row.createdBy || row.owner,
       cell: (row) => {
-        const owner = row.owner;
+        const creator = row.createdBy || row.owner;
 
-        if (!owner) return <span className="text-xs">Unknown</span>;
-        if (owner.role === "admin") {
-          const adminText = owner.name ? `Admin - (${owner.name})` : "Admin";
+        if (!creator) return <span className="text-xs">Unknown</span>;
+        if (creator.role === "admin" || creator.role === "superadmin") {
+          const adminText = creator.name
+            ? `Admin - (${creator.name})`
+            : "Admin";
 
           return (
             <span className="text-xs font-semibold truncate" title={adminText}>
@@ -529,18 +536,18 @@ const ClaimsDataTable = ({
           );
         }
 
-        const parent = owner.owner;
+        const parent = creator.owner;
 
         const companyName =
-          owner.companyName ||
-          owner.warrantyCompany ||
-          owner.storeName ||
+          creator.companyName ||
+          creator.warrantyCompany ||
+          creator.storeName ||
           parent?.companyName ||
           parent?.warrantyCompany ||
           parent?.storeName ||
           "";
 
-        const userName = owner.name || "";
+        const userName = creator.name || "";
 
         let displayName = "Unknown";
 
