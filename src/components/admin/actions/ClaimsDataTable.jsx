@@ -547,7 +547,7 @@ const ClaimsDataTable = ({
           parent?.storeName ||
           "";
 
-        const userName = creator.name || "";
+        const userName = parent?.name || creator.name || "";
 
         let displayName = "Unknown";
 
