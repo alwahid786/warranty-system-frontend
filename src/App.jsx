@@ -135,9 +135,18 @@ function App() {
     };
     SOCKET.connect();
 
+    const recentToasts = new Set();
+
     const handleNotification = (data) => {
       // Ignore notifications triggered by the current user
       if (data?.senderId && data.senderId === user?._id) return;
+
+      // Deduplicate toast messages received within 2 seconds
+      const msgKey = `${data?.title}_${data?.message}`;
+
+      if (recentToasts.has(msgKey)) return;
+      recentToasts.add(msgKey);
+      setTimeout(() => recentToasts.delete(msgKey), 2000);
 
       const toastId = data?._id || "notification-update";
 
@@ -146,7 +155,11 @@ function App() {
         duration: 5000
       });
       dispatch(addNotification(data));
-      if (data?.claimId) {
+      if (
+        data?.claimId ||
+        data?.title?.toLowerCase().includes("claim") ||
+        data?.message?.toLowerCase().includes("claim")
+      ) {
         dispatch(claimsApis.util.invalidateTags(["Claims"]));
         dispatch(chatApis.util.invalidateTags(["chat"]));
       }

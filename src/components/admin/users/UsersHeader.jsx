@@ -41,6 +41,7 @@ const UsersHeader = ({ role, adminCount }) => {
     phone: "",
     password: "",
     gender: "",
+    companyName: "",
     canManageInvoices: false,
     role: role || "user",
     owner: ""
@@ -79,6 +80,7 @@ const UsersHeader = ({ role, adminCount }) => {
       phone: "",
       password: "",
       gender: "",
+      companyName: "",
       canManageInvoices: false,
       role: role || "user",
       owner: ""
@@ -182,6 +184,26 @@ const UsersHeader = ({ role, adminCount }) => {
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
+
+          {(user?.role === "superadmin" ||
+            role === "admin" ||
+            formData.role === "admin") && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Company Name
+              </label>
+              <input
+                type="text"
+                value={formData.companyName}
+                onChange={(e) =>
+                  setformData({ ...formData, companyName: e.target.value })
+                }
+                placeholder="Company Name"
+                className="w-full border px-3 py-2 rounded"
+                autoComplete="off"
+              />
+            </div>
+          )}
 
           {(user?.role === "admin" || user?.role === "superadmin") &&
             role !== "admin" && (

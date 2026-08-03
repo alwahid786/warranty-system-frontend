@@ -68,18 +68,25 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
                 {user?.activeStatus ? "Active" : "Inactive"}
               </span>
             </div>
-            {(user?.companyName || user?.storeName || user?.owner) && (
-              <p className="text-[10px] text-blue-500 font-medium">
-                Company Name:{" "}
-                {user.companyName ||
-                  user.storeName ||
-                  user.owner?.companyName ||
-                  user.owner?.storeName ||
-                  user.owner?.name ||
-                  user.owner?.email ||
-                  "Unknown"}
-              </p>
-            )}
+            {(() => {
+              const displayCompany =
+                user?.role === "admin"
+                  ? user?.companyName?.trim() || user?.storeName?.trim() || ""
+                  : user?.companyName?.trim() ||
+                    user?.storeName?.trim() ||
+                    user?.owner?.companyName?.trim() ||
+                    user?.owner?.storeName?.trim() ||
+                    user?.owner?.name?.trim() ||
+                    "";
+
+              if (!displayCompany) return null;
+
+              return (
+                <p className="text-[10px] text-blue-500 font-medium">
+                  Company Name: {displayCompany}
+                </p>
+              );
+            })()}
           </div>
         </div>
 

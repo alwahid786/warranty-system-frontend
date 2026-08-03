@@ -12,6 +12,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
     phone: "",
     password: "",
     gender: "",
+    companyName: "",
     canManageInvoices: false
   });
 
@@ -26,6 +27,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
         phone: user.phone || "",
         password: "",
         gender: user.gender || "",
+        companyName: user.companyName || "",
         canManageInvoices: user.canManageInvoices || false
       });
     }
@@ -109,29 +111,24 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
             </select>
           </div>
 
-          {/* Parent Account (Read-only) - Only for admins/superadmins */}
-          {(currentUserRole === "admin" || currentUserRole === "superadmin") &&
-            user?.owner && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Company / Parent Account
-                </label>
-                <div className="w-full border rounded px-3 py-2 text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
-                  {user.owner.companyName ||
-                  user.owner.storeName ||
-                  user.owner.name ? (
-                    <>
-                      {user.owner.companyName ||
-                        user.owner.storeName ||
-                        user.owner.name}{" "}
-                      ({user.owner.role})
-                    </>
-                  ) : (
-                    "System / No Parent"
-                  )}
-                </div>
-              </div>
-            )}
+          {/* Company Name */}
+          {(currentUserRole === "superadmin" ||
+            user?.role === "admin" ||
+            currentUserRole === "admin") && (
+            <div>
+              <label className="block text-sm font-medium">
+                Company Name
+              </label>
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                placeholder="Enter company name"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+              />
+            </div>
+          )}
 
           {/* Password */}
           <div>

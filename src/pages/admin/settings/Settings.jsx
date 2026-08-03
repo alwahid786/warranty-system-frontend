@@ -60,7 +60,9 @@ const Settings = () => {
         phone: user.phone || "",
         gender: user.gender || "Male",
         companyName:
-          user.inheritedCompanyName || user.companyName || user.storeName || "",
+          user.role === "user"
+            ? user.inheritedCompanyName || ""
+            : user.companyName || user.storeName || "",
         designation: user.designation || ""
       });
       if (user?.image?.url) setImageSrc(user?.image?.url);
@@ -90,7 +92,9 @@ const Settings = () => {
         phone: user.phone || "",
         gender: user.gender || "Male",
         companyName:
-          user.inheritedCompanyName || user.companyName || user.storeName || "",
+          user.role === "user"
+            ? user.inheritedCompanyName || ""
+            : user.companyName || user.storeName || "",
         designation: user.designation || ""
       });
       if (user.image) setImageSrc(user.image.url);
