@@ -82,6 +82,7 @@ const Actions = () => {
     // Company filter
     if (filters.company) {
       const rowOwnerId = row.owner?._id || row.owner;
+
       const rowClientId =
         row.clientId?._id ||
         row.clientId ||
@@ -99,6 +100,7 @@ const Actions = () => {
 
       const selectedComp = clients.find((c) => c._id === filters.company);
       const targetId = filters.company;
+
       const targetName =
         selectedComp?.companyName ||
         selectedComp?.storeName ||

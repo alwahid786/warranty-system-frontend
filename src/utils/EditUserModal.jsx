@@ -116,9 +116,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
             user?.role === "admin" ||
             currentUserRole === "admin") && (
             <div>
-              <label className="block text-sm font-medium">
-                Company Name
-              </label>
+              <label className="block text-sm font-medium">Company Name</label>
               <input
                 type="text"
                 name="companyName"

@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -67,6 +68,7 @@ const ArchivedActions = () => {
     // Company filter
     if (filters.company) {
       const rowOwnerId = row.owner?._id || row.owner;
+
       const rowClientId =
         row.clientId?._id ||
         row.clientId ||
@@ -84,6 +86,7 @@ const ArchivedActions = () => {
 
       const selectedComp = clients.find((c) => c._id === filters.company);
       const targetId = filters.company;
+
       const targetName =
         selectedComp?.companyName ||
         selectedComp?.storeName ||
