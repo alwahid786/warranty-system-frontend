@@ -139,7 +139,7 @@ function App() {
 
     const handleNotification = (data) => {
       // Ignore notifications triggered by the current user
-      if (data?.senderId && data.senderId === user?._id) return;
+      if (data?.senderId && String(data.senderId) === String(user?._id)) return;
 
       // Deduplicate toast messages received within 2 seconds
       const msgKey = `${data?.title}_${data?.message}`;
