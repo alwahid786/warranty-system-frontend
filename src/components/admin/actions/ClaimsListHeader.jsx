@@ -36,7 +36,11 @@ const ClaimsListHeader = ({
     });
     if (showImportExport) {
       try {
-        await addArchiveClaims(selectedClaimsIds).unwrap();
+        const res = await addArchiveClaims(selectedClaimsIds).unwrap();
+
+        toast.success(res?.message || "Claims archived successfully", {
+          duration: 3000
+        });
         setSelectedClaims([]);
       } catch (err) {
         toast.error(
@@ -46,7 +50,11 @@ const ClaimsListHeader = ({
       }
     } else {
       try {
-        await removeArchiveClaims(selectedClaimsIds).unwrap();
+        const res = await removeArchiveClaims(selectedClaimsIds).unwrap();
+
+        toast.success(res?.message || "Claims unarchived successfully", {
+          duration: 3000
+        });
         setSelectedClaims([]);
       } catch (err) {
         toast.error(

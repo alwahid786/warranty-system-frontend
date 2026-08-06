@@ -33,9 +33,17 @@ const InvoicesListHeader = ({
     e.preventDefault();
     try {
       if (showImportExport) {
-        await addArchiveInvoices(selectedIds).unwrap();
+        const res = await addArchiveInvoices(selectedIds).unwrap();
+
+        toast.success(res?.message || "Invoices archived successfully", {
+          duration: 3000
+        });
       } else {
-        await removeArchiveInvoices(selectedIds).unwrap();
+        const res = await removeArchiveInvoices(selectedIds).unwrap();
+
+        toast.success(res?.message || "Invoices unarchived successfully", {
+          duration: 3000
+        });
       }
 
       setSelectedIds([]);
