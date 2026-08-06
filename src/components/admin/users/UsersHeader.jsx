@@ -185,9 +185,7 @@ const UsersHeader = ({ role, adminCount }) => {
             <option value="Other">Other</option>
           </select>
 
-          {(user?.role === "superadmin" ||
-            role === "admin" ||
-            formData.role === "admin") && (
+          {(role === "admin" || formData.role === "admin") && (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">
                 Company Name

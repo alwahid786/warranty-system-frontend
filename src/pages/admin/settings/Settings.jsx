@@ -82,7 +82,7 @@ const Settings = () => {
         companyName:
           user.role === "user"
             ? user.inheritedCompanyName || ""
-            : user.companyName || user.storeName || "",
+            : user.companyName || "",
         designation: user.designation || "",
         dealerId: user.dealerId || "",
         storeName: user.storeName || user.address?.store || "",
@@ -148,7 +148,7 @@ const Settings = () => {
         companyName:
           user.role === "user"
             ? user.inheritedCompanyName || ""
-            : user.companyName || user.storeName || "",
+            : user.companyName || "",
         designation: user.designation || "",
         dealerId: user.dealerId || "",
         storeName: user.storeName || user.address?.store || "",

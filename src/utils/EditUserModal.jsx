@@ -112,9 +112,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
           </div>
 
           {/* Company Name */}
-          {(currentUserRole === "superadmin" ||
-            user?.role === "admin" ||
-            currentUserRole === "admin") && (
+          {(user?.role === "admin" || user?.role === "superadmin") && (
             <div>
               <label className="block text-sm font-medium">Company Name</label>
               <input
