@@ -9,11 +9,19 @@ import {
 import NotificationItem from "./NotificationItem";
 import { markAllNotificationsRead } from "../../../redux/slices/notificationsSlice";
 
-const NotificationList = ({ groupedNotifications = {} }) => {
+const NotificationList = ({
+  groupedNotifications = {},
+  page = 1,
+  limit = 15
+}) => {
   const [readAllNotifications, { isLoading }] =
     useReadAllNotificationsMutation();
 
-  const { refetch: notificationsRefetch } = useGetNotificationsQuery();
+  const { refetch: notificationsRefetch } = useGetNotificationsQuery({
+    page,
+    limit
+  });
+
   const dispatch = useDispatch();
 
   const hasUnread = Object.values(groupedNotifications || {}).some((items) =>

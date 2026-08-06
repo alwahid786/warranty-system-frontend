@@ -13,10 +13,24 @@ const notificationsApis = createApi({
   endpoints: (builder) => ({
     // Get Notifications
     getNotifications: builder.query({
-      query: () => ({
-        url: `/getNotifications`,
-        method: "GET"
-      }),
+      query: (params) => {
+        let url = `/getNotifications`;
+
+        if (params && typeof params === "object") {
+          const queryParams = new URLSearchParams();
+
+          if (params.page) queryParams.append("page", params.page);
+          if (params.limit) queryParams.append("limit", params.limit);
+          const queryString = queryParams.toString();
+
+          if (queryString) url += `?${queryString}`;
+        }
+
+        return {
+          url,
+          method: "GET"
+        };
+      },
       providesTags: ["notifications"]
     }),
 

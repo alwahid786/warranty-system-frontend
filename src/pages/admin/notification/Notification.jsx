@@ -1,7 +1,10 @@
+import React, { useState } from "react";
+
 import { useSelector } from "react-redux";
 
 import NotificationList from "../../../components/admin/notification/NotificationList";
 import { useGetNotificationsQuery } from "../../../redux/apis/notificationsApis";
+import Pagination from "../../../components/admin/invoices/InvoicesCardPagination";
 
 const dedupeNotifications = (...collections) => {
   const map = new Map();
@@ -20,14 +23,22 @@ const dedupeNotifications = (...collections) => {
 };
 
 const Notification = () => {
-  const { data, isLoading, isFetching } = useGetNotificationsQuery();
+  const [page, setPage] = useState(1);
+  const limit = 15;
+
+  const { data, isLoading, isFetching } = useGetNotificationsQuery({
+    page,
+    limit
+  });
+
   const notificationsApp = useSelector((state) => state.notifications.items);
 
   const notifications = dedupeNotifications(
     data?.data || [],
-    notificationsApp || []
+    page === 1 ? notificationsApp || [] : []
   );
 
+  const totalPages = data?.totalPages || 1;
   const grouped = groupByDate(notifications);
 
   return (
@@ -37,7 +48,22 @@ const Notification = () => {
           <p className="text-sm text-gray-500">Loading notifications...</p>
         </div>
       )}
-      {!isLoading && <NotificationList groupedNotifications={grouped} />}
+      {!isLoading && (
+        <>
+          <NotificationList
+            groupedNotifications={grouped}
+            page={page}
+            limit={limit}
+          />
+          {totalPages > 1 && (
+            <Pagination
+              current={page}
+              total={totalPages}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };
