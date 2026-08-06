@@ -49,7 +49,7 @@ const Settings = () => {
     email: "",
     phone: "",
     password: "",
-    gender: "Male",
+    gender: "",
     companyName: "",
     designation: "",
     dealerId: "",
@@ -78,7 +78,7 @@ const Settings = () => {
         email: user.email || "",
         phone: user.phone || "",
         password: "",
-        gender: user.gender || "Male",
+        gender: user.gender || "",
         companyName:
           user.role === "user"
             ? user.inheritedCompanyName || ""
@@ -144,7 +144,7 @@ const Settings = () => {
         email: user.email || "",
         phone: user.phone || "",
         password: "",
-        gender: user.gender || "Male",
+        gender: user.gender || "",
         companyName:
           user.role === "user"
             ? user.inheritedCompanyName || ""
@@ -339,12 +339,18 @@ const Settings = () => {
                 </label>
                 <Dropdown
                   options={[
+                    { id: 0, name: "Select Gender" },
                     { id: 1, name: "Male" },
                     { id: 2, name: "Female" },
                     { id: 3, name: "Other" }
                   ]}
-                  defaultValue={{ name: formData.gender }}
-                  onChange={(opt) => handleChange("gender", opt.name)}
+                  defaultValue={{ name: formData.gender || "Select Gender" }}
+                  onChange={(opt) =>
+                    handleChange(
+                      "gender",
+                      opt.name === "Select Gender" ? "" : opt.name
+                    )
+                  }
                   className="!py-3.5"
                   width="w-full"
                   disabled={!isEditing}
