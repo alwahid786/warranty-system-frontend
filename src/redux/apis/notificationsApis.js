@@ -59,6 +59,15 @@ const notificationsApis = createApi({
         method: "PUT"
       }),
       invalidatesTags: ["notifications"]
+    }),
+
+    // Clear All Notifications
+    clearAllNotifications: builder.mutation({
+      query: () => ({
+        url: `/clearAllNotifications`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ["notifications"]
     })
   })
 });
@@ -67,7 +76,8 @@ export const {
   useGetNotificationsQuery,
   useDeleteNotificationMutation,
   useReadNotificationMutation,
-  useReadAllNotificationsMutation
+  useReadAllNotificationsMutation,
+  useClearAllNotificationsMutation
 } = notificationsApis;
 
 export default notificationsApis;

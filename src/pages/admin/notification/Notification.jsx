@@ -24,7 +24,7 @@ const dedupeNotifications = (...collections) => {
 
 const Notification = () => {
   const [page, setPage] = useState(1);
-  const limit = 15;
+  const [limit, setLimit] = useState(10);
 
   const { data, isLoading, isFetching } = useGetNotificationsQuery({
     page,
@@ -41,6 +41,11 @@ const Notification = () => {
   const totalPages = data?.totalPages || 1;
   const grouped = groupByDate(notifications);
 
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
+
   return (
     <div className="space-y-6">
       {(isLoading || (isFetching && notifications.length === 0)) && (
@@ -55,13 +60,14 @@ const Notification = () => {
             page={page}
             limit={limit}
           />
-          {totalPages > 1 && (
-            <Pagination
-              current={page}
-              total={totalPages}
-              onPageChange={(newPage) => setPage(newPage)}
-            />
-          )}
+          <Pagination
+            current={page}
+            total={totalPages}
+            onPageChange={(newPage) => setPage(newPage)}
+            limit={limit}
+            onLimitChange={handleLimitChange}
+            limitOptions={[10, 15, 25, 50, 100]}
+          />
         </>
       )}
     </div>
