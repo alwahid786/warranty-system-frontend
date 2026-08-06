@@ -39,6 +39,16 @@ export default function Dropdown({
     onChange?.(option); // Send full object
   };
 
+  const getLabel = (val) => {
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "object" && val.name) return val.name;
+
+    return "";
+  };
+
+  const displayLabel = getLabel(selected) || getLabel(defaultValue) || "Select";
+
   return (
     <div
       className={`relative inline-block text-sm md:text-base ${width ? width : "w-64"}`}
@@ -62,10 +72,7 @@ export default function Dropdown({
   `}
       >
         <span className="text-sm text-nowrap overflow-hidden">
-          {title}{" "}
-          <span className="font-semibold">
-            {selected?.name || defaultValue || "Select"}
-          </span>
+          {title} <span className="font-semibold">{displayLabel}</span>
         </span>
         <FaAngleDown
           className={`text-sm  transition-transform duration-200 
@@ -85,19 +92,26 @@ export default function Dropdown({
             max-h-60 overflow-auto
           "
         >
-          {options?.map((opt) => (
-            <li
-              key={opt.id}
-              onClick={() => !disabled && handleSelect(opt)}
-              className={`
-                px-4 py-2 cursor-pointer text-xs md:text-sm text-[#09090B]
-                hover:bg-gray-100 }
-                ${selected?.id === opt.id ? "bg-gray-100 font-medium" : ""}
-              `}
-            >
-              {opt.name}
-            </li>
-          ))}
+          {options?.map((opt) => {
+            const isSelected =
+              selected?.id !== undefined
+                ? selected?.id === opt.id
+                : getLabel(selected) === opt.name;
+
+            return (
+              <li
+                key={opt.id}
+                onClick={() => !disabled && handleSelect(opt)}
+                className={`
+                  px-4 py-2 cursor-pointer text-xs md:text-sm text-[#09090B]
+                  hover:bg-gray-100
+                  ${isSelected ? "bg-gray-100 font-medium" : ""}
+                `}
+              >
+                {opt.name}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
