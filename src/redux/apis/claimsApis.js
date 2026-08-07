@@ -33,8 +33,11 @@ const claimsApis = createApi({
 
     // export Claims
     exportClaims: builder.query({
-      query: () => ({
-        url: "/exportClaims",
+      query: (claimIds) => ({
+        url:
+          Array.isArray(claimIds) && claimIds.length > 0
+            ? `/exportClaims?claimIds=${claimIds.join(",")}`
+            : "/exportClaims",
         method: "GET",
         responseHandler: (res) => res.blob()
       }),

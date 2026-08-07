@@ -168,6 +168,7 @@ const Actions = () => {
           selectedClient?.name ||
           ""
         }
+        clients={clients}
       />
       <ClaimsFilterBar
         filters={filters}
