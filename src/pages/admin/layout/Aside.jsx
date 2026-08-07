@@ -175,9 +175,13 @@ const Aside = () => {
 
     if (restrictedPages.includes(page.title)) {
       if (["admin", "superadmin"].includes(user?.role)) return true;
+      if (
+        page.title === "Archived" &&
+        (user?.role === "user" || user?.role === "client")
+      )
+        return true;
       if (user?.role === "client" && user?.businessOwnerView) return true;
       if (user?.role === "user" && user?.canManageInvoices) return true;
-      if (page.title === "Archived" && user?.role === "user") return true;
 
       return false;
     }

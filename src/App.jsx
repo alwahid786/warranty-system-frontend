@@ -330,7 +330,7 @@ function App() {
                     allowedRoles={
                       ["admin", "superadmin"].includes(user?.role)
                         ? ["admin", "superadmin"]
-                        : user?.role === "client" && user?.businessOwnerView
+                        : user?.role === "client"
                           ? ["client"]
                           : user?.role === "user"
                             ? ["user"]
@@ -350,7 +350,7 @@ function App() {
                     allowedRoles={
                       ["admin", "superadmin"].includes(user?.role)
                         ? ["admin", "superadmin"]
-                        : user?.role === "client" && user?.businessOwnerView
+                        : user?.role === "client"
                           ? ["client"]
                           : user?.role === "user"
                             ? ["user"]
