@@ -507,10 +507,12 @@ const ClientsHeader = () => {
             <div>
               <label className="block text-sm font-medium mb-1">
                 Add Percentage (%)
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={formData.percentage}
+                required
                 onChange={(e) => {
                   let value = e.target.value;
 

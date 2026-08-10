@@ -59,7 +59,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
         accountOwner: client.accountOwner || "",
         businessOwner: client.businessOwner || "",
         businessOwnerView: client.businessOwnerView || false,
-        percentage: client.percentage || ""
+        percentage: client.percentage ?? ""
       });
     }
   }, [client]);
@@ -443,10 +443,12 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
             <div>
               <label className="block text-sm font-medium mb-1">
                 Add Percentage (%)
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={formData.percentage}
+                required
                 onChange={(e) => {
                   let value = e.target.value;
 
