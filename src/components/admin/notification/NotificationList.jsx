@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import toast from "react-hot-toast";
 import { CheckCheck, Trash2 } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -9,6 +11,7 @@ import {
 } from "../../../redux/apis/notificationsApis";
 import NotificationItem from "./NotificationItem";
 import { markAllNotificationsRead } from "../../../redux/slices/notificationsSlice";
+import ConfirmationModal from "../../../utils/ConfirmationModal";
 
 const NotificationList = ({
   groupedNotifications = {},
@@ -27,6 +30,8 @@ const NotificationList = ({
   });
 
   const dispatch = useDispatch();
+
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
 
   const hasNotifications = Object.keys(groupedNotifications || {}).length > 0;
 
@@ -85,7 +90,7 @@ const NotificationList = ({
           )}
           {hasNotifications && (
             <button
-              onClick={handleClearAll}
+              onClick={() => setIsClearModalOpen(true)}
               disabled={isReadingAll || isClearingAll}
               className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50 cursor-pointer"
               title="Clear all notifications"
@@ -112,6 +117,20 @@ const NotificationList = ({
           </div>
         </div>
       ))}
+      <ConfirmationModal
+        isOpen={isClearModalOpen}
+        onClose={() => setIsClearModalOpen(false)}
+        onSave={handleClearAll}
+        data={
+          <>
+            Are you sure you want to clear all notifications?
+            <br />
+            <span className="text-sm font-normal text-gray-500 block mt-1">
+              This action cannot be undone.
+            </span>
+          </>
+        }
+      />
     </div>
   );
 };

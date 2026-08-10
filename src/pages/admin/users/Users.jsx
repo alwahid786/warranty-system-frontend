@@ -321,7 +321,15 @@ const Users = () => {
         onClose={() => setIsDeleteOpen(false)}
         onSave={handleOnDelete}
         id={deleteId}
-        data={"Are you sure you want to delete this user?"}
+        data={
+          <>
+            Are you sure you want to delete this user?
+            <br />
+            <span className="text-sm font-normal text-gray-500 block mt-1">
+              This action cannot be undone.
+            </span>
+          </>
+        }
       />
     </div>
   );

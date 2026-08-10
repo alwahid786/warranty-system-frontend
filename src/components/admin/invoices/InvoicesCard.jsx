@@ -324,7 +324,15 @@ export default function InvoiceCard({
           isOpen={isDeleteOpen}
           onClose={() => setIsDeleteOpen(false)}
           onSave={handleDeleteInvoice}
-          data="Are you sure you want to delete this invoice?"
+          data={
+            <>
+              Are you sure you want to delete this invoice?
+              <br />
+              <span className="text-sm font-normal text-gray-500 block mt-1">
+                This action cannot be undone.
+              </span>
+            </>
+          }
           id={invoice._id}
         />
       )}

@@ -288,7 +288,15 @@ const Clients = () => {
         onClose={() => setIsDeleteOpen(false)}
         onSave={handleOnDelete}
         id={deleteId}
-        data={"Are you sure you want to delete this client?"}
+        data={
+          <>
+            Are you sure you want to delete this client?
+            <br />
+            <span className="text-sm font-normal text-gray-500 block mt-1">
+              This action cannot be undone.
+            </span>
+          </>
+        }
       />
     </div>
   );

@@ -873,7 +873,15 @@ const ClaimsDataTable = ({
           isOpen={isDeleteOpen}
           onClose={handleDeleteClose}
           onSave={handleDeleteClaim}
-          data="Are you sure you want to delete this claim?"
+          data={
+            <>
+              Are you sure you want to delete this claim?
+              <br />
+              <span className="text-sm font-normal text-gray-500 block mt-1">
+                This action cannot be undone.
+              </span>
+            </>
+          }
           id={deleteClaimId}
         />
       )}
@@ -882,7 +890,16 @@ const ClaimsDataTable = ({
           isOpen={isBulkDeleteOpen}
           onClose={handleBulkDeleteClose}
           onSave={handleBulkDelete}
-          data={`Are you sure you want to delete ${selectedClaims?.length} selected claims? This action cannot be undone.`}
+          data={
+            <>
+              Are you sure you want to delete {selectedClaims?.length} selected
+              claims?
+              <br />
+              <span className="text-sm font-normal text-gray-500 block mt-1">
+                This action cannot be undone.
+              </span>
+            </>
+          }
         />
       )}
     </div>
