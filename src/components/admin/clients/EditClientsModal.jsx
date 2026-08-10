@@ -122,6 +122,10 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       return toast.error("City and Zip Code are required in address");
     }
 
+    if (!formData.percentage) {
+      return toast.error("Percentage is required");
+    }
+
     if (formData.percentage && Number(formData.percentage) > 100) {
       return toast.error("Percentage cannot exceed 100%");
     }
@@ -442,8 +446,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
             </h3>
             <div>
               <label className="block text-sm font-medium mb-1">
-                Add Percentage (%)
-                <span className="text-red-500">*</span>
+                Add Percentage (%) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
