@@ -15,6 +15,10 @@ import { useUpdateMyProfileMutation } from "../../../redux/apis/authApis";
 import { userExist } from "../../../redux/slices/authSlice";
 import Loader from "../../../components/shared/small/Loader";
 import { getInitials } from "../../../utils/getInitials";
+import {
+  validateImage,
+  IMAGE_ACCEPT_TYPES
+} from "../../../utils/imageValidator";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
@@ -108,12 +112,35 @@ const Settings = () => {
   }, [user]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
 
     if (file) {
-      setSelectedFile(file);
-      setImageSrc(URL.createObjectURL(file));
+      const { isValid, previewUrl } = validateImage(file);
+
+      if (isValid) {
+        setSelectedFile(file);
+        setImageSrc(previewUrl);
+      }
     }
+    e.target.value = "";
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+
+    if (file) {
+      const { isValid, previewUrl } = validateImage(file);
+
+      if (isValid) {
+        setSelectedFile(file);
+        setImageSrc(previewUrl);
+      }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   const onImageInputClick = () => imageInputRef.current.click();
@@ -392,6 +419,8 @@ const Settings = () => {
                   <div className="col-span-12 md:col-span-8">
                     <div
                       onClick={onImageInputClick}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
                       className="mt-2 flex h-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 hover:border-[#043655]"
                     >
                       <div className="bg-[#EEF2FF] rounded-full flex items-center justify-center h-10 w-10">
@@ -409,6 +438,7 @@ const Settings = () => {
                       <input
                         onChange={handleImageChange}
                         type="file"
+                        accept={IMAGE_ACCEPT_TYPES}
                         className="hidden"
                         ref={imageInputRef}
                       />
