@@ -269,7 +269,7 @@ const Aside = () => {
             </div>
           </div>
           <div
-            className={`cursor-pointer md:hidden flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] bg-none hover:bg-white ${
+            className={`mt-3 cursor-pointer md:hidden flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] bg-none hover:bg-white ${
               isMenuOpen ? "gap-0 justify-center" : "gap-2"
             } `}
           >
