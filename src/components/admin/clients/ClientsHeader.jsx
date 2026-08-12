@@ -414,7 +414,8 @@ const ClientsHeader = () => {
             {/* Emails Dynamic */}
             <div className="mt-4">
               <label className="block text-sm font-medium mb-2">
-                Who will receive the notifications
+                Who will receive the notifications{" "}
+                <span className="text-red-500">*</span>
               </label>
               {formData.emails.map((email, index) => (
                 <div key={index} className="flex items-center gap-2 mb-2">
@@ -423,6 +424,7 @@ const ClientsHeader = () => {
                     value={email}
                     onChange={(e) => handleEmailChange(index, e.target.value)}
                     placeholder="Enter email"
+                    required
                     className="w-full border px-3 py-2 rounded"
                   />
                   {formData.emails.length > 1 && (
