@@ -383,6 +383,21 @@ const Settings = () => {
                   disabled={!isEditing}
                 />
               </div>
+              {/* Company Name */}
+              <div className="col-span-2 md:col-span-1">
+                <Input
+                  className={`bg-white border ${
+                    (!isEditing || !canEditCompanyName) && "cursor-not-allowed"
+                  }`}
+                  label="Company Name"
+                  value={formData.companyName}
+                  readOnly={!isEditing || !canEditCompanyName}
+                  onChange={(e) =>
+                    canEditCompanyName &&
+                    handleChange("companyName", e.target.value)
+                  }
+                />
+              </div>
 
               {/* Designation */}
               <div className="col-span-2 md:col-span-1">

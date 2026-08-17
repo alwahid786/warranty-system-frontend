@@ -71,11 +71,11 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
             {(() => {
               const displayCompany =
                 user?.role === "admin"
-                  ? user?.companyName?.trim() || user?.storeName?.trim() || ""
-                  : user?.companyName?.trim() ||
-                    user?.storeName?.trim() ||
-                    user?.owner?.companyName?.trim() ||
+                  ? user?.companyName?.trim() || ""
+                  : user?.owner?.companyName?.trim() ||
                     user?.owner?.storeName?.trim() ||
+                    user?.companyName?.trim() ||
+                    user?.storeName?.trim() ||
                     user?.owner?.name?.trim() ||
                     "";
 
