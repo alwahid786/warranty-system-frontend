@@ -174,7 +174,7 @@ export default function ClaimsFilterBar({
       <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
           {/* RO Date Range */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-2">
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From RO Date
@@ -200,7 +200,7 @@ export default function ClaimsFilterBar({
           </div>
 
           {/* Entry Date Range */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-2">
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From Entry Date
