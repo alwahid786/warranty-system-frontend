@@ -102,7 +102,7 @@ export default function UsersFilterBar({
 
           {/* Date Range Group */}
           <div
-            className={`${parents.length > 0 ? "lg:col-span-4" : "lg:col-span-6"} grid grid-cols-2 gap-2`}
+            className={`${parents.length > 0 ? "lg:col-span-4" : "lg:col-span-6"} grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2`}
           >
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">

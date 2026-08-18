@@ -114,14 +114,14 @@ const InvoicesFilterBar = ({
           </div>
 
           {/* Dates */}
-          <div className="lg:col-span-6 grid grid-cols-2 gap-4">
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From Invoice Date
               </label>
               <input
                 type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2 text-sm w-full text-gray-600"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full text-gray-600 focus:border-primary focus:ring-1 focus:ring-primary/20"
                 value={filters.fromDate}
                 onChange={(e) => onFilterChange({ fromDate: e.target.value })}
               />
@@ -132,7 +132,7 @@ const InvoicesFilterBar = ({
               </label>
               <input
                 type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2 text-sm w-full text-gray-600"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full text-gray-600 focus:border-primary focus:ring-1 focus:ring-primary/20"
                 value={filters.toDate}
                 onChange={(e) => onFilterChange({ toDate: e.target.value })}
               />
