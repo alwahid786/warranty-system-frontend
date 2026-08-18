@@ -1,7 +1,6 @@
-// import { invoices as allInvoices } from '../../../data/data';
-// import InvoiceCard from "../../../components/admin/invoices/InvoicesCard";
 import { useState } from "react";
 
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import InvoicesGrid from "../../../components/admin/invoices/InvoicesGrid";
@@ -26,6 +25,13 @@ const defaultFilters = {
 };
 
 const ArchivedInvoices = () => {
+  const { user } = useSelector((state) => state.auth);
+
+  const isAdminSide =
+    ["superadmin", "admin"].includes(user?.role) ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
+
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
@@ -47,7 +53,11 @@ const ArchivedInvoices = () => {
     refetchOnMountOrArgChange: true
   });
 
-  const allInvoices = Array.isArray(data) ? data : (data?.data ?? []);
+  const rawInvoices = Array.isArray(data) ? data : (data?.data ?? []);
+
+  const allInvoices = rawInvoices.filter(
+    (inv) => isAdminSide || inv.status !== "draft"
+  );
 
   const companies = Array.from(
     new Set(allInvoices.map((inv) => inv.warrantyCompany).filter(Boolean))

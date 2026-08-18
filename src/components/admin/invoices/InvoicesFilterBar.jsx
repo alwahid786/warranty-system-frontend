@@ -41,11 +41,12 @@ const InvoicesFilterBar = ({
 }) => {
   const { user } = useSelector((state) => state.auth);
 
-  const showCompanyFilter =
-    (["superadmin", "admin"].includes(user?.role) ||
-      (user?.role === "user" &&
-        ["admin", "superadmin"].includes(user?.owner?.role))) &&
-    companies.length > 0;
+  const isAdminSide =
+    ["superadmin", "admin"].includes(user?.role) ||
+    (user?.role === "user" &&
+      ["admin", "superadmin"].includes(user?.owner?.role));
+
+  const showCompanyFilter = isAdminSide && companies.length > 0;
 
   const handleReset = () => {
     onFilterChange(defaultLocalFilters);
@@ -65,7 +66,9 @@ const InvoicesFilterBar = ({
               <input
                 type="text"
                 className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full lg:pr-72 transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
-                placeholder={`Search by ${searchTypes.find((t) => t.key === filters.searchType)?.label}`}
+                placeholder={`Search by ${
+                  searchTypes.find((t) => t.key === filters.searchType)?.label
+                }`}
                 value={filters.searchValue}
                 onChange={(e) =>
                   onFilterChange({ searchValue: e.target.value })
@@ -110,26 +113,26 @@ const InvoicesFilterBar = ({
             </div>
           </div>
 
-          {/* Date Range */}
-          <div className="lg:col-span-6 grid grid-cols-2 gap-2">
+          {/* Dates */}
+          <div className="lg:col-span-6 grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
-                FROM Invoice Date
+                From Invoice Date
               </label>
               <input
                 type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2 text-sm w-full text-gray-600"
                 value={filters.fromDate}
                 onChange={(e) => onFilterChange({ fromDate: e.target.value })}
               />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
-                TO Invoice Date
+                To Invoice Date
               </label>
               <input
                 type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2 text-sm w-full text-gray-600"
                 value={filters.toDate}
                 onChange={(e) => onFilterChange({ toDate: e.target.value })}
               />
@@ -159,7 +162,13 @@ const InvoicesFilterBar = ({
 
           {/* Statement Type */}
           <div
-            className={`${showCompanyFilter ? "lg:col-span-2" : "lg:col-span-3"} flex flex-col gap-1`}
+            className={`${
+              !isAdminSide
+                ? "lg:col-span-3"
+                : showCompanyFilter
+                  ? "lg:col-span-2"
+                  : "lg:col-span-3"
+            } flex flex-col gap-1`}
           >
             <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
               Statement Type
@@ -174,7 +183,11 @@ const InvoicesFilterBar = ({
           </div>
 
           {/* Totals */}
-          <div className="lg:col-span-4 grid grid-cols-2 gap-2">
+          <div
+            className={`${
+              !isAdminSide ? "lg:col-span-6" : "lg:col-span-4"
+            } grid grid-cols-2 gap-2`}
+          >
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 Min Total
@@ -215,27 +228,31 @@ const InvoicesFilterBar = ({
             </div>
           </div>
 
-          {/* Status */}
-          <div
-            className={`${showCompanyFilter ? "lg:col-span-2" : "lg:col-span-3"} flex flex-col gap-1`}
-          >
-            <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
-              Status
-            </label>
-            <Dropdown
-              title=""
-              options={orderStatuses}
-              defaultValue={orderStatuses.find(
-                (opt) =>
-                  opt.name.toLowerCase() === filters.status?.toLowerCase()
-              )}
-              onChange={(val) => onFilterChange({ status: val?.name || "" })}
-              width="w-full"
-            />
-          </div>
+          {/* Status (Admin only) */}
+          {isAdminSide && (
+            <div
+              className={`${
+                showCompanyFilter ? "lg:col-span-2" : "lg:col-span-3"
+              } flex flex-col gap-1`}
+            >
+              <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+                Status
+              </label>
+              <Dropdown
+                title=""
+                options={orderStatuses}
+                defaultValue={orderStatuses.find(
+                  (opt) =>
+                    opt.name.toLowerCase() === filters.status?.toLowerCase()
+                )}
+                onChange={(val) => onFilterChange({ status: val?.name || "" })}
+                width="w-full"
+              />
+            </div>
+          )}
 
           {/* Reset Button */}
-          <div className="lg:col-span-2">
+          <div className={!isAdminSide ? "lg:col-span-3" : "lg:col-span-2"}>
             <Button
               text="Reset Filter"
               bg="bg-[#043655C4]"
