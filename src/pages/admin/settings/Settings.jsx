@@ -511,6 +511,19 @@ const Settings = () => {
                       onChange={(e) => handleChange("dealerId", e.target.value)}
                     />
                   </div>
+                  <div className="col-span-2 md:col-span-1">
+                    <Input
+                      className={`bg-white border ${
+                        !isEditing && "cursor-not-allowed"
+                      }`}
+                      label="Designation"
+                      value={formData.designation}
+                      readOnly={!isEditing}
+                      onChange={(e) =>
+                        handleChange("designation", e.target.value)
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
