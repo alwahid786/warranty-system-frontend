@@ -42,6 +42,7 @@ const UsersHeader = ({ role, adminCount }) => {
     password: "",
     gender: "",
     companyName: "",
+    designation: "",
     canManageInvoices: false,
     role: role || "user",
     owner: ""
@@ -81,6 +82,7 @@ const UsersHeader = ({ role, adminCount }) => {
       password: "",
       gender: "",
       companyName: "",
+      designation: "",
       canManageInvoices: false,
       role: role || "user",
       owner: ""
@@ -186,21 +188,38 @@ const UsersHeader = ({ role, adminCount }) => {
           </select>
 
           {(role === "admin" || formData.role === "admin") && (
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
-                Company Name
-              </label>
-              <input
-                type="text"
-                value={formData.companyName}
-                onChange={(e) =>
-                  setformData({ ...formData, companyName: e.target.value })
-                }
-                placeholder="Company Name"
-                className="w-full border px-3 py-2 rounded"
-                autoComplete="off"
-              />
-            </div>
+            <>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.companyName}
+                  onChange={(e) =>
+                    setformData({ ...formData, companyName: e.target.value })
+                  }
+                  placeholder="Company Name"
+                  className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Designation
+                </label>
+                <input
+                  type="text"
+                  value={formData.designation}
+                  onChange={(e) =>
+                    setformData({ ...formData, designation: e.target.value })
+                  }
+                  placeholder="Designation (e.g. Manager)"
+                  className="w-full border px-3 py-2 rounded"
+                  autoComplete="off"
+                />
+              </div>
+            </>
           )}
 
           {(user?.role === "admin" || user?.role === "superadmin") &&

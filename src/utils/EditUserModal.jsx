@@ -13,6 +13,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
     password: "",
     gender: "",
     companyName: "",
+    designation: "",
     canManageInvoices: false
   });
 
@@ -28,6 +29,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
         password: "",
         gender: user.gender || "",
         companyName: user.companyName || "",
+        designation: user.designation || "",
         canManageInvoices: user.canManageInvoices || false
       });
     }
@@ -113,17 +115,32 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
 
           {/* Company Name */}
           {(user?.role === "admin" || user?.role === "superadmin") && (
-            <div>
-              <label className="block text-sm font-medium">Company Name</label>
-              <input
-                type="text"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                placeholder="Enter company name"
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  placeholder="Enter company name"
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Designation</label>
+                <input
+                  type="text"
+                  name="designation"
+                  value={formData.designation}
+                  onChange={handleChange}
+                  placeholder="Enter designation"
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+                />
+              </div>
+            </>
           )}
 
           {/* Password */}

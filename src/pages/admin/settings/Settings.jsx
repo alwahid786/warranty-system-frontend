@@ -384,33 +384,40 @@ const Settings = () => {
                 />
               </div>
               {/* Company Name */}
-              <div className="col-span-2 md:col-span-1">
-                <Input
-                  className={`bg-white border ${
-                    (!isEditing || !canEditCompanyName) && "cursor-not-allowed"
-                  }`}
-                  label="Company Name"
-                  value={formData.companyName}
-                  readOnly={!isEditing || !canEditCompanyName}
-                  onChange={(e) =>
-                    canEditCompanyName &&
-                    handleChange("companyName", e.target.value)
-                  }
-                />
-              </div>
+              {!isClient && (
+                <div className="col-span-2 md:col-span-1">
+                  <Input
+                    className={`bg-white border ${
+                      (!isEditing || !canEditCompanyName) &&
+                      "cursor-not-allowed"
+                    }`}
+                    label="Company Name"
+                    value={formData.companyName}
+                    readOnly={!isEditing || !canEditCompanyName}
+                    onChange={(e) =>
+                      canEditCompanyName &&
+                      handleChange("companyName", e.target.value)
+                    }
+                  />
+                </div>
+              )}
 
               {/* Designation */}
-              <div className="col-span-2 md:col-span-1">
-                <Input
-                  className={`bg-white border ${
-                    !isEditing && "cursor-not-allowed"
-                  }`}
-                  label="Designation"
-                  value={formData.designation}
-                  readOnly={!isEditing}
-                  onChange={(e) => handleChange("designation", e.target.value)}
-                />
-              </div>
+              {!isClient && (
+                <div className="col-span-2 md:col-span-1">
+                  <Input
+                    className={`bg-white border ${
+                      !isEditing && "cursor-not-allowed"
+                    }`}
+                    label="Designation"
+                    value={formData.designation}
+                    readOnly={!isEditing}
+                    onChange={(e) =>
+                      handleChange("designation", e.target.value)
+                    }
+                  />
+                </div>
+              )}
 
               {/* Image Upload */}
               {isEditing && (
