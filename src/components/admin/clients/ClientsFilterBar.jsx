@@ -134,7 +134,7 @@ export default function ClientsFilterBar({
       {/* Row 2: Date Range + Reset */}
       <div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
-          <div className="lg:col-span-10 grid grid-cols-2 gap-4">
+          <div className="lg:col-span-10 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
                 From Date
