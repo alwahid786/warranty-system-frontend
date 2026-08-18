@@ -353,6 +353,7 @@ const Settings = () => {
                   country={"us"}
                   onChange={(value) => handleChange("phone", value)}
                   disabled={!isEditing}
+                  containerClass="!w-full"
                   inputClass={`!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white ${
                     !isEditing && "cursor-not-allowed"
                   }`}
@@ -643,7 +644,7 @@ const Settings = () => {
                       }
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="col-span-2 md:col-span-1 flex flex-col gap-2">
                     <label className="text-sm text-dark-text font-medium">
                       Store Phone
                     </label>
@@ -652,6 +653,7 @@ const Settings = () => {
                       country={"us"}
                       onChange={(value) => handleChange("storePhone", value)}
                       disabled={!isEditing}
+                      containerClass="!w-full"
                       inputClass={`!outline-none !border !border-[#e5e5e5] !h-[50px] !rounded-md !w-full !text-sm !text-[#535353] !bg-white ${
                         !isEditing && "cursor-not-allowed"
                       }`}
