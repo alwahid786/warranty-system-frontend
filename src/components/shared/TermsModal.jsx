@@ -27,29 +27,35 @@ const TermsModal = ({ onAccept }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900/60 z-[10000] p-4 backdrop-blur-sm">
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="flex justify-between items-center border-b p-5 bg-white">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900/60 z-[10000] p-3 sm:p-4 backdrop-blur-sm">
+      <div className="relative bg-white rounded-2xl sm:rounded-xl shadow-2xl w-full max-w-2xl max-h-[90dvh] sm:max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+        {/* Modal Header */}
+        <div className="flex justify-between items-start sm:items-center border-b p-4 sm:p-5 bg-white shrink-0">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Terms of Usage</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+              Terms of Usage
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
               Please review and accept our terms to activate your account.
             </p>
           </div>
           <button
-            onClick={handleLogout}
-            className="text-gray-400 hover:text-red-500 transition-colors p-1"
+            onClick={() => handleLogout()}
+            disabled={isLoggingOut}
+            className="text-gray-400 hover:text-red-500 transition-colors p-1 shrink-0 ml-2"
             title="Decline and Logout"
           >
-            <MdClose size={28} />
+            <MdClose size={24} className="sm:w-7 sm:h-7" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-6 bg-gray-50 space-y-6">
+
+        {/* Modal Content / Terms List */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 space-y-4 sm:space-y-6">
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
               1. Acceptance of Terms
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               By using the Warranty Management System, you agree to comply with
               all rules and regulations set forth by the administrator.
               Unauthorized access or use of this system is strictly prohibited.
@@ -57,10 +63,10 @@ const TermsModal = ({ onAccept }) => {
           </section>
 
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
               2. Data Privacy
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               Your data is protected under our strict privacy policy. We ensure
               that your client information and claim details are encrypted and
               secure. Your information will never be shared with third parties
@@ -69,10 +75,10 @@ const TermsModal = ({ onAccept }) => {
           </section>
 
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
               3. Usage Responsibilities
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               As a client or user, you are responsible for maintaining the
               confidentiality of your login credentials and for all activities
               that occur under your account. You must notify the administrator
@@ -81,10 +87,10 @@ const TermsModal = ({ onAccept }) => {
           </section>
 
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
               4. System Integrity
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               Any attempt to misuse, manipulate, or compromise the system&apos;s
               integrity will lead to immediate account suspension and potential
               legal action.
@@ -92,20 +98,22 @@ const TermsModal = ({ onAccept }) => {
           </section>
 
           <section>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
               5. Updates to Terms
             </h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               We reserve the right to update these terms at any time. Continued
               use of the system implies acceptance of the updated terms. We
               recommend reviewing these terms periodically.
             </p>
           </section>
         </div>
-        <div className="p-6 border-t bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-          <div className="flex flex-col gap-4">
-            <label className="flex items-center gap-3 cursor-pointer group select-none">
-              <div className="relative flex items-center justify-center">
+
+        {/* Modal Footer */}
+        <div className="p-4 sm:p-6 shrink-0 border-t bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <label className="flex items-start sm:items-center gap-3 cursor-pointer group select-none">
+              <div className="relative flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                 <input
                   type="checkbox"
                   className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:bg-black checked:border-black transition-all"
@@ -125,21 +133,21 @@ const TermsModal = ({ onAccept }) => {
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
-              <span className="text-sm font-medium text-gray-700 group-hover:text-black transition-colors">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-black transition-colors leading-tight sm:leading-normal">
                 I have read and accept the terms and conditions
               </span>
             </label>
 
-            <div className="flex gap-3 mt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2.5 sm:gap-3 mt-1 sm:mt-2">
               <button
-                className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-white font-bold bg-red-300 hover:bg-red-600 active:bg-red-100 transition-all cursor-pointer disabled:opacity-50"
+                className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-xl border-2 border-red-200 text-red-600 font-bold bg-red-50 hover:bg-red-600 hover:text-white active:bg-red-100 transition-all cursor-pointer disabled:opacity-50 text-sm sm:text-base"
                 onClick={() => handleLogout()}
                 disabled={isAccepting || isLoggingOut}
               >
                 {isLoggingOut ? "Logging out..." : "Logout"}
               </button>
               <button
-                className={`flex-[2] px-6 py-3 rounded-xl font-bold text-white shadow-lg transition-all
+                className={`w-full sm:flex-[2] py-2.5 sm:py-3 px-4 rounded-xl font-bold text-white shadow-lg transition-all text-sm sm:text-base
                   ${
                     accepted && !isAccepting
                       ? "bg-primary hover:bg-primary-dark active:scale-[0.98] shadow-black/20"
