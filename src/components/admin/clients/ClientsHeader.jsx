@@ -328,7 +328,8 @@ const ClientsHeader = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Store Name"
+                placeholder="Store Name *"
+                required
                 value={formData.address.store}
                 onChange={(e) => handleAddressChange("store", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -350,6 +351,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="City *"
+                required
                 value={formData.address.city}
                 onChange={(e) =>
                   handleAddressChange(
@@ -381,6 +383,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="Zip Code *"
+                required
                 value={formData.address.zip}
                 onChange={(e) =>
                   handleAddressChange("zip", e.target.value.replace(/\D/g, ""))

@@ -3,24 +3,13 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
 
-import {
-  useAcceptTermsMutation,
-  useLogoutMutation
-} from "../../redux/apis/authApis";
+import { useAcceptTermsMutation } from "../../redux/apis/authApis";
+import useLogoutHandler from "../../utils/useLogoutHandler";
 
 const TermsModal = ({ onAccept }) => {
   const [accepted, setAccepted] = useState(false);
   const [acceptTerms, { isLoading: isAccepting }] = useAcceptTermsMutation();
-  const [logout] = useLogoutMutation();
-
-  const handleLogout = async () => {
-    try {
-      await logout().unwrap();
-      window.location.reload();
-    } catch {
-      toast.error("Logout failed");
-    }
-  };
+  const { handleLogout, isLoading: isLoggingOut } = useLogoutHandler();
 
   const handleAccept = async () => {
     if (!accepted) {
@@ -143,11 +132,11 @@ const TermsModal = ({ onAccept }) => {
 
             <div className="flex gap-3 mt-2">
               <button
-                className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-white font-bold bg-red-300 hover:bg-red-600 active:bg-red-100 transition-all"
-                onClick={handleLogout}
-                disabled={isAccepting}
+                className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-white font-bold bg-red-300 hover:bg-red-600 active:bg-red-100 transition-all cursor-pointer disabled:opacity-50"
+                onClick={() => handleLogout()}
+                disabled={isAccepting || isLoggingOut}
               >
-                Logout
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </button>
               <button
                 className={`flex-[2] px-6 py-3 rounded-xl font-bold text-white shadow-lg transition-all

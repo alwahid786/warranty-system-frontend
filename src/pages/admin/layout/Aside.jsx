@@ -6,8 +6,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import toast from "react-hot-toast";
 
 import {
   DashboardIcon,
@@ -22,18 +20,14 @@ import {
 // import Modal from "../../../components/shared/small/Modal";
 import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
-import { userNotExist } from "../../../redux/slices/authSlice";
-import { setNotifications } from "../../../redux/slices/notificationsSlice";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
-import { useLogoutMutation } from "../../../redux/apis/authApis";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
+import useLogoutHandler from "../../../utils/useLogoutHandler";
 
-const Aside = () => {
+const Aside = ({ onCloseMobileNav }) => {
   const { pathname } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [logout] = useLogoutMutation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { handleLogout, isLoading: isLoggingOut } = useLogoutHandler();
 
   const { user } = useSelector((state) => state.auth);
 
@@ -189,26 +183,6 @@ const Aside = () => {
     return true;
   });
 
-  // handle logout
-
-  const handleLogout = async () => {
-    try {
-      const res = await logout().unwrap();
-
-      if (res.success) {
-        dispatch(userNotExist());
-        // dispatch(clearSelectedUser());
-        dispatch(setNotifications([]));
-        // dispatch(authApis.util.resetApiState());
-        toast.success(res.message, { duration: 3000 });
-
-        return navigate("/");
-      }
-    } catch (err) {
-      toast.error(err?.data?.message || "Logout failed", { duration: 3000 });
-    }
-  };
-
   return (
     <aside
       style={{ background: 'url("/Sidebar.png")' }}
@@ -229,7 +203,7 @@ const Aside = () => {
         className="w-full h-full rounded-lg px-[11px] py-5 overflow-y-auto overflow-x-hidden scroll-0 flex flex-col justify-between gap-6 relative"
         style={{ boxShadow: "0px 4px 14px 0px #3582E729" }}
       >
-        <div className="">
+        <div className="flex flex-col justify-between h-full">
           <div>
             <div className="flex items-center justify-center gap-1">
               {isMenuOpen && (
@@ -263,28 +237,28 @@ const Aside = () => {
                     page={page}
                     pathname={pathname}
                     isMenuOpen={isMenuOpen}
+                    onCloseMobileNav={onCloseMobileNav}
                   />
                 ))}
               </div>
             </div>
           </div>
-          <div
-            className={`mt-3 cursor-pointer md:hidden flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] bg-none hover:bg-white ${
+          <button
+            type="button"
+            onClick={() => handleLogout(onCloseMobileNav)}
+            disabled={isLoggingOut}
+            className={`mt-4 w-full flex items-center py-[10px] px-[12px] rounded-lg text-sm text-white hover:text-[#043655] hover:bg-white cursor-pointer transition-all duration-200 ${
               isMenuOpen ? "gap-0 justify-center" : "gap-2"
-            } `}
+            }`}
+            title="Logout"
           >
-            {React.cloneElement(<IoLogOutOutline fontSize={18} />)}
-            <button
-              onClick={handleLogout}
-              className={`transition-all duration-100 text-nowrap ${
-                isMenuOpen
-                  ? "opacity-0 scale-x-0 w-0 h-0"
-                  : "opacity-100 scale-x-100 h-auto w-auto"
-              }`}
-            >
-              Logout
-            </button>
-          </div>
+            <IoLogOutOutline fontSize={18} className="shrink-0" />
+            {!isMenuOpen && (
+              <span className="transition-all duration-100 whitespace-nowrap">
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </aside>
@@ -293,7 +267,7 @@ const Aside = () => {
 
 export default Aside;
 
-const LinkItem = ({ page, pathname, isMenuOpen }) => {
+const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
   const isLinkActive = page?.link.some((item) => item === pathname);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -308,6 +282,15 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
       setIsOpen(true);
     }
   }, [hasActiveChild]);
+
+  const handleSubLinkClick = (link) => {
+    if (onCloseMobileNav) onCloseMobileNav();
+    navigate(link);
+  };
+
+  const handleMainLinkClick = () => {
+    if (onCloseMobileNav) onCloseMobileNav();
+  };
 
   if (
     page.title === "Archived" ||
@@ -349,7 +332,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
               return (
                 <div
                   key={child.id}
-                  onClick={() => navigate(child.link)}
+                  onClick={() => handleSubLinkClick(child.link)}
                   className={`text-sm px-2 py-[6px] rounded cursor-pointer ${
                     isMenuOpen ? "!px-1" : ""
                   } ${
@@ -373,6 +356,7 @@ const LinkItem = ({ page, pathname, isMenuOpen }) => {
   return (
     <Link
       to={page?.link[0]}
+      onClick={handleMainLinkClick}
       className={`flex items-center justify-between py-[10px] px-[12px] rounded-lg text-sm ${
         isMenuOpen ? "gap-0 justify-center" : "gap-2"
       } ${

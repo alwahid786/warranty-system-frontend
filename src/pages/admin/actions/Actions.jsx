@@ -155,35 +155,37 @@ const Actions = () => {
   };
 
   return (
-    <div>
-      <ClaimsListHeader
-        selectedClaims={selectedClaims}
-        setSelectedClaims={setSelectedClaims}
-        claims={claims}
-        showImportExport={true}
-        targetClientId={clientId || ""}
-        targetClientName={
-          selectedClient?.companyName ||
-          selectedClient?.storeName ||
-          selectedClient?.name ||
-          ""
-        }
-        clients={clients}
-      />
-      <ClaimsFilterBar
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        companies={clients}
-        showCompanyFilter={isAdminSide}
-      />
-      <ClaimsDataTable
-        data={filteredData}
-        selectedClaims={selectedClaims}
-        onSelectionChange={setSelectedClaims}
-        archived={false}
-        openChatClaimId={openChatClaimId}
-        onNotificationChatOpened={handleNotificationChatOpened}
-      />
+    <div className="flex flex-col min-h-full p-6">
+      <div className="flex-1">
+        <ClaimsListHeader
+          selectedClaims={selectedClaims}
+          setSelectedClaims={setSelectedClaims}
+          claims={claims}
+          showImportExport={true}
+          targetClientId={clientId || ""}
+          targetClientName={
+            selectedClient?.companyName ||
+            selectedClient?.storeName ||
+            selectedClient?.name ||
+            ""
+          }
+          clients={clients}
+        />
+        <ClaimsFilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          companies={clients}
+          showCompanyFilter={isAdminSide}
+        />
+        <ClaimsDataTable
+          data={filteredData}
+          selectedClaims={selectedClaims}
+          onSelectionChange={setSelectedClaims}
+          archived={false}
+          openChatClaimId={openChatClaimId}
+          onNotificationChatOpened={handleNotificationChatOpened}
+        />
+      </div>
     </div>
   );
 };

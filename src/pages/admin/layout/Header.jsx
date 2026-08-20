@@ -6,17 +6,13 @@ import { useLocation } from "react-router-dom";
 import { HiChevronDown } from "react-icons/hi";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector, useDispatch } from "react-redux";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
-import { userExist, userNotExist } from "../../../redux/slices/authSlice";
-import { useLogoutMutation } from "../../../redux/apis/authApis";
+import { userExist } from "../../../redux/slices/authSlice";
 import Aside from "./Aside";
 import { getDate } from "../../../utils/getDate";
-import { setNotifications } from "../../../redux/slices/notificationsSlice";
-import { clearSelectedUser } from "../../../redux/slices/userSlice";
 import { getInitials } from "../../../utils/getInitials";
+import useLogoutHandler from "../../../utils/useLogoutHandler";
 
 const Header = () => {
   const [mobileNav, setMobileNav] = useState(false);
@@ -116,12 +112,12 @@ const Header = () => {
           )}
           <div className="flex flex-col gap-1">
             <h6 className="text-sm font-semibold text-gray-800">
-              {user.name}{" "}
+              {user?.name}{" "}
               <span className="text-xs font-normal text-gray-500 capitalize">
-                [{user.role}]
+                [{user?.role}]
               </span>
             </h6>
-            <p className="text-xs text-gray-600">{user.email}</p>
+            <p className="text-xs text-gray-600">{user?.email}</p>
           </div>
           <div
             onClick={profileOpenHandler}
@@ -139,7 +135,10 @@ const Header = () => {
               isProfileOpen ? "opacity-100" : "invisible opacity-0"
             }`}
           >
-            <Profile menuRef={menuRef} />
+            <Profile
+              menuRef={menuRef}
+              onCloseProfile={() => setIsProfileOpen(false)}
+            />
           </div>
         </div>
       </div>
@@ -155,8 +154,9 @@ const Header = () => {
           className={`absolute top-3 left-3 h-[calc(100svh-24px)] transition-transform duration-500 ${
             mobileNav ? "translate-x-0" : "-translate-x-full"
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
-          <Aside />
+          <Aside onCloseMobileNav={() => setMobileNav(false)} />
         </div>
       </div>
     </header>
@@ -165,40 +165,20 @@ const Header = () => {
 
 export default Header;
 
-const Profile = ({ menuRef }) => {
-  const [logout] = useLogoutMutation();
-  const { refetch } = useGetMyProfileQuery();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const handleLogout = async () => {
-    try {
-      const res = await logout().unwrap();
-
-      if (res.success) {
-        await refetch();
-        dispatch(userNotExist());
-        dispatch(clearSelectedUser());
-        dispatch(setNotifications([]));
-
-        toast.success(res.message, { duration: 3000 });
-
-        return navigate("/");
-      }
-    } catch (err) {
-      toast.error(err?.data?.message || "Logout failed", { duration: 3000 });
-    }
-  };
+const Profile = ({ menuRef, onCloseProfile }) => {
+  const { handleLogout, isLoading: isLoggingOut } = useLogoutHandler();
 
   return (
     <div className="w-full">
       <button
         ref={menuRef}
-        className="w-full flex items-center gap-2 rounded-md border-b bg-white px-2 py-2 cursor-pointer hover:bg-gray-100"
-        onClick={handleLogout}
+        type="button"
+        disabled={isLoggingOut}
+        className="w-full flex items-center gap-2 rounded-md bg-white px-3 py-2 cursor-pointer hover:bg-gray-100 text-left text-sm"
+        onClick={() => handleLogout(onCloseProfile)}
       >
         <IoLogOutOutline fontSize={18} />
-        <h6>Logout</h6>
+        <h6>{isLoggingOut ? "Logging out..." : "Logout"}</h6>
       </button>
     </div>
   );
