@@ -206,3 +206,24 @@ button {
 .bg-light {
   background-color: #A7A7A7 !important;
 }
+
+/* Date input WebKit normalization for iOS Safari & Mobile Browsers */
+input[type="date"] {
+  min-height: 42px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 1.2em;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}

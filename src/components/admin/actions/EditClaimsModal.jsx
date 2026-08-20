@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { MdClose } from "react-icons/md";
 
+import DateInput from "../../shared/small/DateInput";
+
 const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
   const [formData, setFormData] = useState({});
 
@@ -96,12 +98,10 @@ const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
                 >
                   RO Date
                 </label>
-                <input
-                  type="date"
+                <DateInput
                   name="roDate"
                   value={formData.roDate || ""}
                   onChange={handleChange}
-                  className="border p-2 rounded w-full"
                 />
               </div>
             </div>
@@ -174,12 +174,10 @@ const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
           {/* Section 3: Dates */}
           <div>
             <h3 className="font-semibold text-gray-700 mb-2">Entry Date</h3>
-            <input
-              type="date"
+            <DateInput
               name="entryDate"
               value={formData.entryDate || ""}
               onChange={handleChange}
-              className="border p-2 rounded w-full"
             />
           </div>
 
