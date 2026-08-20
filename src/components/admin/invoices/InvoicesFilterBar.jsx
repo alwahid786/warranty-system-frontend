@@ -3,6 +3,7 @@ import { MdFilterAltOff } from "react-icons/md";
 
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
+import DateInput from "../../shared/small/DateInput";
 
 const searchTypes = [
   { key: "invoiceNumber", label: "INV-#" },
@@ -119,9 +120,8 @@ const InvoicesFilterBar = ({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From Invoice Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full text-gray-600 focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.fromDate}
                 onChange={(e) => onFilterChange({ fromDate: e.target.value })}
               />
@@ -130,9 +130,8 @@ const InvoicesFilterBar = ({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 To Invoice Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full text-gray-600 focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.toDate}
                 onChange={(e) => onFilterChange({ toDate: e.target.value })}
               />

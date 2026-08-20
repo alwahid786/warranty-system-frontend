@@ -35,7 +35,7 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
       }`}
     >
       {/* Header Section */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
           {/* User Avatar */}
           {user?.image?.url ||
@@ -43,17 +43,17 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
             <img
               src={user?.image?.url || user?.image}
               alt="User"
-              className="w-14 h-14 rounded-full object-cover border border-gray-200"
+              className="w-14 h-14 rounded-full object-cover border border-gray-200 shrink-0"
             />
           ) : (
-            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center border border-gray-200 text-white font-bold text-xl">
+            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center border border-gray-200 text-white font-bold text-xl shrink-0">
               {getInitials(user?.name)}
             </div>
           )}
 
           {/* User Info */}
           <div className="min-w-0 flex-1">
-            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+            <div className="flex flex-wrap items-center gap-2">
               <p className="font-semibold text-gray-900 text-base truncate">
                 {user?.name}
               </p>
@@ -82,7 +82,7 @@ const UsersDetailCard = ({ user, onEdit, onDelete, canManage = true }) => {
               if (!displayCompany) return null;
 
               return (
-                <p className="text-[10px] text-blue-500 font-medium">
+                <p className="text-[10px] text-blue-500 font-medium truncate mt-0.5">
                   Company Name: {displayCompany}
                 </p>
               );

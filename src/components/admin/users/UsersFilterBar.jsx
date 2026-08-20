@@ -3,6 +3,7 @@ import React from "react";
 import { MdFilterAltOff } from "react-icons/md";
 
 import Button from "../../shared/small/Button";
+import DateInput from "../../shared/small/DateInput";
 
 const searchTypes = [
   { key: "name", label: "NAME" },
@@ -108,9 +109,8 @@ export default function UsersFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
                 From
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.fromDate}
                 onChange={(e) => onFilterChange({ fromDate: e.target.value })}
               />
@@ -119,9 +119,8 @@ export default function UsersFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest">
                 To
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.toDate}
                 onChange={(e) => onFilterChange({ toDate: e.target.value })}
               />
