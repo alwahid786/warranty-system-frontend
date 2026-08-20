@@ -36,7 +36,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
 
   // Prefill when editing
   useEffect(() => {
-    if (client) {
+    if (isOpen && client) {
       setFormData({
         clientName: client.name || "",
         clientEmail: client.email || "",
@@ -61,8 +61,9 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
         businessOwnerView: client.businessOwnerView || false,
         percentage: client.percentage ?? ""
       });
+      setShowPassword(false);
     }
-  }, [client]);
+  }, [client, isOpen]);
 
   // handle address updates
   const handleAddressChange = (field, value) => {
@@ -306,20 +307,28 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 "state",
                 "country",
                 "zip"
-              ].map((field) => (
-                <div key={field} className="flex flex-col gap-2">
-                  <label className="block text-sm font-medium">
-                    {formatLabel(field)}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={formatLabel(field)}
-                    value={formData.address[field]}
-                    onChange={(e) => handleAddressChange(field, e.target.value)}
-                    className="w-full border px-3 py-2 rounded"
-                  />
-                </div>
-              ))}
+              ].map((field) => {
+                const isRequired = ["store", "city", "zip"].includes(field);
+
+                return (
+                  <div key={field} className="flex flex-col gap-2">
+                    <label className="block text-sm font-medium">
+                      {formatLabel(field)}{" "}
+                      {isRequired && <span className="text-red-500">*</span>}
+                    </label>
+                    <input
+                      type="text"
+                      required={isRequired}
+                      placeholder={formatLabel(field)}
+                      value={formData.address[field]}
+                      onChange={(e) =>
+                        handleAddressChange(field, e.target.value)
+                      }
+                      className="w-full border px-3 py-2 rounded"
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 

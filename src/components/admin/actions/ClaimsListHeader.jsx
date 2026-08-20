@@ -13,6 +13,7 @@ import { useAddClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useAddArchiveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useRemoveArchiveClaimsMutation } from "../../../redux/apis/claimsApis";
 import { useLazyExportClaimsQuery } from "../../../redux/apis/claimsApis";
+import { captilizeFirstLetter } from "../../../utils/formatters";
 
 const ClaimsListHeader = ({
   claims,
@@ -159,7 +160,9 @@ const ClaimsListHeader = ({
         {/* Title & Description */}
         <div className="">
           <h2 className="text-2xl font-medium font-inter text-primary">
-            {targetClientName ? `${targetClientName} Claims` : "Claims List"}
+            {targetClientName
+              ? `${captilizeFirstLetter(targetClientName)} Claims`
+              : "Claims List"}
           </h2>
           <p className="text-sm font-inter font-medium text-secondary">
             Review, update, and organize user-submitted warranty claims. Use

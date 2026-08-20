@@ -7,8 +7,8 @@ const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    if (claim) setFormData(claim);
-  }, [claim]);
+    if (isOpen && claim) setFormData(claim);
+  }, [claim, isOpen]);
 
   if (!isOpen) return null;
 

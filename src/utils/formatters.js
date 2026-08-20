@@ -23,3 +23,14 @@ export const formatPhoneNumber = (value) => {
   // For other lengths, just return with a + if it looks like an international number
   return len > 10 ? `+${phoneNumber}` : phoneNumber;
 };
+
+/**
+ * Captilizes the first letter of a string
+ * @param {string} str - The string to capitalize
+ * @returns {string} - The capitalized string
+ */
+export const captilizeFirstLetter = (str) => {
+  if (!str) return str;
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
