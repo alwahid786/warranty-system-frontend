@@ -2,6 +2,7 @@ import { MdFilterAltOff } from "react-icons/md";
 
 import Dropdown from "../../shared/small/Dropdown";
 import Button from "../../shared/small/Button";
+import DateInput from "../../shared/small/DateInput";
 
 const searchTypes = [
   { key: "roNumber", label: "RO Number" },
@@ -179,9 +180,8 @@ export default function ClaimsFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From RO Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.fromDate}
                 onChange={(e) => onFilterChange({ fromDate: e.target.value })}
               />
@@ -190,9 +190,8 @@ export default function ClaimsFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 To RO Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.toDate}
                 onChange={(e) => onFilterChange({ toDate: e.target.value })}
               />
@@ -205,9 +204,8 @@ export default function ClaimsFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 From Entry Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.entryFromDate || ""}
                 onChange={(e) =>
                   onFilterChange({ entryFromDate: e.target.value })
@@ -218,9 +216,8 @@ export default function ClaimsFilterBar({
               <label className="text-[10px] font-bold text-secondary uppercase tracking-widest truncate">
                 To Entry Date
               </label>
-              <input
-                type="date"
-                className="bg-white border border-gray-200 shadow-sm rounded px-3 py-2.5 text-sm w-full focus:border-primary focus:ring-1 focus:ring-primary/20"
+              <DateInput
+                placeholder="mm/dd/yyyy"
                 value={filters.entryToDate || ""}
                 onChange={(e) =>
                   onFilterChange({ entryToDate: e.target.value })
