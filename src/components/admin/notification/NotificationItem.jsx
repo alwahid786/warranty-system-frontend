@@ -140,13 +140,13 @@ const NotificationItem = ({ notification }) => {
       }`}
       onClick={handleOpen}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
         <div
-          className={`w-5 h-5 rounded-full ${
-            isRead ? "bg-green-400" : "bg-gray-300"
+          className={`w-3.5 h-3.5 rounded-full shrink-0 mt-1.5 ${
+            isRead ? "bg-green-500" : "bg-gray-300"
           }`}
         />
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0 flex-1">
           <p className="font-inter font-medium text-[16px] text-[#333]">
             {title}
           </p>
