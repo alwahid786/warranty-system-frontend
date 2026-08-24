@@ -42,10 +42,10 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
             <tbody>
               {currentBrands.map((brand, idx) => (
                 <tr key={idx} className="border-b last:border-none">
-                  <td className="py-2 px-5 font-medium text-[10px] leading-5 text-primary ">
+                  <td className="py-2 px-5 font-medium text-[15px] leading-5 text-primary ">
                     {brand.name}
                   </td>
-                  <td className="py-2 px-5 text-right font-medium text-[10px] leading-5 text-primary">
+                  <td className="py-2 px-5 text-right font-medium text-[15px] leading-5 text-primary">
                     {brand.count}
                   </td>
                 </tr>

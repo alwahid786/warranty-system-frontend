@@ -89,7 +89,7 @@ const ClaimsTable = ({ data }) => {
         fontWeight: "bold",
         backgroundColor: "#f9fafb",
         color: "#374151",
-        fontSize: "14px"
+        fontSize: "13px"
       }
     },
     cells: {

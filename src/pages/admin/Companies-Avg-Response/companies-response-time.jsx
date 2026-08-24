@@ -31,7 +31,7 @@ const CompaniesResponseTimePage = () => {
         </button>
         <h1 className="text-xl font-bold mb-4">All Companies Response Time</h1>
 
-        <table className="w-full text-sm border">
+        <table className="w-full text-sm text-[15px] border">
           <thead className="bg-[#F9FAFB] border">
             <tr className="text-gray-500">
               <th className="text-left py-2 px-2">COMPANY</th>

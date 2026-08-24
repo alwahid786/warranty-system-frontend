@@ -54,17 +54,17 @@ const TotalClaimsCard = ({ data }) => {
   return (
     <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full min-h-[400px]">
       <div className="flex items-center justify-between mb-4 px-4 mt-4">
-        <h2 className="font-medium text-[14px] leading-5 text-primary">
+        <h2 className="font-medium text-[15px] leading-5 text-primary">
           Total Claims By Statuses
         </h2>
       </div>
       <table className="w-full text-sm">
         <thead className="bg-[#F9FAFB] border w-full">
           <tr className="text-gray-500">
-            <th className="text-left py-2 px-2 font-semibold text-secondary text-[10px] leading-[18px] ">
+            <th className="text-left py-2 px-2 font-semibold text-secondary text-[13px] leading-[18px] ">
               METRIC
             </th>
-            <th className="text-right py-2 px-2 font-semibold text-secondary text-[10px] leading-[18px]">
+            <th className="text-right py-2 px-2 font-semibold text-secondary text-[13px] leading-[18px]">
               VALUE
             </th>
           </tr>
@@ -72,10 +72,10 @@ const TotalClaimsCard = ({ data }) => {
         <tbody>
           {currentTotal.map((item, idx) => (
             <tr key={idx} className="border-b last:border-none">
-              <td className="py-2 px-5 font-semibold text-primary text-[10px] leading-[18px]">
+              <td className="py-2 px-5 font-semibold text-primary text-[13px] leading-[18px]">
                 {item.metric}
               </td>
-              <td className="py-2 px-5 text-right font-semibold text-primary text-[10px] leading-[18px]">
+              <td className="py-2 px-5 text-right font-semibold text-primary text-[13px] leading-[18px]">
                 {item.value}
               </td>
             </tr>
