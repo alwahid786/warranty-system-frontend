@@ -28,33 +28,42 @@ const ClaimsTable = ({ data }) => {
     {
       name: "User Name",
       selector: (row) => row.name,
-      sortable: true
+      sortable: true,
+      minWidth: "140px",
+      grow: 1
     },
     {
       name: "Email",
       selector: (row) => row.email,
-      sortable: true
+      sortable: true,
+      minWidth: "180px",
+      grow: 1
     },
     {
       name: "Date Submitted",
       selector: (row) => row.date,
-      sortable: true
+      sortable: true,
+      minWidth: "140px",
+      grow: 1
     },
     {
       name: "Message",
       selector: (row) => row.message,
-      wrap: true
+      wrap: true,
+      minWidth: "200px",
+      grow: 2
     },
     {
       name: "Action",
+      minWidth: "220px",
       cell: (row) => (
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Button
             text={row.status}
             color="text-white justify-center text-xs"
             bg={
               row.status === "Sent Successfully!"
-                ? "bg-secondary "
+                ? "bg-secondary"
                 : "bg-primary"
             }
             cn="!px-2 w-32 !py-2 !text-xs text-nowrap rounded"
@@ -86,19 +95,15 @@ const ClaimsTable = ({ data }) => {
     cells: {
       style: {
         fontSize: "13px",
-        height: "65px",
-        display: "flex",
-        alignItems: "center"
+        minHeight: "65px"
       }
     }
   };
 
   return (
-    <div className="bg-white w-full p-4 rounded-xl shadow">
-      <h2 className="text-lg font-semibold mb-4 overflow-auto">
-        Recent Contacts
-      </h2>
-      <div className="w-full overflow-auto">
+    <div className="bg-white w-full p-4 rounded-xl shadow overflow-hidden">
+      <h2 className="text-lg font-semibold mb-4">Recent Contacts</h2>
+      <div className="w-full overflow-x-auto">
         <DataTable
           columns={columns}
           data={data}
