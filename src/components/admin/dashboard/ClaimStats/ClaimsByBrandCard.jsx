@@ -18,7 +18,7 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
 
   return (
     <div className="bg-white rounded-xl border shadow flex-1 pb-6 flex flex-col h-full min-h-[400px]">
-      <h2 className="font-medium text-[14px] leading-5 text-primary mb-4 px-4 mt-4">
+      <h2 className="font-medium text-[15px] leading-5 text-primary mb-4 px-4 mt-4">
         Claims by Warranty Company
       </h2>
 
@@ -31,10 +31,10 @@ const ClaimsByBrandCard = ({ brands = [] }) => {
           <table className="w-full text-sm">
             <thead className="bg-[#F9FAFB] border">
               <tr className="text-gray-500">
-                <th className="text-left py-2 px-2 font-semibold text-[10px] leading-5 text-secondary ">
+                <th className="text-left py-2 px-2 font-semibold text-[13px] leading-5 text-secondary ">
                   COMPANY
                 </th>
-                <th className="text-right py-2 px-2 font-semibold text-[10px] leading-5 text-secondary ">
+                <th className="text-right py-2 px-2 font-semibold text-[13px] leading-5 text-secondary ">
                   TOTAL CLAIMS
                 </th>
               </tr>

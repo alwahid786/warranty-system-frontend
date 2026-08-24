@@ -5,6 +5,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
+import { PiChatCircleTextThin } from "react-icons/pi";
 import { useSelector } from "react-redux";
 
 import {
@@ -23,6 +24,7 @@ import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
 import { useGetUsersQuery } from "../../../redux/apis/userApis";
+import { useGetClaimsQuery } from "../../../redux/apis/claimsApis";
 import useLogoutHandler from "../../../utils/useLogoutHandler";
 
 const Aside = ({ onCloseMobileNav }) => {
@@ -46,8 +48,17 @@ const Aside = ({ onCloseMobileNav }) => {
     { skip: !["admin", "superadmin"].includes(user?.role) }
   );
 
+  const { data: claimsData } = useGetClaimsQuery(undefined, {
+    skip: !user?._id
+  });
+
   const clients = clientsData?.data ?? [];
   const adminCount = adminUsersData?.data?.length;
+  const claims = claimsData?.data ?? [];
+
+  const hasActionsUnreadChat = claims.some(
+    (claim) => (claim.unreadChatCount || 0) > 0
+  );
 
   const adminTitle =
     adminCount !== undefined && adminCount > 1 ? "Admins" : "Admin";
@@ -69,12 +80,24 @@ const Aside = ({ onCloseMobileNav }) => {
           ]
         : ["/dashboard/actions"],
       icon: <ActionsIcon />,
+      hasUnreadChat: hasActionsUnreadChat,
       children: isAdminSideUser
         ? clients.map((client) => ({
             id: client._id,
             title: client.companyName || client.storeName || client.name,
             link: `/dashboard/actions/${client._id}`,
-            icon: <ActionSubLink />
+            icon: <ActionSubLink />,
+            hasUnreadChat: claims.some((c) => {
+              const cOwnerId = c?.owner?._id || c?.owner;
+              const cClientId = c?.clientId?._id || c?.clientId;
+              const targetId = client._id;
+
+              return (
+                (String(cOwnerId) === String(targetId) ||
+                  String(cClientId) === String(targetId)) &&
+                (c.unreadChatCount || 0) > 0
+              );
+            })
           }))
         : []
     },
@@ -310,18 +333,42 @@ const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
       <div className={`flex flex-col rounded-lg`}>
         <div
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center py-[10px] px-[12px] rounded-lg text-sm cursor-pointer ${
+          className={`group flex items-center py-[10px] px-[12px] rounded-lg text-sm cursor-pointer ${
             isLinkActive || hasActiveChild
               ? "bg-white text-[#043655]"
-              : "text-white hover:text-primary bg-none hover:bg-white"
+              : "text-white hover:text-[#043655] bg-none hover:bg-white"
           } ${isMenuOpen ? "justify-center" : "gap-2"}`}
         >
-          {React.cloneElement(page.icon, {
-            isLinkActive: isLinkActive || hasActiveChild
-          })}
+          <div className="relative flex items-center">
+            {React.cloneElement(page.icon, {
+              isLinkActive: isLinkActive || hasActiveChild
+            })}
+            {page.hasUnreadChat && isMenuOpen && (
+              <PiChatCircleTextThin
+                size={14}
+                className={`absolute -top-1 -right-2  drop-shadow ${
+                  isLinkActive || hasActiveChild
+                    ? "text-[#043655]"
+                    : "text-white group-hover:text-[#043655]"
+                }`}
+              />
+            )}
+          </div>
           {!isMenuOpen && (
             <>
-              <span className="flex-1">{page.title}</span>
+              <span className="flex-1 flex items-center justify-between pr-1 gap-1">
+                <span>{page.title}</span>
+                {page.hasUnreadChat && !isOpen && (
+                  <PiChatCircleTextThin
+                    size={17}
+                    className={` shrink-0 ${
+                      isLinkActive || hasActiveChild
+                        ? "text-[#043655]"
+                        : "text-white group-hover:text-[#043655]"
+                    }`}
+                  />
+                )}
+              </span>
               <span
                 className="text-xs transform transition-transform duration-200"
                 style={{
@@ -343,7 +390,7 @@ const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
                 <div
                   key={child.id}
                   onClick={() => handleSubLinkClick(child.link)}
-                  className={`text-sm px-2 py-[6px] rounded cursor-pointer ${
+                  className={`group text-sm px-2 py-[6px] rounded cursor-pointer flex items-center justify-between gap-1 ${
                     isMenuOpen ? "!px-1" : ""
                   } ${
                     isActive
@@ -351,9 +398,21 @@ const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
                       : "text-white hover:text-[#043655] hover:bg-white"
                   }`}
                 >
-                  {isMenuOpen
-                    ? React.cloneElement(child.icon, { isActive })
-                    : child.title}
+                  <span className="truncate">
+                    {isMenuOpen
+                      ? React.cloneElement(child.icon, { isActive })
+                      : child.title}
+                  </span>
+                  {child.hasUnreadChat && !isMenuOpen && (
+                    <PiChatCircleTextThin
+                      size={15}
+                      className={` shrink-0 ${
+                        isActive
+                          ? "text-[#043655]"
+                          : "text-white group-hover:text-[#043655]"
+                      }`}
+                    />
+                  )}
                 </div>
               );
             })}
@@ -367,7 +426,7 @@ const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
     <Link
       to={page?.link[0]}
       onClick={handleMainLinkClick}
-      className={`flex items-center justify-between py-[10px] px-[12px] rounded-lg text-sm ${
+      className={`group flex items-center justify-between py-[10px] px-[12px] rounded-lg text-sm ${
         isMenuOpen ? "gap-0 justify-center" : "gap-2"
       } ${
         isLinkActive
@@ -375,10 +434,32 @@ const LinkItem = ({ page, pathname, isMenuOpen, onCloseMobileNav }) => {
           : "text-white hover:text-[#043655] bg-none hover:bg-white"
       }`}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative">
         {React.cloneElement(page?.icon, { isLinkActive })}
         {!isMenuOpen && <span>{page?.title}</span>}
+        {page.hasUnreadChat && isMenuOpen && (
+          <PiChatCircleTextThin
+            size={14}
+            className={`absolute -top-1 -right-2  drop-shadow ${
+              isLinkActive
+                ? "text-[#043655]"
+                : "text-white group-hover:text-[#043655]"
+            }`}
+          />
+        )}
       </div>
+
+      {/* 💬 Show chat icon for unread chat */}
+      {page.hasUnreadChat && !isMenuOpen && (
+        <PiChatCircleTextThin
+          size={17}
+          className={` shrink-0 ml-1 ${
+            isLinkActive
+              ? "text-[#043655]"
+              : "text-white group-hover:text-[#043655]"
+          }`}
+        />
+      )}
 
       {/* 🔔 Show badge for notifications */}
       {page.showBadge && unreadCount > 0 && !isMenuOpen && (
