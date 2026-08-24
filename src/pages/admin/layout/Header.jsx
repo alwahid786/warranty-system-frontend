@@ -8,6 +8,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { useSelector, useDispatch } from "react-redux";
 
 import { useGetMyProfileQuery } from "../../../redux/apis/authApis";
+import { useGetUsersQuery } from "../../../redux/apis/userApis";
 import { userExist } from "../../../redux/slices/authSlice";
 import Aside from "./Aside";
 import { getDate } from "../../../utils/getDate";
@@ -34,6 +35,21 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+
+  const { data: adminUsersData } = useGetUsersQuery(
+    { role: "admin", onlyAdminSubusers: true },
+    { skip: !["admin", "superadmin"].includes(user?.role) }
+  );
+
+  const adminCount = adminUsersData?.data?.length;
+
+  const adminTitle =
+    adminCount !== undefined && adminCount > 1 ? "Admins" : "Admin";
+
+  const isAdminsPath =
+    path.toLowerCase() === "admins" || path.toLowerCase() === "admin";
+
+  const displayTitle = isAdminsPath ? adminTitle : path;
 
   const { data } = useGetMyProfileQuery(undefined, {
     skip: !!user?._id,
@@ -91,7 +107,7 @@ const Header = () => {
         </button>
         <div>
           <h2 className="text-dark-text text-xl lg:text-2xl font-medium capitalize lg:text-[22px]">
-            {path}
+            {displayTitle}
           </h2>
           <p className="text-xs text-primary">{date}</p>
         </div>

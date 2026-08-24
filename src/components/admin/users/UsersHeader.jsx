@@ -122,8 +122,21 @@ const UsersHeader = ({ role, adminCount }) => {
     <div className="mb-6">
       <div className="flex w-full flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold">Users List</h1>
-          <p className="text-sm text-gray-500">Manage all your Users</p>
+          <h1 className="text-2xl font-semibold">
+            {role === "admin"
+              ? currentAdminCount <= 1
+                ? "Admin List"
+                : "Admins List"
+              : "Users List"}
+          </h1>
+          <p className="text-sm text-gray-500">
+            Manage all your{" "}
+            {role === "admin"
+              ? currentAdminCount <= 1
+                ? "Admin"
+                : "Admins"
+              : "Users"}
+          </p>
         </div>
 
         {canCreateUsers && (
@@ -131,7 +144,7 @@ const UsersHeader = ({ role, adminCount }) => {
             onClick={() => setIsOpen(true)}
             className="w-full rounded-sm bg-primary px-4 py-2 text-base text-white sm:w-auto"
           >
-            + Add New {role === "admin" ? "Admins" : "Users"}
+            + Add New {role === "admin" ? "Admin" : "Users"}
           </button>
         )}
       </div>

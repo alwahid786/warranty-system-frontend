@@ -22,6 +22,7 @@ import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
 import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
+import { useGetUsersQuery } from "../../../redux/apis/userApis";
 import useLogoutHandler from "../../../utils/useLogoutHandler";
 
 const Aside = ({ onCloseMobileNav }) => {
@@ -40,7 +41,16 @@ const Aside = ({ onCloseMobileNav }) => {
     skip: !isAdminSideUser
   });
 
+  const { data: adminUsersData } = useGetUsersQuery(
+    { role: "admin", onlyAdminSubusers: true },
+    { skip: !["admin", "superadmin"].includes(user?.role) }
+  );
+
   const clients = clientsData?.data ?? [];
+  const adminCount = adminUsersData?.data?.length;
+
+  const adminTitle =
+    adminCount !== undefined && adminCount > 1 ? "Admins" : "Admin";
 
   const pages = [
     {
@@ -132,13 +142,13 @@ const Aside = ({ onCloseMobileNav }) => {
     },
     {
       id: 8,
-      title: "Admins",
+      title: adminTitle,
       link: ["/dashboard/admins"],
       icon: <UsersIcon />
     }
   ];
 
-  const superAdminOnlyPages = ["Admins"];
+  const superAdminOnlyPages = ["Admin", "Admins"];
   const adminOnlyPages = ["Clients"];
   const restrictedPages = ["Dashboard", "Invoices", "Archived"];
 

@@ -238,7 +238,7 @@ const Admins = () => {
 
       <div className="bg-white py-6 px-5 rounded-[10px] shadow-sm mt-5">
         <p className="font-inter font-medium text-[22px] text-dark-text">
-          Admins List
+          {users.length <= 1 ? "Admin List" : "Admins List"}
         </p>
         <UsersFilterBar
           filters={filters}
