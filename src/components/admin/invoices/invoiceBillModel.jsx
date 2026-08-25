@@ -1,6 +1,8 @@
+import { useSelector } from "react-redux";
 import { FaDiamond } from "react-icons/fa6";
 
-import logoWithBackground from "../../../assets/logos/logo-with-bg.png";
+import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
+import { getCompanyLogoUrl } from "../../../utils/getCompanyLogoUrl";
 
 const SectionHeader = ({ children }) => (
   <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
@@ -16,7 +18,13 @@ const InfoRow = ({ label, value }) => (
 );
 
 const InvoiceBill = ({ invoice, isOpen, onClose }) => {
+  const user = useSelector((state) => state.auth.user);
+
   if (!isOpen) return null;
+
+  const logoToDisplay =
+    getCompanyLogoUrl(invoice?.owner) ||
+    getCompanyLogoUrl(user, { fallback: logoWithOutBg });
 
   const adjustments = invoice.adjustments || [];
 
@@ -45,9 +53,9 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
         <div className="flex flex-col mt-6 sm:flex-row items-center gap-4 justify-between border-b pb-3">
           <div className="flex gap-4 items-center">
             <img
-              src={logoWithBackground}
+              src={logoToDisplay}
               alt="warranty-system-logo"
-              className="w-23 h-23"
+              className="max-h-20 max-w-[150px] object-contain"
             />
             <div className="flex flex-col">
               <p className="text-lg font-extrabold text-primary">

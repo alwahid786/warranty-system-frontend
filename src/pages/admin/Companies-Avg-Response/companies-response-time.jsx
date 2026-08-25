@@ -25,9 +25,9 @@ const CompaniesResponseTimePage = () => {
       <div className="flex-1">
         <button
           onClick={() => navigate(-1)}
-          className="mb-4 bg-primary text-yellow-300 text-3xl py-2 px-4 rounded-2xl"
+          className="mb-4 text-primary text-4xl cursor-pointer py-2 px-4 rounded-2xl"
         >
-          <HiArrowLeft className="w-5 h-5 text-white cursor-pointer" />
+          <HiArrowLeft className="w-6 h-6 cursor-pointer" />
         </button>
         <h1 className="text-xl font-bold mb-4">All Companies Response Time</h1>
 

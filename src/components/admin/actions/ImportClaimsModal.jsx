@@ -139,7 +139,7 @@ const ImportClaimsModal = ({
             color="text-gray-700"
             onClick={onClose}
             disabled={isLoading}
-            cn="!py-2 !px-4 text-sm"
+            cn="!py-2 !px-4 text-sm hover:text-white"
           />
           <Button
             type="submit"

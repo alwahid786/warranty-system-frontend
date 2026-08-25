@@ -19,14 +19,22 @@ import {
   validateImage,
   IMAGE_ACCEPT_TYPES
 } from "../../../utils/imageValidator";
+import { getCompanyLogoUrl } from "../../../utils/getCompanyLogoUrl";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
   const isClient = user?.role === "client";
   const canEditCompanyName = user?.role === "admin" || user?.role === "client";
+  const canEditCompanyLogo = user?.role === "admin";
   const imageInputRef = useRef(null);
+  const logoInputRef = useRef(null);
 
   const [imageSrc, setImageSrc] = useState(user?.image?.url || "");
+
+  const [companyLogoSrc, setCompanyLogoSrc] = useState(
+    getCompanyLogoUrl(user, { transparent: false }) || ""
+  );
+
   const [showPassword, setShowPassword] = useState(false);
 
   const { data, isLoading: isLoadingForGetMyProfile } = useGetMyProfileQuery(
@@ -40,6 +48,7 @@ const Settings = () => {
   const [updateProfile, { isLoading }] = useUpdateMyProfileMutation();
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedLogoFile, setSelectedLogoFile] = useState(null);
 
   useEffect(() => {
     if (!data?.data) return;
@@ -108,6 +117,7 @@ const Settings = () => {
         businessOwner: user.businessOwner || ""
       });
       if (user?.image?.url) setImageSrc(user?.image?.url);
+      setCompanyLogoSrc(getCompanyLogoUrl(user, { transparent: false }) || "");
     }
   }, [user]);
 
@@ -125,7 +135,21 @@ const Settings = () => {
     e.target.value = "";
   };
 
-  const handleDrop = (e) => {
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const { isValid, previewUrl } = validateImage(file);
+
+      if (isValid) {
+        setSelectedLogoFile(file);
+        setCompanyLogoSrc(previewUrl);
+      }
+    }
+    e.target.value = "";
+  };
+
+  const handleImageDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer?.files?.[0];
 
@@ -139,11 +163,26 @@ const Settings = () => {
     }
   };
 
+  const handleLogoDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+
+    if (file) {
+      const { isValid, previewUrl } = validateImage(file);
+
+      if (isValid) {
+        setSelectedLogoFile(file);
+        setCompanyLogoSrc(previewUrl);
+      }
+    }
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
   const onImageInputClick = () => imageInputRef.current.click();
+  const onLogoInputClick = () => logoInputRef.current?.click();
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -197,6 +236,9 @@ const Settings = () => {
         businessOwner: user.businessOwner || ""
       });
       if (user.image) setImageSrc(user.image.url);
+      setCompanyLogoSrc(getCompanyLogoUrl(user, { transparent: false }) || "");
+      setSelectedFile(null);
+      setSelectedLogoFile(null);
     }
     setIsEditing(false);
   };
@@ -224,12 +266,17 @@ const Settings = () => {
       if (selectedFile) {
         form.append("file", selectedFile);
       }
+      if (selectedLogoFile) {
+        form.append("companyLogo", selectedLogoFile);
+      }
       const res = await updateProfile(form).unwrap();
 
       if (res.success) {
         dispatch(userExist(res.newuser));
         setIsEditing(false);
         setFormData((prev) => ({ ...prev, password: "" }));
+        setSelectedFile(null);
+        setSelectedLogoFile(null);
         toast.success(res.message, { duration: 3000 });
       }
     } catch (err) {
@@ -255,28 +302,49 @@ const Settings = () => {
 
       {/* Profile Section */}
       <div className="relative -top-19">
-        <div className="px-6 flex flex-col gap-4">
-          <div className="w-29 h-29 rounded-full overflow-hidden">
-            {user?.image?.url ||
-            (selectedFile && imageSrc !== user?.image?.url) ? (
-              <img
-                src={imageSrc}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-primary flex items-center justify-center text-white text-4xl font-bold">
-                {getInitials(user?.name)}
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col sm:flex-row gap-5 items-start justify-between">
-            <div className="flex flex-col gap-2">
-              <p className="font-bold text-3xl text-[#1E293B]">
+        <div className="px-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-29 h-29 rounded-full overflow-hidden border-4 border-white shadow-md">
+              {user?.image?.url ||
+              (selectedFile && imageSrc !== user?.image?.url) ? (
+                <img
+                  src={imageSrc}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-primary flex items-center justify-center text-white text-4xl font-bold">
+                  {getInitials(user?.name)}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-1 mt-6">
+              <p className="font-bold text-3xl text-white pb-2">
                 {formData.name}
               </p>
+              {formData.companyName && (
+                <p className="text-sm font-medium text-[#64748B]">
+                  {formData.companyName}
+                </p>
+              )}
             </div>
           </div>
+
+          {/* Company Logo Badge Display */}
+          {canEditCompanyLogo && companyLogoSrc && (
+            <div className="flex flex-col items-center justify-center text-center gap-1.5 mt-2 sm:mt-4">
+              <span className="text-xs font-semibold text-white uppercase tracking-wider">
+                Company Logo
+              </span>
+              <div className="h-20 sm:h-24 flex items-center justify-center">
+                <img
+                  src={companyLogoSrc}
+                  alt="Company Logo"
+                  className="max-h-full max-w-[200px] sm:max-w-[240px] object-contain drop-shadow-md"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Form Section Container */}
@@ -420,53 +488,125 @@ const Settings = () => {
                 </div>
               )}
 
-              {/* Image Upload */}
+              {/* Company Logo Display (Read-Only) */}
+              {!isEditing && canEditCompanyLogo && (
+                <div className="col-span-2 md:col-span-1 flex flex-col gap-2">
+                  <label className="text-sm text-dark-text font-medium">
+                    Company Logo
+                  </label>
+                  <div className="h-[50px] px-3 border border-[#e5e5e5] rounded-md bg-[#f8fafc] flex items-center justify-between overflow-hidden">
+                    {companyLogoSrc ? (
+                      <img
+                        src={companyLogoSrc}
+                        alt="Company Logo"
+                        className="h-8 max-w-[140px] object-contain"
+                      />
+                    ) : (
+                      <span className="text-xs text-gray-400">
+                        No logo uploaded
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Image & Logo Upload */}
               {isEditing && (
                 <div className="col-span-2 grid grid-cols-12 gap-5 pb-4">
-                  <div className="flex flex-col items-center gap-2 col-span-12 md:col-span-4">
-                    <p>Change Profile</p>
-                    <div className="rounded-full w-25 h-25 overflow-hidden">
-                      {imageSrc && imageSrc !== "/profile-pic.png" ? (
-                        <img
-                          src={imageSrc}
-                          className="w-full h-full object-cover"
-                          alt=""
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-primary flex items-center justify-center text-white text-3xl font-bold">
-                          {getInitials(user?.name)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-span-12 md:col-span-8">
-                    <div
-                      onClick={onImageInputClick}
-                      onDrop={handleDrop}
-                      onDragOver={handleDragOver}
-                      className="mt-2 flex h-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 hover:border-[#043655]"
-                    >
-                      <div className="bg-[#EEF2FF] rounded-full flex items-center justify-center h-10 w-10">
-                        <MdUploadFile size={23} fill="#043655" />
+                  {/* Change Profile Picture */}
+                  <div className="col-span-12 md:col-span-6 border p-4 rounded-lg bg-gray-50/50">
+                    <p className="font-semibold text-sm mb-3 text-[#1E293B]">
+                      Change Profile Picture
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="rounded-full w-20 h-20 overflow-hidden flex-shrink-0">
+                        {imageSrc && imageSrc !== "/profile-pic.png" ? (
+                          <img
+                            src={imageSrc}
+                            className="w-full h-full object-cover"
+                            alt=""
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-primary flex items-center justify-center text-white text-2xl font-bold">
+                            {getInitials(user?.name)}
+                          </div>
+                        )}
                       </div>
-                      <p className="mt-2 text-xs text-[#475569]">
-                        <span className="text-[#043655] font-bold">
-                          Click here
-                        </span>{" "}
-                        to upload your file or drag.
-                      </p>
-                      <p className="text-sm font-medium text-[#94A3B8]">
-                        Supported Format: SVG, JPG, PNG (10mb each)
-                      </p>
-                      <input
-                        onChange={handleImageChange}
-                        type="file"
-                        accept={IMAGE_ACCEPT_TYPES}
-                        className="hidden"
-                        ref={imageInputRef}
-                      />
+                      <div
+                        onClick={onImageInputClick}
+                        onDrop={handleImageDrop}
+                        onDragOver={handleDragOver}
+                        className="w-full flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-3 hover:border-[#043655] bg-white"
+                      >
+                        <div className="bg-[#EEF2FF] rounded-full flex items-center justify-center h-8 w-8">
+                          <MdUploadFile size={18} fill="#043655" />
+                        </div>
+                        <p className="mt-1 text-xs text-[#475569]">
+                          <span className="text-[#043655] font-bold">
+                            Upload
+                          </span>{" "}
+                          profile photo
+                        </p>
+                        <input
+                          onChange={handleImageChange}
+                          type="file"
+                          accept={IMAGE_ACCEPT_TYPES}
+                          className="hidden"
+                          ref={imageInputRef}
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Change Company Logo */}
+                  {canEditCompanyLogo && (
+                    <div className="col-span-12 md:col-span-6 border p-4 rounded-lg bg-gray-50/50">
+                      <p className="font-semibold text-sm mb-1 text-[#1E293B]">
+                        Change Company Logo
+                      </p>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Upload your company logo.
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="w-24 h-16 rounded border bg-[#f8fafc] flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
+                          {companyLogoSrc ? (
+                            <img
+                              src={companyLogoSrc}
+                              className="max-h-full max-w-full object-contain"
+                              alt="Company Logo"
+                            />
+                          ) : (
+                            <span className="text-xs text-gray-400">
+                              No Logo
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          onClick={onLogoInputClick}
+                          onDrop={handleLogoDrop}
+                          onDragOver={handleDragOver}
+                          className="w-full flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-3 hover:border-[#043655] bg-white"
+                        >
+                          <div className="bg-[#EEF2FF] rounded-full flex items-center justify-center h-8 w-8">
+                            <MdUploadFile size={18} fill="#043655" />
+                          </div>
+                          <p className="mt-1 text-xs text-[#475569]">
+                            <span className="text-[#043655] font-bold">
+                              Upload
+                            </span>{" "}
+                            company logo
+                          </p>
+                          <input
+                            onChange={handleLogoChange}
+                            type="file"
+                            accept={IMAGE_ACCEPT_TYPES}
+                            className="hidden"
+                            ref={logoInputRef}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
