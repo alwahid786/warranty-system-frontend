@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import { X, Minus, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
 const EditInvoiceForm = ({
@@ -434,7 +435,7 @@ const EditInvoiceForm = ({
           {formData.adjustments.map((adj, idx) => (
             <div
               key={idx}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
+              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center"
             >
               <select
                 className="border rounded p-2"
@@ -474,25 +475,48 @@ const EditInvoiceForm = ({
                 }
               />
 
-              {formData.adjustments.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeAdjustmentRow(idx)}
-                  className="text-red-600"
+              {idx > 0 ? (
+                <div className="flex justify-end md:justify-start">
+                  <button
+                    type="button"
+                    onClick={() => removeAdjustmentRow(idx)}
+                    className="text-red-600 font-medium"
+                    title="Remove adjustment"
+                  >
+                    <span className="hidden md:inline">
+                      <X size={15} strokeWidth={2.5} />
+                    </span>
+                    <span className="inline-flex md:hidden items-center gap-1.5">
+                      <Minus size={15} strokeWidth={2.5} />
+                      Cancel
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="invisible flex justify-end md:justify-start"
+                  aria-hidden="true"
                 >
-                  ✖
-                </button>
+                  <button type="button" className="font-medium" tabIndex="-1">
+                    <span className="hidden md:inline">
+                      <X size={15} strokeWidth={2.5} />
+                    </span>
+                  </button>
+                </div>
               )}
             </div>
           ))}
 
-          <button
-            type="button"
-            onClick={addAdjustmentRow}
-            className="text-blue-600"
-          >
-            + Add Another
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={addAdjustmentRow}
+              className="text-blue-600 font-medium mt-2 flex items-center gap-1.5"
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              Add Another
+            </button>
+          </div>
         </div>
 
         {/* Calculation */}
