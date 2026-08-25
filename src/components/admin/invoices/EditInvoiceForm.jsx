@@ -487,7 +487,6 @@ const EditInvoiceForm = ({
                       <X size={15} strokeWidth={2.5} />
                     </span>
                     <span className="inline-flex md:hidden items-center gap-1.5">
-                      <Minus size={15} strokeWidth={2.5} />
                       Cancel
                     </span>
                   </button>
