@@ -91,14 +91,7 @@ function App() {
   useEffect(() => {
     // 1. Synchronize user profile from query if successful
     if (isSuccess && data?.data) {
-      if (
-        !user?._id ||
-        data?.data._id !== user?._id ||
-        data?.data.termsAccepted !== user?.termsAccepted ||
-        data?.data.activeStatus !== user?.activeStatus
-      ) {
-        dispatch(userExist(data?.data));
-      }
+      dispatch(userExist(data.data));
     }
 
     // 2. Synchronize notifications if user is logged in and notifications data is available

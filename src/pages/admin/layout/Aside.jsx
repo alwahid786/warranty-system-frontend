@@ -21,7 +21,7 @@ import {
 // import Modal from "../../../components/shared/small/Modal";
 import ActionSubLink from "../../../assets/icons/aside/ActionSubLink";
 import InvoicesSubLink from "../../../assets/icons/aside/InvoicesSubLink";
-import logoWithOutBg from "../../../assets/logos/logo-without-bg.png";
+import { getCompanyLogoUrl } from "../../../utils/getCompanyLogoUrl";
 import { useGetClientsQuery } from "../../../redux/apis/clientsApis";
 import { useGetUsersQuery } from "../../../redux/apis/userApis";
 import { useGetClaimsQuery } from "../../../redux/apis/claimsApis";
@@ -216,6 +216,8 @@ const Aside = ({ onCloseMobileNav }) => {
     return true;
   });
 
+  const asideLogoSrc = getCompanyLogoUrl(user);
+
   return (
     <aside
       style={{ background: 'url("/Sidebar.png")' }}
@@ -238,17 +240,17 @@ const Aside = ({ onCloseMobileNav }) => {
       >
         <div className="flex flex-col justify-between h-full">
           <div>
-            <div className="flex items-center justify-center gap-1">
-              {isMenuOpen && (
+            <div className="flex flex-col items-center justify-center gap-1">
+              {asideLogoSrc && (
                 <img
-                  src={logoWithOutBg}
+                  src={asideLogoSrc}
                   alt="warranty-system-logo"
-                  className="mx-auto h-8 object-contain"
+                  className=" mb-2 mx-auto max-h-10 max-w-[160px] object-contain"
                 />
               )}
               {!isMenuOpen && (
                 <h3
-                  className="text-white font-semibold text-lg truncate px-2"
+                  className="text-white font-semibold text-sm truncate px-2 text-center"
                   title={user?.companyName || "Precision Warranty"}
                 >
                   {user?.companyName || "Precision Warranty"}

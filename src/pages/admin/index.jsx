@@ -1,45 +1,34 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import Aside from "./layout/Aside";
 import Header from "./layout/Header";
-// import { jwtDecode } from "jwt-decode";
-// import SessionExpiredModal from "../../components/shared/small/SessionExpiredModal";
 
 const AdminDashboard = () => {
-  //   useEffect(() => {
-  //     let timeoutId;
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  //     const checkTokenExpiryAndSetTimeout = async () => {
-  //       const token = localStorage.getItem("token");
-  //       if (token) {
-  //         try {
-  //           const decodedToken = jwtDecode(token);
-  //           const currentTime = Date.now() / 1000;
-  //           if (decodedToken.exp && decodedToken.exp < currentTime) {
-  //             setIsTokenExpired(true);
-  //           } else if (decodedToken.exp) {
-  //             const timeLeft = decodedToken.exp * 1000 - Date.now() - 60 * 1000;
-  //             timeoutId = setTimeout(checkTokenExpiryAndSetTimeout, timeLeft);
-  //           }
-  //         } catch (error) {
-  //           console.error("Invalid token");
-  //         }
-  //       }
-  //     };
+  const isLogoMissing =
+    user &&
+    !user.companyLogo?.url &&
+    !user.inheritedCompanyLogo &&
+    user.role === "admin";
 
-  //     checkTokenExpiryAndSetTimeout();
-
-  //     return () => {
-  //       if (timeoutId) {
-  //         clearTimeout(timeoutId);
-  //       }
-  //     };
-  //   }, [navigate]);
-
-  //   const handleSessionExpired = () => {
-  //     localStorage.removeItem("token");
-  //     navigate("/login");
-  //   };
+  useEffect(() => {
+    if (isLogoMissing && location.pathname !== "/dashboard/settings") {
+      toast.error(
+        "Company logo is required. Please upload your company logo.",
+        {
+          id: "logo-required-toast"
+        }
+      );
+      navigate("/dashboard/settings", { replace: true });
+    }
+  }, [isLogoMissing, location.pathname, navigate]);
 
   return (
     <section className="bg-[#F8F9FC] w-full h-screen h-[100dvh] flex items-center justify-center overflow-hidden">
