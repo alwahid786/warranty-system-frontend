@@ -77,7 +77,7 @@ const TopCards = ({ usersData, invoiceData }) => {
       id: "invoices",
       title: "Total Invoices",
       icon: (
-        <MdOutlinePendingActions className="text-3xl text-red-400 bg-[#FCE7E766] rounded-md p-1" />
+        <MdOutlinePendingActions className="text-3xl text-[#043655] bg-[#EBF7FF] rounded-md p-1" />
       ),
       value: invoiceData?.data?.[`totalInvoicesIn${range.invoices}Days`] ?? 0,
       change: invoiceData?.data?.[`percentageIn${range.invoices}Days`] ?? 0
