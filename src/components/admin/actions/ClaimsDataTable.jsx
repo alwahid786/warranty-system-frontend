@@ -560,8 +560,10 @@ const ClaimsDataTable = ({
           }
 
           const storeName =
-            creator.storeName ||
+            creator.owner?.companyName ||
+            creator.owner?.storeName ||
             creator.companyName ||
+            creator.storeName ||
             creator.warrantyCompany ||
             "";
 
@@ -601,7 +603,12 @@ const ClaimsDataTable = ({
         }
 
         const companyName =
-          owner.companyName || owner.warrantyCompany || owner.storeName || "";
+          owner.owner?.companyName ||
+          owner.owner?.storeName ||
+          owner.companyName ||
+          owner.warrantyCompany ||
+          owner.storeName ||
+          "";
 
         const userName = owner.name || "";
 
