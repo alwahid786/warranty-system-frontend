@@ -531,12 +531,12 @@ const ClaimsDataTable = ({
               : "Admin";
 
             return (
-              <span
-                className="text-xs font-semibold truncate"
+              <div
+                className="text-xs font-semibold line-clamp-2 break-words max-w-full"
                 title={adminText}
               >
                 {adminText}
-              </span>
+              </div>
             );
           }
 
@@ -550,12 +550,12 @@ const ClaimsDataTable = ({
               : "Admin";
 
             return (
-              <span
-                className="text-xs font-semibold truncate"
+              <div
+                className="text-xs font-semibold line-clamp-2 break-words max-w-full"
                 title={adminUserText}
               >
                 {adminUserText}
-              </span>
+              </div>
             );
           }
 
@@ -573,24 +573,30 @@ const ClaimsDataTable = ({
               : storeName || name || "Client";
 
           return (
-            <span className="text-xs truncate" title={clientText}>
+            <div
+              className="text-xs line-clamp-2 break-words max-w-full"
+              title={clientText}
+            >
               {clientText}
-            </span>
+            </div>
           );
         }
 
         // Fallback for legacy claims where createdBy is not set
         const owner = row.owner;
 
-        if (!owner) return <span className="text-xs">Unknown</span>;
+        if (!owner) return <div className="text-xs">Unknown</div>;
 
         if (owner.role === "admin" || owner.role === "superadmin") {
           const adminText = owner.name ? `Admin - (${owner.name})` : "Admin";
 
           return (
-            <span className="text-xs font-semibold truncate" title={adminText}>
+            <div
+              className="text-xs font-semibold line-clamp-2 break-words max-w-full"
+              title={adminText}
+            >
               {adminText}
-            </span>
+            </div>
           );
         }
 
@@ -605,9 +611,12 @@ const ClaimsDataTable = ({
             : companyName || userName || "Unknown";
 
         return (
-          <span className="text-xs truncate" title={displayName}>
+          <div
+            className="text-xs line-clamp-2 break-words max-w-full"
+            title={displayName}
+          >
             {displayName}
-          </span>
+          </div>
         );
       },
       sortable: true,
