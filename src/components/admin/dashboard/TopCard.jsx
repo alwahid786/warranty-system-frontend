@@ -87,6 +87,7 @@ const TopCards = ({ usersData, invoiceData }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => {
+        const isAllTime = range[card.id] === "all";
         const formatted = formatChange(card.change, card.inverse);
 
         return (
@@ -118,31 +119,48 @@ const TopCards = ({ usersData, invoiceData }) => {
             </div>
 
             {/* Main value */}
-            {/* Main value */}
             <div className="text-2xl font-semibold text-primary flex items-center gap-2">
               {card.value}
 
               {/* Percentage badge */}
-              {card.change !== undefined && (
-                <span
-                  className={`text-sm px-2 py-0.5 rounded-full ${
-                    formatted.color === "text-green-600"
+              <span
+                className={`text-sm px-2 py-0.5 rounded-full ${
+                  isAllTime
+                    ? card.value > 0
+                      ? "bg-green-100 text-green-600"
+                      : "bg-gray-100 text-gray-500"
+                    : formatted.color === "text-green-600"
                       ? "bg-green-100 text-green-600"
                       : formatted.color === "text-red-600"
                         ? "bg-red-100 text-red-600"
                         : "bg-gray-100 text-gray-500"
-                  }`}
-                >
-                  {parseFloat(card.change) > 0
+                }`}
+              >
+                {isAllTime
+                  ? card.value > 0
+                    ? "+100.00"
+                    : "0.00"
+                  : parseFloat(card.change) > 0
                     ? `+${parseFloat(card.change).toFixed(2)}`
                     : parseFloat(card.change).toFixed(2)}
-                </span>
-              )}
+              </span>
             </div>
 
             {/* Percentage description */}
-            <div className={`text-xs mt-1 ${formatted.color}`}>
-              {formatted.text.replace("X", range[card.id])}
+            <div
+              className={`text-xs mt-1 ${
+                isAllTime
+                  ? card.value > 0
+                    ? "text-green-600"
+                    : "text-gray-500"
+                  : formatted.color
+              }`}
+            >
+              {isAllTime
+                ? card.value > 0
+                  ? "It's +100.00% better than all time"
+                  : "0% same as last all time"
+                : formatted.text.replace("X", range[card.id])}
             </div>
           </div>
         );
