@@ -519,115 +519,21 @@ const ClaimsDataTable = ({
     },
     {
       name: "Created By",
-      selector: (row) => row.createdBy || row.owner,
+      selector: (row) => row.createdBy?.name || row.owner?.name || "",
       cell: (row) => {
-        const creator = row.createdBy;
-
-        // If createdBy is populated (for newly created claims)
-        if (creator) {
-          if (creator.role === "admin" || creator.role === "superadmin") {
-            const adminText = creator.name
-              ? `Admin - (${creator.name})`
-              : "Admin";
-
-            return (
-              <div
-                className="text-xs font-semibold line-clamp-2 break-words max-w-full"
-                title={adminText}
-              >
-                {adminText}
-              </div>
-            );
-          }
-
-          if (
-            creator.role === "user" &&
-            (creator.owner?.role === "admin" ||
-              creator.owner?.role === "superadmin")
-          ) {
-            const adminUserText = creator.name
-              ? `Admin - (${creator.name})`
-              : "Admin";
-
-            return (
-              <div
-                className="text-xs font-semibold line-clamp-2 break-words max-w-full"
-                title={adminUserText}
-              >
-                {adminUserText}
-              </div>
-            );
-          }
-
-          const storeName =
-            creator.owner?.companyName ||
-            creator.owner?.storeName ||
-            creator.companyName ||
-            creator.storeName ||
-            creator.warrantyCompany ||
-            "";
-
-          const name = creator.name || "";
-
-          const clientText =
-            storeName && name
-              ? `${storeName} - (${name})`
-              : storeName || name || "Client";
-
-          return (
-            <div
-              className="text-xs line-clamp-2 break-words max-w-full"
-              title={clientText}
-            >
-              {clientText}
-            </div>
-          );
-        }
-
-        // Fallback for legacy claims where createdBy is not set
-        const owner = row.owner;
-
-        if (!owner) return <div className="text-xs">Unknown</div>;
-
-        if (owner.role === "admin" || owner.role === "superadmin") {
-          const adminText = owner.name ? `Admin - (${owner.name})` : "Admin";
-
-          return (
-            <div
-              className="text-xs font-semibold line-clamp-2 break-words max-w-full"
-              title={adminText}
-            >
-              {adminText}
-            </div>
-          );
-        }
-
-        const companyName =
-          owner.owner?.companyName ||
-          owner.owner?.storeName ||
-          owner.companyName ||
-          owner.warrantyCompany ||
-          owner.storeName ||
-          "";
-
-        const userName = owner.name || "";
-
-        const displayName =
-          companyName && userName
-            ? `${companyName} - (${userName})`
-            : companyName || userName || "Unknown";
+        const creatorName = row.createdBy?.name || row.owner?.name || "N/A";
 
         return (
           <div
-            className="text-xs line-clamp-2 break-words max-w-full"
-            title={displayName}
+            className="text-xs font-medium line-clamp-2 break-words max-w-full"
+            title={creatorName}
           >
-            {displayName}
+            {creatorName}
           </div>
         );
       },
       sortable: true,
-      minWidth: "160px"
+      minWidth: "140px"
     },
     {
       name: "Error Description",
