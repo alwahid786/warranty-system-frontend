@@ -12,6 +12,12 @@ import Input from "../../../components/shared/small/input";
 import Button from "../../../components/shared/small/Button";
 import { useValidateResetTokenQuery } from "../../../redux/apis/authApis";
 
+const PASSWORD_RULE_MESSAGE =
+  "Password must be at least 8 characters and include 1 uppercase letter, 1 lowercase letter, and 1 symbol.";
+
+const isStrongPassword = (password) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+
 function AdminResetPassword() {
   const [formData, setFormData] = useState({
     password: "",
@@ -49,6 +55,11 @@ function AdminResetPassword() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+
+    if (!isStrongPassword(formData.password)) {
+      return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+    }
+
     if (formData.password !== formData.confirmPassword) {
       return toast.error("Passwords do not match!", { duration: 3000 });
     }
@@ -97,6 +108,9 @@ function AdminResetPassword() {
                     className="bg-white border pr-10"
                     label="New Password"
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {PASSWORD_RULE_MESSAGE}
+                  </p>
                   <span
                     className="absolute right-3 top-12 cursor-pointer text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}

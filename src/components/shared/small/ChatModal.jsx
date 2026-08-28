@@ -17,6 +17,8 @@ import claimsApis from "../../../redux/apis/claimsApis";
 import notificationsApis from "../../../redux/apis/notificationsApis";
 import { getInitials } from "../../../utils/getInitials";
 
+const MESSAGE_CHUNK_SIZE = 500;
+
 const normalizeId = (value) => {
   if (!value) return "";
   if (typeof value === "string") return value;
@@ -37,6 +39,7 @@ export default function ChatModal({
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState(null);
   const [expandedImage, setExpandedImage] = useState(null);
+  const [visibleMessageLengths, setVisibleMessageLengths] = useState({});
   const [sendMessageMutation, { isLoading }] = useSendMessageMutation();
 
   const { data } = useGetChatQuery(forInvoice ? row?.Id : row?._id, {
@@ -59,6 +62,29 @@ export default function ChatModal({
   const dispatch = useDispatch();
 
   const messages = useMemo(() => data?.data ?? [], [data?.data]);
+
+  const getMessageKey = (msg, fallback) => normalizeId(msg?._id) || fallback;
+
+  const getVisibleMessageLength = (msg, fallback) => {
+    const contentLength = msg?.content?.length || 0;
+    const messageKey = getMessageKey(msg, fallback);
+    const savedLength = visibleMessageLengths[messageKey];
+
+    return Math.min(savedLength || MESSAGE_CHUNK_SIZE, contentLength);
+  };
+
+  const showMoreMessageContent = (msg, fallback) => {
+    const contentLength = msg?.content?.length || 0;
+    const messageKey = getMessageKey(msg, fallback);
+
+    setVisibleMessageLengths((prev) => ({
+      ...prev,
+      [messageKey]: Math.min(
+        (prev[messageKey] || MESSAGE_CHUNK_SIZE) + MESSAGE_CHUNK_SIZE,
+        contentLength
+      )
+    }));
+  };
 
   const suggestionsData = (suggestionData?.data || []).map((u) => ({
     id: normalizeId(u._id),
@@ -230,7 +256,7 @@ export default function ChatModal({
       ></div>
 
       <div
-        className={`relative w-full max-w-3xl rounded-r-[8px] bg-white h-full shadow-xl flex flex-col transform transition-transform duration-1000 ease-in-out ${
+        className={`relative w-full max-w-3xl rounded-r-[8px] bg-white h-full shadow-xl flex flex-col overflow-hidden transform transition-transform duration-1000 ease-in-out ${
           animateIn ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -283,7 +309,7 @@ export default function ChatModal({
         </div>
 
         {/* Chat Messages ---------- */}
-        <div className="p-4 flex-1 overflow-y-auto space-y-4">
+        <div className="p-4 flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
               <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3">
@@ -297,84 +323,98 @@ export default function ChatModal({
               </p>
             </div>
           ) : (
-            messages.map((msg, idx) => (
-              <div
-                key={msg._id || idx}
-                className={`flex flex-col ${
-                  normalizeId(msg.senderId) === normalizeId(user?._id)
-                    ? "items-end"
-                    : "items-start"
-                }`}
-              >
-                <p className="text-[11px] font-semibold text-gray-500 mb-1 px-1">
-                  {msg.senderName ||
-                    (normalizeId(msg.senderId) === normalizeId(user?._id)
-                      ? user?.name || "You"
-                      : "User")}
-                </p>
+            messages.map((msg, idx) => {
+              const isOwn =
+                normalizeId(msg.senderId) === normalizeId(user?._id);
 
+              const visibleLength = getVisibleMessageLength(msg, idx);
+              const hasMoreContent = (msg.content?.length || 0) > visibleLength;
+              const visibleContent = msg.content?.slice(0, visibleLength);
+
+              return (
                 <div
-                  className={`p-3 rounded-lg max-w-xs ${
-                    normalizeId(msg.senderId) === normalizeId(user?._id)
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-900"
+                  key={msg._id || idx}
+                  className={`flex w-full flex-col ${
+                    isOwn ? "items-end" : "items-start"
                   }`}
                 >
-                  {msg.content && (
-                    <p
-                      className={`whitespace-pre-wrap break-words ${msg.type === "file" ? "mb-2" : ""}`}
-                    >
-                      {renderMessageContent(
-                        msg.content,
-                        normalizeId(msg.senderId) === normalizeId(user?._id)
-                      )}
-                    </p>
-                  )}
-
-                  {msg.type === "file" && msg.fileData && (
-                    <>
-                      {msg.fileData.format === "jpg" ||
-                      msg.fileData.format === "jpeg" ||
-                      msg.fileData.format === "png" ? (
-                        <img
-                          src={msg.fileData.url}
-                          alt="attachment"
-                          className="max-w-[200px] rounded-md cursor-pointer hover:brightness-90 transition-all active:scale-95"
-                          onClick={() => setExpandedImage(msg.fileData.url)}
-                        />
-                      ) : (
-                        <>
-                          <p>{msg.fileData.filename}</p>
-                          <a
-                            href={msg.fileData.url}
-                            download={msg.fileData.filename}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline"
-                          >
-                            Download{" "}
-                            {msg.fileData.format?.toUpperCase() || "File"}
-                          </a>
-                        </>
-                      )}
-                    </>
-                  )}
-
-                  {/* Timestamp inside the bubble */}
-                  <p className="text-[10px] mt-1 opacity-70">
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
+                  <p className="text-[11px] font-semibold text-gray-500 mb-1 px-1">
+                    {msg.senderName || (isOwn ? user?.name || "You" : "User")}
                   </p>
+
+                  <div
+                    className={`p-3 rounded-lg w-fit max-w-[85%] sm:max-w-lg min-w-0 overflow-hidden ${
+                      isOwn
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-900"
+                    }`}
+                  >
+                    {msg.content && (
+                      <div className={msg.type === "file" ? "mb-2" : ""}>
+                        <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                          {renderMessageContent(visibleContent, isOwn)}
+                        </p>
+                        {hasMoreContent && (
+                          <button
+                            type="button"
+                            className={`mt-1 text-xs font-semibold hover:underline ${
+                              isOwn ? "text-white/90" : "text-blue-700"
+                            }`}
+                            onClick={() => showMoreMessageContent(msg, idx)}
+                          >
+                            Read more
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {msg.type === "file" && msg.fileData && (
+                      <>
+                        {msg.fileData.format === "jpg" ||
+                        msg.fileData.format === "jpeg" ||
+                        msg.fileData.format === "png" ? (
+                          <img
+                            src={msg.fileData.url}
+                            alt="attachment"
+                            className="max-w-full sm:max-w-[200px] rounded-md cursor-pointer hover:brightness-90 transition-all active:scale-95"
+                            onClick={() => setExpandedImage(msg.fileData.url)}
+                          />
+                        ) : (
+                          <>
+                            <p className="break-words [overflow-wrap:anywhere]">
+                              {msg.fileData.filename}
+                            </p>
+                            <a
+                              href={msg.fileData.url}
+                              download={msg.fileData.filename}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline break-words [overflow-wrap:anywhere]"
+                            >
+                              Download{" "}
+                              {msg.fileData.format?.toUpperCase() || "File"}
+                            </a>
+                          </>
+                        )}
+                      </>
+                    )}
+
+                    {/* Timestamp inside the bubble */}
+                    <p className="text-[10px] mt-1 opacity-70">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
           <div ref={chatEndRef}></div>
         </div>
 
-        <div className="p-4 border-t flex items-center space-x-2">
+        <div className="mt-auto p-4 border-t bg-white flex shrink-0 items-end gap-2 overflow-hidden">
           {/* Hidden file input */}
           <input
             type="file"
@@ -391,7 +431,7 @@ export default function ChatModal({
           </button>
 
           {file && (
-            <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded border">
+            <div className="flex min-w-0 items-center space-x-1 bg-gray-100 px-2 py-1 rounded border">
               <span
                 className="text-xs text-gray-600 truncate max-w-[100px]"
                 title={file.name}
@@ -411,8 +451,9 @@ export default function ChatModal({
             </div>
           )}
 
-          <div className="flex-1 relative mentions-wrapper">
+          <div className="min-w-0 flex-1 relative mentions-wrapper">
             <MentionsInput
+              className="chat-composer"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message... (Use @ to mention, Shift+Enter for new line)"
@@ -421,23 +462,47 @@ export default function ChatModal({
                   fontSize: 14,
                   fontWeight: "normal",
                   fontFamily: "inherit",
-                  lineHeight: "1.5"
+                  lineHeight: "1.5",
+                  width: "100%",
+                  maxWidth: "100%",
+                  minWidth: 0,
+                  height: "120px",
+                  maxHeight: "120px",
+                  overflow: "hidden"
                 },
                 highlighter: {
                   padding: "8px 12px",
                   border: "1px solid transparent",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  maxWidth: "100%",
+                  minHeight: "120px",
+                  height: "120px",
+                  maxHeight: "120px",
+                  overflow: "hidden",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "anywhere",
+                  wordBreak: "break-word"
                 },
                 input: {
                   margin: 0,
+                  display: "block",
                   border: "1px solid #e5e7eb",
                   borderRadius: "0.25rem",
                   padding: "8px 12px",
                   outline: "none",
-                  minHeight: "40px",
+                  width: "100%",
+                  maxWidth: "100%",
+                  minWidth: 0,
+                  minHeight: "120px",
+                  height: "120px",
                   maxHeight: "120px",
                   overflowY: "auto",
-                  boxSizing: "border-box"
+                  overflowX: "hidden",
+                  boxSizing: "border-box",
+                  resize: "none",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "anywhere",
+                  wordBreak: "break-word"
                 },
                 suggestions: {
                   list: {

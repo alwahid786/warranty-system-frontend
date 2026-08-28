@@ -28,7 +28,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
     emails: [""],
     accountOwner: "",
     businessOwner: "",
-    businessOwnerView: false,
+    businessOwnerView: true,
     percentage: ""
   });
 
@@ -58,7 +58,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
         emails: client.emails?.length ? client.emails : [""],
         accountOwner: client.accountOwner || "",
         businessOwner: client.businessOwner || "",
-        businessOwnerView: client.businessOwnerView || false,
+        businessOwnerView: true,
         percentage: client.percentage ?? ""
       });
       setShowPassword(false);
@@ -136,7 +136,11 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       (email) => email.trim() !== ""
     );
 
-    const dataToSubmit = { ...formData, emails: filteredEmails };
+    const dataToSubmit = {
+      ...formData,
+      businessOwnerView: true,
+      emails: filteredEmails
+    };
 
     onSave(dataToSubmit);
   };
@@ -429,24 +433,6 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                   className="w-full border px-3 py-2 rounded"
                 />
               </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.businessOwnerView}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      businessOwnerView: e.target.checked
-                    })
-                  }
-                  className="h-4 w-4"
-                />
-                <span className="text-sm font-medium">
-                  Business owner can view invoices
-                </span>
-              </label>
             </div>
           </div>
 

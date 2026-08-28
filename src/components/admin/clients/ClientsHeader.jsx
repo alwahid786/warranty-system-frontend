@@ -38,7 +38,7 @@ const ClientsHeader = () => {
     emails: [""],
     accountOwner: "",
     businessOwner: "",
-    businessOwnerView: false,
+    businessOwnerView: true,
     percentage: ""
   });
 
@@ -102,7 +102,7 @@ const ClientsHeader = () => {
       emails: [""],
       accountOwner: "",
       businessOwner: "",
-      businessOwnerView: false,
+      businessOwnerView: true,
       percentage: ""
     });
     setShowPassword(false);
@@ -150,7 +150,11 @@ const ClientsHeader = () => {
         (email) => email.trim() !== ""
       );
 
-      const dataToSubmit = { ...formData, emails: filteredEmails };
+      const dataToSubmit = {
+        ...formData,
+        businessOwnerView: true,
+        emails: filteredEmails
+      };
 
       const res = await addClient(dataToSubmit).unwrap();
 
@@ -484,26 +488,6 @@ const ClientsHeader = () => {
                   placeholder="Enter Business Owner Name"
                   className="w-full border px-3 py-2 rounded"
                 />
-              </div>
-            </div>
-
-            {/* Permissions */}
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.businessOwnerView}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      businessOwnerView: e.target.checked
-                    })
-                  }
-                  className="h-4 w-4"
-                />
-                <label className="text-sm font-medium">
-                  Business owner can view invoices
-                </label>
               </div>
             </div>
           </div>

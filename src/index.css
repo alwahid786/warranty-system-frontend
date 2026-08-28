@@ -52,6 +52,39 @@ body {
 button {
   cursor: pointer;
 }
+
+.chat-composer,
+.chat-composer__control {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: 120px !important;
+  max-height: 120px !important;
+  overflow: hidden !important;
+}
+
+.chat-composer__highlighter,
+.chat-composer__input {
+  max-width: 100% !important;
+  min-height: 120px !important;
+  height: 120px !important;
+  max-height: 120px !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
+}
+
+.chat-composer__highlighter {
+  overflow: hidden !important;
+}
+
+.chat-composer__input {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  resize: none !important;
+}
+
 .bg-gradient {
   background: var(--gradient-primary);
 }
