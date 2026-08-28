@@ -19,6 +19,11 @@ import {
   validateImage,
   IMAGE_ACCEPT_TYPES
 } from "../../../utils/imageValidator";
+import {
+  isStrongPassword,
+  PASSWORD_RULE_MESSAGE,
+  shouldValidateOptionalPassword
+} from "../../../utils/passwordValidator";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
@@ -203,6 +208,13 @@ const Settings = () => {
 
   const handleSave = async () => {
     try {
+      if (
+        shouldValidateOptionalPassword(formData.password) &&
+        !isStrongPassword(formData.password)
+      ) {
+        return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+      }
+
       const form = new FormData();
 
       Object.keys(formData).forEach((key) => {
@@ -341,6 +353,11 @@ const Settings = () => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {isEditing && (
+                  <p className="text-xs text-gray-500">
+                    {PASSWORD_RULE_MESSAGE}
+                  </p>
+                )}
               </div>
 
               {/* Phone */}

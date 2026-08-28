@@ -12,6 +12,10 @@ import {
   useGetClientsActivityStatsQuery
 } from "../../../redux/apis/clientsApis";
 import AddClientModal from "./AddClientModal";
+import {
+  isStrongPassword,
+  PASSWORD_RULE_MESSAGE
+} from "../../../utils/passwordValidator";
 
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,6 +135,10 @@ const ClientsHeader = () => {
 
       if (!formData.clientPhone) {
         return toast.error("Client Phone is required");
+      }
+
+      if (!isStrongPassword(formData.clientPassword)) {
+        return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
       }
 
       if (!formData.address.city || !formData.address.zip) {
@@ -261,6 +269,9 @@ const ClientsHeader = () => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  {PASSWORD_RULE_MESSAGE}
+                </p>
               </div>
               {/* Phone */}
               <div>

@@ -11,12 +11,10 @@ import { useResetPasswordMutation } from "../../../redux/apis/authApis";
 import Input from "../../../components/shared/small/input";
 import Button from "../../../components/shared/small/Button";
 import { useValidateResetTokenQuery } from "../../../redux/apis/authApis";
-
-const PASSWORD_RULE_MESSAGE =
-  "Password must be at least 8 characters and include 1 uppercase letter, 1 lowercase letter, and 1 symbol.";
-
-const isStrongPassword = (password) =>
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+import {
+  isStrongPassword,
+  PASSWORD_RULE_MESSAGE
+} from "../../../utils/passwordValidator";
 
 function AdminResetPassword() {
   const [formData, setFormData] = useState({

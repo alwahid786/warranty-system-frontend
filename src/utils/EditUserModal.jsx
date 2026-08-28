@@ -2,8 +2,15 @@ import React, { useState, useEffect } from "react";
 
 import { MdClose } from "react-icons/md";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+
+import {
+  isStrongPassword,
+  PASSWORD_RULE_MESSAGE,
+  shouldValidateOptionalPassword
+} from "./passwordValidator";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
@@ -41,6 +48,14 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (
+      shouldValidateOptionalPassword(formData.password) &&
+      !isStrongPassword(formData.password)
+    ) {
+      return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+    }
+
     onSave(formData);
   };
 
@@ -163,6 +178,9 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              {PASSWORD_RULE_MESSAGE}
+            </p>
           </div>
 
           {/* Permission Checkbox */}

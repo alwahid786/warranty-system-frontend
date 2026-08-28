@@ -17,7 +17,7 @@ import claimsApis from "../../../redux/apis/claimsApis";
 import notificationsApis from "../../../redux/apis/notificationsApis";
 import { getInitials } from "../../../utils/getInitials";
 
-const MESSAGE_CHUNK_SIZE = 500;
+const MESSAGE_CHUNK_SIZE = 5000;
 
 const normalizeId = (value) => {
   if (!value) return "";
