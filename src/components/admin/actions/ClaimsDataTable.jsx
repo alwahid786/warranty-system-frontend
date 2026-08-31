@@ -10,12 +10,12 @@ import {
   HiChevronRight
 } from "react-icons/hi2";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { createPortal } from "react-dom";
 
 import ChatModal from "../../shared/small/ChatModal";
+import CloseButton from "../../shared/small/CloseButton";
 import {
   useUpdateClaimsMutation,
   useUpdateClaimsAdditionalDataMutation,
@@ -766,12 +766,7 @@ const ClaimsDataTable = ({
         {infoModal && (
           <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-50">
             <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-              <button
-                onClick={() => setInfoModal(null)}
-                className="absolute top-3 right-3 text-gray-700 hover:text-gray-500"
-              >
-                <MdClose className="text-2xl" />
-              </button>
+              <CloseButton onClick={() => setInfoModal(null)} />
 
               <div className="flex flex-col gap-2 text-center">
                 <h3 className="font-semibold mb-2">{infoModalTitle}</h3>

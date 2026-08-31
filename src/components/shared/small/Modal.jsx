@@ -1,5 +1,6 @@
-// import { CrossIcon } from "../../../assets/icons/icons";
 import { useEffect, useState } from "react";
+
+import CloseButton from "./CloseButton";
 
 const Modal = ({ title, onClose, children, width, className }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -21,12 +22,13 @@ const Modal = ({ title, onClose, children, width, className }) => {
       style={{ opacity: isVisible ? 1 : 0 }}
     >
       <div
-        className={`bg-white rounded-t-[20px] md:rounded-md shadow-lg p-4 md:p-6 overflow-y-scroll h-fit max-h-[90vh] scroll-0 transition-transform duration-300 ease-in-out ${
+        className={`bg-white rounded-t-[20px] md:rounded-md shadow-lg p-4 md:p-6 overflow-y-scroll h-fit max-h-[90vh] scroll-0 transition-transform duration-300 ease-in-out relative ${
           width ? width : "w-[300px] md:w-[600px] lg:w-[900px] xl:w-[1200px]"
         }${className || ""}`}
         onClick={(e) => e.stopPropagation()}
         style={{ transform: isVisible ? "translateY(0)" : "translateY(100%)" }}
       >
+        <CloseButton onClick={handleClose} />
         <div className="flex items-center justify-center">
           <h2 className="text-[#09090B] text-center font-medium text-xl xl:text-2xl">
             {title}

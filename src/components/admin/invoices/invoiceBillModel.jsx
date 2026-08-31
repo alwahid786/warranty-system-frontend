@@ -1,6 +1,7 @@
 import { FaDiamond } from "react-icons/fa6";
 
 import logoWithBackground from "../../../assets/logos/logo-with-bg.png";
+import CloseButton from "../../shared/small/CloseButton";
 
 const SectionHeader = ({ children }) => (
   <p className="text-[11px] font-medium text-primary flex items-center gap-1 mb-2">
@@ -34,12 +35,7 @@ const InvoiceBill = ({ invoice, isOpen, onClose }) => {
     <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
       <div className="relative w-full max-w-3xl flex flex-col gap-6 p-6 bg-white rounded-xl shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute text-2xl top-3 right-3 text-gray-500 hover:text-black"
-        >
-          ✖
-        </button>
+        <CloseButton onClick={onClose} />
 
         {/* Header */}
         <div className="flex flex-col mt-6 sm:flex-row items-center gap-4 justify-between border-b pb-3">

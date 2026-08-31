@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
 import toast from "react-hot-toast";
-import { MdClose } from "react-icons/md";
 
 import DateInput from "../../shared/small/DateInput";
+import CloseButton from "../../shared/small/CloseButton";
 
 const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
   const [formData, setFormData] = useState({});
@@ -41,15 +41,10 @@ const EditClaimsModal = ({ isOpen, onClose, claim, onSubmit, isAdmin }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900/50 z-50">
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <CloseButton onClick={onClose} className="z-10" />
         {/* Header */}
         <div className="flex justify-between items-center border-b p-4">
           <h2 className="text-3xl font-semibold text-gray-800">Edit Claim</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <MdClose size={24} />
-          </button>
         </div>
 
         {/* Body */}

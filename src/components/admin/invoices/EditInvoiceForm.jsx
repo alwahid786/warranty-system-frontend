@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import { X, Minus, Plus } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+
+import CloseButton from "../../shared/small/CloseButton";
 
 const EditInvoiceForm = ({
   isOpen,
@@ -301,12 +303,7 @@ const EditInvoiceForm = ({
   return (
     <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
       <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 space-y-6">
-        <button
-          onClick={onClose}
-          className="absolute text-2xl top-3 right-3 text-gray-500 hover:text-black"
-        >
-          ✖
-        </button>
+        <CloseButton onClick={onClose} />
 
         <h2 className="text-xl font-bold">Edit Invoice</h2>
 

@@ -12,6 +12,7 @@ import {
   shouldValidateOptionalPassword
 } from "./passwordValidator";
 import PasswordRequirements from "../components/shared/small/PasswordRequirements";
+import CloseButton from "../components/shared/small/CloseButton";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
@@ -68,13 +69,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
     <div className="fixed inset-0 bg-gray-900/60 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-96 p-6 relative">
         {/* Close Button */}
-        <button
-          className="absolute top-2 right-2 text-gray-600 hover:text-black"
-          onClick={onClose}
-          type="button"
-        >
-          <MdClose size={22} />
-        </button>
+        <CloseButton onClick={onClose} />
 
         <h2 className="text-lg font-semibold mb-4">Edit User</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
