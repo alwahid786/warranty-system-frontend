@@ -15,9 +15,10 @@ import {
   useGetAllParentsQuery,
   useGetUsersQuery
 } from "../../../redux/apis/userApis";
+import PasswordRequirements from "../../shared/small/PasswordRequirements";
 import {
-  isStrongPassword,
-  PASSWORD_RULE_MESSAGE
+  getPasswordRequirementsMessage,
+  isStrongPassword
 } from "../../../utils/passwordValidator";
 
 const UsersHeader = ({ role, adminCount }) => {
@@ -104,7 +105,9 @@ const UsersHeader = ({ role, adminCount }) => {
 
     try {
       if (!isStrongPassword(formData.password)) {
-        return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+        return toast.error(getPasswordRequirementsMessage(formData.password), {
+          duration: 4000
+        });
       }
 
       const payload = {
@@ -289,7 +292,7 @@ const UsersHeader = ({ role, adminCount }) => {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p className="text-xs text-gray-500">{PASSWORD_RULE_MESSAGE}</p>
+          <PasswordRequirements password={formData.password} />
 
           {/* Permission Checkbox - Only for non-admin users */}
           {role !== "admin" && (

@@ -13,9 +13,10 @@ import {
 } from "../../../redux/apis/clientsApis";
 import AddClientModal from "./AddClientModal";
 import {
-  isStrongPassword,
-  PASSWORD_RULE_MESSAGE
+  getPasswordRequirementsMessage,
+  isStrongPassword
 } from "../../../utils/passwordValidator";
+import PasswordRequirements from "../../../components/shared/small/PasswordRequirements";
 
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -138,7 +139,12 @@ const ClientsHeader = () => {
       }
 
       if (!isStrongPassword(formData.clientPassword)) {
-        return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+        return toast.error(
+          getPasswordRequirementsMessage(formData.clientPassword),
+          {
+            duration: 4000
+          }
+        );
       }
 
       if (!formData.address.city || !formData.address.zip) {
@@ -247,31 +253,36 @@ const ClientsHeader = () => {
                 <label className="block text-sm font-medium mb-1">
                   Client Password <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={formData.clientPassword}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        clientPassword: e.target.value
-                      })
-                    }
-                    placeholder="Enter Password"
-                    className="w-full border px-3 py-2 rounded pr-10"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-dark-text"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+                <div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={formData.clientPassword}
+                      onChange={(e) =>
+                        setFormData((previous) => ({
+                          ...previous,
+                          clientPassword: e.target.value
+                        }))
+                      }
+                      placeholder="Enter Password"
+                      className="w-full border px-3 py-2 rounded pr-10"
+                      autoComplete="new-password"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((previous) => !previous)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-dark-text"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+
+                  <PasswordRequirements password={formData.clientPassword} />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  {PASSWORD_RULE_MESSAGE}
-                </p>
               </div>
               {/* Phone */}
               <div>

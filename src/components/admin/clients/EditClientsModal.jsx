@@ -7,10 +7,11 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import {
+  getPasswordRequirementsMessage,
   isStrongPassword,
-  PASSWORD_RULE_MESSAGE,
   shouldValidateOptionalPassword
 } from "../../../utils/passwordValidator";
+import PasswordRequirements from "../../shared/small/PasswordRequirements";
 
 const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -129,7 +130,12 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       shouldValidateOptionalPassword(formData.clientPassword) &&
       !isStrongPassword(formData.clientPassword)
     ) {
-      return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+      return toast.error(
+        getPasswordRequirementsMessage(formData.clientPassword),
+        {
+          duration: 4000
+        }
+      );
     }
 
     if (!formData.address.city || !formData.address.zip) {
@@ -250,9 +256,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  {PASSWORD_RULE_MESSAGE}
-                </p>
+                <PasswordRequirements password={formData.clientPassword} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">

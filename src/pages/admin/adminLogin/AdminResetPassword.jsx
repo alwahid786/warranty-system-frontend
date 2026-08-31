@@ -11,9 +11,10 @@ import { useResetPasswordMutation } from "../../../redux/apis/authApis";
 import Input from "../../../components/shared/small/input";
 import Button from "../../../components/shared/small/Button";
 import { useValidateResetTokenQuery } from "../../../redux/apis/authApis";
+import PasswordRequirements from "../../../components/shared/small/PasswordRequirements";
 import {
-  isStrongPassword,
-  PASSWORD_RULE_MESSAGE
+  getPasswordRequirementsMessage,
+  isStrongPassword
 } from "../../../utils/passwordValidator";
 
 function AdminResetPassword() {
@@ -55,7 +56,9 @@ function AdminResetPassword() {
     e.preventDefault();
 
     if (!isStrongPassword(formData.password)) {
-      return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+      return toast.error(getPasswordRequirementsMessage(formData.password), {
+        duration: 4000
+      });
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -106,9 +109,7 @@ function AdminResetPassword() {
                     className="bg-white border pr-10"
                     label="New Password"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
-                    {PASSWORD_RULE_MESSAGE}
-                  </p>
+                  <PasswordRequirements password={formData.password} />
                   <span
                     className="absolute right-3 top-12 cursor-pointer text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}

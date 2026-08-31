@@ -20,10 +20,11 @@ import {
   IMAGE_ACCEPT_TYPES
 } from "../../../utils/imageValidator";
 import {
+  getPasswordRequirementsMessage,
   isStrongPassword,
-  PASSWORD_RULE_MESSAGE,
   shouldValidateOptionalPassword
 } from "../../../utils/passwordValidator";
+import PasswordRequirements from "../../../components/shared/small/PasswordRequirements";
 
 const Settings = () => {
   const user = useSelector((state) => state.auth.user);
@@ -212,7 +213,9 @@ const Settings = () => {
         shouldValidateOptionalPassword(formData.password) &&
         !isStrongPassword(formData.password)
       ) {
-        return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+        return toast.error(getPasswordRequirementsMessage(formData.password), {
+          duration: 4000
+        });
       }
 
       const form = new FormData();
@@ -354,9 +357,7 @@ const Settings = () => {
                   </button>
                 </div>
                 {isEditing && (
-                  <p className="text-xs text-gray-500">
-                    {PASSWORD_RULE_MESSAGE}
-                  </p>
+                  <PasswordRequirements password={formData.password} />
                 )}
               </div>
 

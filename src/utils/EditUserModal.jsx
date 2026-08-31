@@ -7,10 +7,11 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import {
+  getPasswordRequirementsMessage,
   isStrongPassword,
-  PASSWORD_RULE_MESSAGE,
   shouldValidateOptionalPassword
 } from "./passwordValidator";
+import PasswordRequirements from "../components/shared/small/PasswordRequirements";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
@@ -53,7 +54,9 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
       shouldValidateOptionalPassword(formData.password) &&
       !isStrongPassword(formData.password)
     ) {
-      return toast.error(PASSWORD_RULE_MESSAGE, { duration: 4000 });
+      return toast.error(getPasswordRequirementsMessage(formData.password), {
+        duration: 4000
+      });
     }
 
     onSave(formData);
@@ -178,9 +181,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              {PASSWORD_RULE_MESSAGE}
-            </p>
+            <PasswordRequirements password={formData.password} />
           </div>
 
           {/* Permission Checkbox */}
