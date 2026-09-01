@@ -87,7 +87,16 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
   // Dealer Change
   const onDealerChange = (e) => {
     const selectedClient = clients.find((c) => c.id === e.target.value);
-    const perc = selectedClient?.percentage ?? "";
+    let perc = selectedClient?.percentage ?? "";
+
+    if (
+      perc !== "" &&
+      perc !== null &&
+      perc !== undefined &&
+      Number(perc) > 100
+    ) {
+      perc = 100;
+    }
     const isEmptyPerc = perc === "" || perc === null || perc === undefined;
 
     setFormData({
@@ -177,6 +186,13 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
         formData.assignedPercentage === null)
     ) {
       return toast.error("Please enter an assigned percentage or check bypass");
+    }
+    if (
+      !formData.bypass &&
+      (Number(formData.assignedPercentage) > 100 ||
+        Number(formData.assignedPercentage) < 0)
+    ) {
+      return toast.error("Percentage cannot be more than 100%");
     }
 
     const payload = {
@@ -415,9 +431,13 @@ const InvoiceForm = ({ isOpen, onClose, clientsData, outgoingData }) => {
                 disabled={formData.bypass}
                 value={formData.assignedPercentage}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  let val = e.target.value;
 
                   if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                    if (val !== "" && Number(val) > 100) {
+                      val = "100";
+                    }
+
                     const isEmpty =
                       val === "" || val === null || val === undefined;
 
