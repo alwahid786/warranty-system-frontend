@@ -17,6 +17,7 @@ import {
   isStrongPassword
 } from "../../../utils/passwordValidator";
 import PasswordRequirements from "../../../components/shared/small/PasswordRequirements";
+import { FIELD_LIMITS, validateTextLimits } from "../../../utils/formatters";
 
 const ClientsHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -159,6 +160,12 @@ const ClientsHeader = () => {
         return toast.error("Percentage cannot exceed 100%");
       }
 
+      const textLimitError = validateTextLimits(formData);
+
+      if (textLimitError) {
+        return toast.error(textLimitError);
+      }
+
       // Filter out empty emails
       const filteredEmails = formData.emails.filter(
         (email) => email.trim() !== ""
@@ -221,6 +228,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.clientName}
                   value={formData.clientName}
                   onChange={(e) =>
                     setFormData({ ...formData, clientName: e.target.value })
@@ -238,6 +246,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="email"
+                  maxLength={FIELD_LIMITS.clientEmail}
                   value={formData.clientEmail}
                   onChange={(e) =>
                     setFormData({ ...formData, clientEmail: e.target.value })
@@ -316,6 +325,7 @@ const ClientsHeader = () => {
                 <input
                   type="text"
                   required
+                  maxLength={FIELD_LIMITS.companyName}
                   value={formData.companyName}
                   onChange={(e) =>
                     setFormData({ ...formData, companyName: e.target.value })
@@ -333,6 +343,7 @@ const ClientsHeader = () => {
                 <input
                   type="text"
                   required
+                  maxLength={FIELD_LIMITS.dealerId}
                   value={formData.dealerId}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
@@ -356,6 +367,7 @@ const ClientsHeader = () => {
                 type="text"
                 placeholder="Store Name *"
                 required
+                maxLength={FIELD_LIMITS.addressStore}
                 value={formData.address.store}
                 onChange={(e) => handleAddressChange("store", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -363,6 +375,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="Street"
+                maxLength={FIELD_LIMITS.addressStreet}
                 value={formData.address.street}
                 onChange={(e) => handleAddressChange("street", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -370,6 +383,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="Main Area"
+                maxLength={FIELD_LIMITS.addressArea}
                 value={formData.address.area}
                 onChange={(e) => handleAddressChange("area", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -378,6 +392,7 @@ const ClientsHeader = () => {
                 type="text"
                 placeholder="City *"
                 required
+                maxLength={FIELD_LIMITS.addressCity}
                 value={formData.address.city}
                 onChange={(e) =>
                   handleAddressChange(
@@ -390,6 +405,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="State"
+                maxLength={FIELD_LIMITS.addressState}
                 value={formData.address.state}
                 onChange={(e) =>
                   handleAddressChange(
@@ -402,6 +418,7 @@ const ClientsHeader = () => {
               <input
                 type="text"
                 placeholder="Country"
+                maxLength={FIELD_LIMITS.addressCountry}
                 value={formData.address.country}
                 onChange={(e) => handleAddressChange("country", e.target.value)}
                 className="w-full border px-3 py-2 rounded"
@@ -410,6 +427,7 @@ const ClientsHeader = () => {
                 type="text"
                 placeholder="Zip Code *"
                 required
+                maxLength={FIELD_LIMITS.addressZip}
                 value={formData.address.zip}
                 onChange={(e) =>
                   handleAddressChange("zip", e.target.value.replace(/\D/g, ""))
@@ -450,6 +468,7 @@ const ClientsHeader = () => {
                 <div key={index} className="flex items-center gap-2 mb-2">
                   <input
                     type="email"
+                    maxLength={FIELD_LIMITS.email}
                     value={email}
                     onChange={(e) => handleEmailChange(index, e.target.value)}
                     placeholder="Enter email"
@@ -489,6 +508,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.accountOwner}
                   value={formData.accountOwner}
                   onChange={(e) =>
                     setFormData({ ...formData, accountOwner: e.target.value })
@@ -503,6 +523,7 @@ const ClientsHeader = () => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.businessOwner}
                   value={formData.businessOwner}
                   onChange={(e) =>
                     setFormData({ ...formData, businessOwner: e.target.value })

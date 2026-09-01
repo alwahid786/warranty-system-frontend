@@ -19,7 +19,50 @@ import { formatPhoneNumber } from "../../../utils/formatters";
 const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAddressExpanded, setIsAddressExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const addressRef = useRef(null);
   const menuRef = useRef(null);
+
+  const formattedAddress = client?.address
+    ? [
+        client.address.store,
+        client.address.street,
+        client.address.area,
+        client.address.city,
+        client.address.state,
+        client.address.country,
+        client.address.zip
+      ]
+        .filter(Boolean)
+        .join(", ")
+    : "";
+
+  // Reset expansion when client or address changes
+  useEffect(() => {
+    setIsAddressExpanded(false);
+  }, [client?._id, formattedAddress]);
+
+  // Check if text is actually overflowing container lines
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (addressRef.current && !isAddressExpanded) {
+        const hasOverflow =
+          addressRef.current.scrollHeight > addressRef.current.clientHeight + 1;
+
+        setIsOverflowing(hasOverflow);
+      }
+    };
+
+    checkOverflow();
+    const timer = setTimeout(checkOverflow, 100);
+
+    window.addEventListener("resize", checkOverflow);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, [formattedAddress, isAddressExpanded]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -153,63 +196,44 @@ const ClientsDetailCard = ({ client, onEdit, onDelete }) => {
         </div>
 
         {/* Address */}
-        {(() => {
-          const formattedAddress = client.address
-            ? [
-                client.address.store,
-                client.address.street,
-                client.address.area,
-                client.address.city,
-                client.address.state,
-                client.address.country,
-                client.address.zip
-              ]
-                .filter(Boolean)
-                .join(", ")
-            : "";
-
-          if (!formattedAddress) return null;
-
-          const isLongAddress = formattedAddress.length > 35;
-
-          return (
-            <div className="text-xs text-gray-600 leading-4">
-              <div
-                className={`flex items-start gap-2 ${
-                  isLongAddress ? "cursor-pointer select-none group" : ""
-                }`}
-                onClick={() => {
-                  if (isLongAddress) {
-                    setIsAddressExpanded((prev) => !prev);
-                  }
-                }}
-                title={
-                  isLongAddress
-                    ? isAddressExpanded
-                      ? "Click to collapse address"
-                      : "Click to expand address"
-                    : undefined
+        {formattedAddress && (
+          <div className="text-xs text-gray-600 leading-4">
+            <div
+              className={`flex items-start gap-2 ${
+                isOverflowing ? "cursor-pointer select-none group" : ""
+              }`}
+              onClick={() => {
+                if (isOverflowing) {
+                  setIsAddressExpanded((prev) => !prev);
                 }
-              >
-                <MdLocationOn className="text-gray-500 text-base shrink-0 mt-0.5" />
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`break-words ${
-                      !isAddressExpanded && isLongAddress ? "line-clamp-1" : ""
-                    }`}
-                  >
-                    {formattedAddress}
-                  </p>
-                  {isLongAddress && (
-                    <span className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold cursor-pointer block mt-1">
-                      {isAddressExpanded ? "Show less" : "Show more"}
-                    </span>
-                  )}
-                </div>
+              }}
+              title={
+                isOverflowing
+                  ? isAddressExpanded
+                    ? "Click to collapse address"
+                    : "Click to expand address"
+                  : undefined
+              }
+            >
+              <MdLocationOn className="text-gray-500 text-base shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p
+                  ref={addressRef}
+                  className={`break-words ${
+                    !isAddressExpanded ? "line-clamp-2" : ""
+                  }`}
+                >
+                  {formattedAddress}
+                </p>
+                {isOverflowing && (
+                  <span className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold cursor-pointer block mt-1">
+                    {isAddressExpanded ? "Show less" : "Show more"}
+                  </span>
+                )}
               </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
 
         {/* Owners */}
         <div className="flex flex-wrap justify-between items-center gap-y-2 gap-x-3 text-xs text-gray-700 border-t pt-3">

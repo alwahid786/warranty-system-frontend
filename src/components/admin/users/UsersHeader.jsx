@@ -20,6 +20,7 @@ import {
   getPasswordRequirementsMessage,
   isStrongPassword
 } from "../../../utils/passwordValidator";
+import { FIELD_LIMITS, validateTextLimits } from "../../../utils/formatters";
 
 const UsersHeader = ({ role, adminCount }) => {
   const { user } = useSelector((state) => state.auth);
@@ -104,6 +105,12 @@ const UsersHeader = ({ role, adminCount }) => {
     e.preventDefault();
 
     try {
+      const textLimitError = validateTextLimits(formData);
+
+      if (textLimitError) {
+        return toast.error(textLimitError);
+      }
+
       if (!isStrongPassword(formData.password)) {
         return toast.error(getPasswordRequirementsMessage(formData.password), {
           duration: 4000
@@ -169,6 +176,7 @@ const UsersHeader = ({ role, adminCount }) => {
           <label>Name</label>
           <input
             type="text"
+            maxLength={FIELD_LIMITS.name}
             value={formData.name}
             onChange={(e) => setformData({ ...formData, name: e.target.value })}
             placeholder="First Name"
@@ -179,6 +187,7 @@ const UsersHeader = ({ role, adminCount }) => {
           <label>Email</label>
           <input
             type="email"
+            maxLength={FIELD_LIMITS.email}
             value={formData.email}
             onChange={(e) =>
               setformData({ ...formData, email: e.target.value })
@@ -219,6 +228,7 @@ const UsersHeader = ({ role, adminCount }) => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.companyName}
                   value={formData.companyName}
                   onChange={(e) =>
                     setformData({ ...formData, companyName: e.target.value })
@@ -234,6 +244,7 @@ const UsersHeader = ({ role, adminCount }) => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.designation}
                   value={formData.designation}
                   onChange={(e) =>
                     setformData({ ...formData, designation: e.target.value })

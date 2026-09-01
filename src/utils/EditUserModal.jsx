@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { MdClose } from "react-icons/md";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import PhoneInput from "react-phone-input-2";
@@ -13,6 +12,7 @@ import {
 } from "./passwordValidator";
 import PasswordRequirements from "../components/shared/small/PasswordRequirements";
 import CloseButton from "../components/shared/small/CloseButton";
+import { FIELD_LIMITS, validateTextLimits } from "./formatters";
 
 const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const [formData, setFormData] = useState({
@@ -51,6 +51,12 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const textLimitError = validateTextLimits(formData);
+
+    if (textLimitError) {
+      return toast.error(textLimitError);
+    }
+
     if (
       shouldValidateOptionalPassword(formData.password) &&
       !isStrongPassword(formData.password)
@@ -79,6 +85,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
             <input
               type="text"
               name="name"
+              maxLength={FIELD_LIMITS.name}
               value={formData.name}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
@@ -136,6 +143,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
                 <input
                   type="text"
                   name="companyName"
+                  maxLength={FIELD_LIMITS.companyName}
                   value={formData.companyName}
                   onChange={handleChange}
                   placeholder="Enter company name"
@@ -147,6 +155,7 @@ const EditUserModal = ({ user, isOpen, onClose, onSave, currentUserRole }) => {
                 <input
                   type="text"
                   name="designation"
+                  maxLength={FIELD_LIMITS.designation}
                   value={formData.designation}
                   onChange={handleChange}
                   placeholder="Enter designation"

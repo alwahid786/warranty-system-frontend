@@ -13,6 +13,7 @@ import {
 } from "../../../utils/passwordValidator";
 import PasswordRequirements from "../../shared/small/PasswordRequirements";
 import CloseButton from "../../shared/small/CloseButton";
+import { FIELD_LIMITS, validateTextLimits } from "../../../utils/formatters";
 
 const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -151,6 +152,12 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
       return toast.error("Percentage cannot exceed 100%");
     }
 
+    const textLimitError = validateTextLimits(formData);
+
+    if (textLimitError) {
+      return toast.error(textLimitError);
+    }
+
     // Filter out empty emails
     const filteredEmails = formData.emails.filter(
       (email) => email.trim() !== ""
@@ -206,6 +213,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 </label>
                 <input
                   type="text"
+                  maxLength={FIELD_LIMITS.clientName}
                   value={formData.clientName}
                   onChange={(e) =>
                     setFormData({ ...formData, clientName: e.target.value })
@@ -284,6 +292,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 <input
                   type="text"
                   required
+                  maxLength={FIELD_LIMITS.companyName}
                   value={formData.companyName}
                   onChange={(e) =>
                     setFormData({ ...formData, companyName: e.target.value })
@@ -300,6 +309,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                 <input
                   type="text"
                   required
+                  maxLength={FIELD_LIMITS.dealerId}
                   value={formData.dealerId}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
@@ -330,6 +340,16 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
               ].map((field) => {
                 const isRequired = ["store", "city", "zip"].includes(field);
 
+                const addressLimits = {
+                  store: FIELD_LIMITS.addressStore,
+                  street: FIELD_LIMITS.addressStreet,
+                  area: FIELD_LIMITS.addressArea,
+                  city: FIELD_LIMITS.addressCity,
+                  state: FIELD_LIMITS.addressState,
+                  country: FIELD_LIMITS.addressCountry,
+                  zip: FIELD_LIMITS.addressZip
+                };
+
                 return (
                   <div key={field} className="flex flex-col gap-2">
                     <label className="block text-sm font-medium">
@@ -339,6 +359,7 @@ const EditClientsModal = ({ client, isOpen, onClose, onSave }) => {
                     <input
                       type="text"
                       required={isRequired}
+                      maxLength={addressLimits[field] || 50}
                       placeholder={formatLabel(field)}
                       value={formData.address[field]}
                       onChange={(e) =>
