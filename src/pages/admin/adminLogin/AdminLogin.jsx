@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { HiEye } from "react-icons/hi2";
+import { Link, useNavigate } from "react-router-dom";
+import { HiArrowLeft, HiEye } from "react-icons/hi2";
 import { HiEyeOff } from "react-icons/hi";
 
 import Button from "../../../components/shared/small/Button";
@@ -204,13 +204,28 @@ function AdminLogin() {
                   onClick={forgotPassword ? handleReset : handleLogin}
                   text={
                     forgotPassword
-                      ? "Send Resent Link"
+                      ? "Send Reset Link"
                       : resetPassword
                         ? "Reset Password"
                         : "Login"
                   }
                 />
               </form>
+              {forgotPassword && (
+                <div className="mt-2 flex flex-col gap-2">
+                  <p className="text-sm text-gray-600">
+                    Remembered your password?
+                  </p>
+                  <Link
+                    to="/"
+                    onClick={() => setForgotPassword(false)}
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#00235A] hover:underline transition-colors w-fit"
+                  >
+                    <HiArrowLeft className="h-4 w-4" />
+                    Back to Login
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
