@@ -107,6 +107,10 @@ const EditInvoiceForm = ({
       total += isCharge ? amt : -amt;
     });
 
+    if (total < 0) {
+      total = 0;
+    }
+
     if (!formData.bypass) {
       const perc = Number(formData.assignedPercentage) || 0;
 
@@ -274,6 +278,23 @@ const EditInvoiceForm = ({
         Number(formData.assignedPercentage) < 0)
     ) {
       return toast.error("Percentage cannot be more than 100%");
+    }
+
+    const statementTotalNum = Number(formData.statementTotal) || 0;
+
+    const totalDeductions = (formData.adjustments || []).reduce(
+      (acc, adj) =>
+        acc +
+        (String(adj.type || "")
+          .toLowerCase()
+          .includes("deduct")
+          ? Number(adj.amount) || 0
+          : 0),
+      0
+    );
+
+    if (totalDeductions > statementTotalNum) {
+      return toast.error("Deduction cannot be more than Statement Total");
     }
 
     const payload = {
@@ -445,79 +466,102 @@ const EditInvoiceForm = ({
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-semibold">Adjustments</h2>
 
-          {formData.adjustments.map((adj, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center"
-            >
-              <select
-                className="border rounded p-2"
-                value={
-                  /charge|add/i.test(adj.type || "") ? "Charge" : "Deduction"
-                }
-                onChange={(e) =>
-                  handleAdjustmentChange(idx, "type", e.target.value)
-                }
-              >
-                <option value="Charge">Charge</option>
-                <option value="Deduction">Deduction</option>
-              </select>
+          {formData.adjustments.map((adj, idx) => {
+            const statementTotalNum = Number(formData.statementTotal) || 0;
+            const isDeduction = !/charge|add/i.test(adj.type || "");
+            const adjAmt = Number(adj.amount) || 0;
 
-              <input
-                type="text"
-                inputMode="decimal"
-                placeholder="Amount"
-                className="border rounded p-2"
-                value={adj.amount}
-                onChange={(e) => {
-                  const value = e.target.value;
+            const isExceeded =
+              isDeduction &&
+              statementTotalNum > 0 &&
+              adjAmt > statementTotalNum;
 
-                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                    handleAdjustmentChange(idx, "amount", value);
-                  }
-                }}
-              />
-
-              <input
-                type="text"
-                placeholder="Reason"
-                className="border rounded p-2"
-                value={adj.reason}
-                onChange={(e) =>
-                  handleAdjustmentChange(idx, "reason", e.target.value)
-                }
-              />
-
-              {idx > 0 ? (
-                <div className="flex justify-end md:justify-start">
-                  <button
-                    type="button"
-                    onClick={() => removeAdjustmentRow(idx)}
-                    className="text-red-600 font-medium"
-                    title="Remove adjustment"
+            return (
+              <div key={idx} className="flex flex-col gap-1">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
+                  <select
+                    className="border rounded p-2"
+                    value={
+                      /charge|add/i.test(adj.type || "")
+                        ? "Charge"
+                        : "Deduction"
+                    }
+                    onChange={(e) =>
+                      handleAdjustmentChange(idx, "type", e.target.value)
+                    }
                   >
-                    <span className="hidden md:inline">
-                      <X size={15} strokeWidth={2.5} />
-                    </span>
-                    <span className="inline-flex md:hidden items-center gap-1.5">
-                      Cancel
-                    </span>
-                  </button>
+                    <option value="Charge">Charge</option>
+                    <option value="Deduction">Deduction</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="Amount"
+                    className={`border rounded p-2 outline-none ${
+                      isExceeded ? "border-red-500 ring-1 ring-red-500" : ""
+                    }`}
+                    value={adj.amount}
+                    onChange={(e) => {
+                      const value = e.target.value;
+
+                      if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                        handleAdjustmentChange(idx, "amount", value);
+                      }
+                    }}
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Reason"
+                    className="border rounded p-2"
+                    value={adj.reason}
+                    onChange={(e) =>
+                      handleAdjustmentChange(idx, "reason", e.target.value)
+                    }
+                  />
+
+                  {idx > 0 ? (
+                    <div className="flex justify-end md:justify-start">
+                      <button
+                        type="button"
+                        onClick={() => removeAdjustmentRow(idx)}
+                        className="text-red-600 font-medium"
+                        title="Remove adjustment"
+                      >
+                        <span className="hidden md:inline">
+                          <X size={15} strokeWidth={2.5} />
+                        </span>
+                        <span className="inline-flex md:hidden items-center gap-1.5">
+                          Cancel
+                        </span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="invisible flex justify-end md:justify-start"
+                      aria-hidden="true"
+                    >
+                      <button
+                        type="button"
+                        className="font-medium"
+                        tabIndex="-1"
+                      >
+                        <span className="hidden md:inline">
+                          <X size={15} strokeWidth={2.5} />
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div
-                  className="invisible flex justify-end md:justify-start"
-                  aria-hidden="true"
-                >
-                  <button type="button" className="font-medium" tabIndex="-1">
-                    <span className="hidden md:inline">
-                      <X size={15} strokeWidth={2.5} />
-                    </span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+                {isExceeded && (
+                  <p className="text-xs text-red-500 font-medium ml-1">
+                    Deduction cannot be more than Statement Total
+                  </p>
+                )}
+              </div>
+            );
+          })}
 
           <div className="flex justify-end">
             <button
