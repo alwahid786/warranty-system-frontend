@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import toast from "react-hot-toast";
-import { MdClose } from "react-icons/md";
 
 import { useAcceptTermsMutation } from "../../redux/apis/authApis";
 import useLogoutHandler from "../../utils/useLogoutHandler";
