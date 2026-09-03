@@ -53,14 +53,24 @@ button {
   cursor: pointer;
 }
 
-.chat-composer,
+.chat-composer {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 70px !important;
+  background: transparent !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
 .chat-composer__control {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   height: 70px !important;
   max-height: 120px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   background: transparent !important;
 }
 
@@ -89,6 +99,10 @@ button {
   outline: none !important;
   background: transparent !important;
   box-shadow: none !important;
+}
+
+.chat-composer__suggestions {
+  z-index: 9999 !important;
 }
 
 .bg-gradient {

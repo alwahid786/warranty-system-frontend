@@ -150,17 +150,19 @@ const NotificationItem = ({ notification }) => {
           <p className="font-inter font-medium text-[16px] text-[#333]">
             {title}
           </p>
-          <p className="font-inter font-normal text-[14px] text-[#5F5F5F]">
-            {message}
-          </p>
+          <p
+            className="font-inter font-normal text-[14px] text-[#5F5F5F]"
+            dangerouslySetInnerHTML={{ __html: message }}
+          />
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500 whitespace-nowrap">
-          {new Date(time).toLocaleTimeString([], {
+          {new Date(time).toLocaleTimeString("en-US", {
             hour: "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
+            hour12: true
           })}
         </span>
 

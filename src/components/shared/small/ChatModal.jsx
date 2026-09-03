@@ -401,9 +401,10 @@ export default function ChatModal({
 
                     {/* Timestamp inside the bubble */}
                     <p className="text-[10px] mt-1 opacity-70">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                      {new Date(msg.createdAt).toLocaleTimeString("en-US", {
                         hour: "2-digit",
-                        minute: "2-digit"
+                        minute: "2-digit",
+                        hour12: true
                       })}
                     </p>
                   </div>
@@ -509,17 +510,18 @@ export default function ChatModal({
                     list: {
                       backgroundColor: "white",
                       border: "1px solid #e5e7eb",
-                      borderRadius: "0.5rem",
+                      borderRadius: "0.75rem",
                       boxShadow:
-                        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                        "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
                       fontSize: 14,
                       maxHeight: "240px",
                       overflowY: "auto",
                       bottom: "100%",
                       position: "absolute",
-                      marginBottom: "12px",
-                      width: "256px",
-                      zIndex: 100
+                      marginBottom: "10px",
+                      left: 0,
+                      width: "260px",
+                      zIndex: 9999
                     },
                     item: {
                       padding: "0",
