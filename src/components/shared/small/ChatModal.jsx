@@ -5,7 +5,7 @@ import { MdCancel } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { MentionsInput, Mention } from "react-mentions";
-import { User, Users } from "lucide-react";
+import { User, Users, Paperclip, SendHorizontal, X } from "lucide-react";
 
 import chatApis, {
   useGetChatQuery,
@@ -414,7 +414,7 @@ export default function ChatModal({
           <div ref={chatEndRef}></div>
         </div>
 
-        <div className="mt-auto p-4 border-t bg-white flex shrink-0 items-end gap-2 overflow-hidden">
+        <div className="mt-auto p-4 border-t border-gray-100 bg-white shrink-0">
           {/* Hidden file input */}
           <input
             type="file"
@@ -423,173 +423,199 @@ export default function ChatModal({
             accept="*/*"
             onChange={handleFileChange}
           />
-          <button
-            className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-            onClick={() => fileInputRef.current.click()}
-          >
-            📎
-          </button>
 
-          {file && (
-            <div className="flex min-w-0 items-center space-x-1 bg-gray-100 px-2 py-1 rounded border">
-              <span
-                className="text-xs text-gray-600 truncate max-w-[100px]"
-                title={file.name}
-              >
-                {file.name}
-              </span>
-              <button
-                onClick={() => {
-                  setFile(null);
-                  if (fileInputRef.current) fileInputRef.current.value = "";
+          {/* Unified Input Card Container (Image 1 Design - White Theme) */}
+          <div className="relative rounded-2xl border border-gray-200 bg-white p-3 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            {/* Attached file preview badge */}
+            {file && (
+              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg text-xs text-blue-700 mb-2.5 w-fit">
+                <Paperclip size={14} className="shrink-0" />
+                <span
+                  className="truncate max-w-[220px] font-medium"
+                  title={file.name}
+                >
+                  {file.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFile(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="text-blue-500 hover:text-red-500 ml-1 transition-colors"
+                  title="Remove file"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* MentionsInput textarea */}
+            <div className="min-w-0 flex-1 relative mentions-wrapper">
+              <MentionsInput
+                className="chat-composer"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                style={{
+                  control: {
+                    fontSize: 14,
+                    fontWeight: "normal",
+                    fontFamily: "inherit",
+                    lineHeight: "1.5",
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                    height: "70px",
+                    maxHeight: "120px",
+                    overflow: "hidden"
+                  },
+                  highlighter: {
+                    padding: "2px 0px",
+                    border: "none",
+                    boxSizing: "border-box",
+                    maxWidth: "100%",
+                    minHeight: "70px",
+                    height: "70px",
+                    maxHeight: "120px",
+                    overflow: "hidden",
+                    whiteSpace: "pre-wrap",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word"
+                  },
+                  input: {
+                    margin: 0,
+                    display: "block",
+                    border: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    padding: "2px 0px",
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                    minHeight: "70px",
+                    height: "70px",
+                    maxHeight: "120px",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    boxSizing: "border-box",
+                    resize: "none",
+                    whiteSpace: "pre-wrap",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                    backgroundColor: "transparent"
+                  },
+                  suggestions: {
+                    list: {
+                      backgroundColor: "white",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      boxShadow:
+                        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                      fontSize: 14,
+                      maxHeight: "240px",
+                      overflowY: "auto",
+                      bottom: "100%",
+                      position: "absolute",
+                      marginBottom: "12px",
+                      width: "256px",
+                      zIndex: 100
+                    },
+                    item: {
+                      padding: "0",
+                      borderBottom: "1px solid #f3f4f6"
+                    }
+                  }
                 }}
-                className="text-gray-500 hover:text-red-500 flex-shrink-0"
-                title="Remove file"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    if (!e.defaultPrevented) {
+                      e.preventDefault();
+                      setTimeout(() => sendMessage(), 0);
+                    }
+                  }
+                }}
               >
-                <MdCancel size={14} />
+                <Mention
+                  trigger="@"
+                  markup="@[__display__](__id__)"
+                  data={suggestionsData}
+                  displayTransform={(id, display) => `@${display}`}
+                  appendSpaceOnAdd={true}
+                  renderSuggestion={(
+                    suggestion,
+                    search,
+                    highlightedDisplay,
+                    index,
+                    focused
+                  ) => (
+                    <div
+                      className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                        focused ? "bg-blue-50" : "hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {suggestion.isSpecial ? (
+                          <Users size={16} className="text-blue-600" />
+                        ) : suggestion.image?.url ? (
+                          <img
+                            src={suggestion.image.url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User size={16} className="text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 truncate">
+                          {suggestion.name}
+                        </p>
+                        <p className="text-[10px] text-gray-500 capitalize">
+                          {suggestion.displayRole}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  style={{
+                    backgroundColor: "rgba(37, 99, 235, 0.2)",
+                    borderRadius: "4px"
+                  }}
+                />
+              </MentionsInput>
+            </div>
+
+            {/* Bottom Row: Paperclip + Hint text on Left, Circular Send Button on Right */}
+            <div className="flex items-center justify-between pt-2 mt-1 border-t border-gray-100/80">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Attach file"
+                >
+                  <Paperclip size={18} />
+                </button>
+                <span className="text-xs text-gray-400 font-normal select-none">
+                  @ Mention · Shift + Enter for new line
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="w-9 h-9 rounded-full bg-blue-500 hover:bg-blue-600 active:scale-95 text-white flex items-center justify-center transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-500 disabled:active:scale-100 shrink-0"
+                onClick={sendMessage}
+                disabled={isLoading || (!newMessage.trim() && !file)}
+                title="Send message"
+              >
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <SendHorizontal size={17} className="translate-x-[-0.5px]" />
+                )}
               </button>
             </div>
-          )}
-
-          <div className="min-w-0 flex-1 relative mentions-wrapper">
-            <MentionsInput
-              className="chat-composer"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message... (Use @ to mention, Shift+Enter for new line)"
-              style={{
-                control: {
-                  fontSize: 14,
-                  fontWeight: "normal",
-                  fontFamily: "inherit",
-                  lineHeight: "1.5",
-                  width: "100%",
-                  maxWidth: "100%",
-                  minWidth: 0,
-                  height: "120px",
-                  maxHeight: "120px",
-                  overflow: "hidden"
-                },
-                highlighter: {
-                  padding: "8px 12px",
-                  border: "1px solid transparent",
-                  boxSizing: "border-box",
-                  maxWidth: "100%",
-                  minHeight: "120px",
-                  height: "120px",
-                  maxHeight: "120px",
-                  overflow: "hidden",
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "anywhere",
-                  wordBreak: "break-word"
-                },
-                input: {
-                  margin: 0,
-                  display: "block",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "0.25rem",
-                  padding: "8px 12px",
-                  outline: "none",
-                  width: "100%",
-                  maxWidth: "100%",
-                  minWidth: 0,
-                  minHeight: "120px",
-                  height: "120px",
-                  maxHeight: "120px",
-                  overflowY: "auto",
-                  overflowX: "hidden",
-                  boxSizing: "border-box",
-                  resize: "none",
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "anywhere",
-                  wordBreak: "break-word"
-                },
-                suggestions: {
-                  list: {
-                    backgroundColor: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.5rem",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                    fontSize: 14,
-                    maxHeight: "240px",
-                    overflowY: "auto",
-                    bottom: "100%",
-                    position: "absolute",
-                    marginBottom: "8px",
-                    width: "256px",
-                    zIndex: 100
-                  },
-                  item: {
-                    padding: "0",
-                    borderBottom: "1px solid #f3f4f6"
-                  }
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  // react-mentions prevents default when selecting a suggestion.
-                  if (!e.defaultPrevented) {
-                    e.preventDefault();
-                    setTimeout(() => sendMessage(), 0);
-                  }
-                }
-              }}
-            >
-              <Mention
-                trigger="@"
-                markup="@[__display__](__id__)"
-                data={suggestionsData}
-                displayTransform={(id, display) => `@${display}`}
-                appendSpaceOnAdd={true}
-                renderSuggestion={(
-                  suggestion,
-                  search,
-                  highlightedDisplay,
-                  index,
-                  focused
-                ) => (
-                  <div
-                    className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
-                      focused ? "bg-blue-50" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {suggestion.isSpecial ? (
-                        <Users size={16} className="text-blue-600" />
-                      ) : suggestion.image?.url ? (
-                        <img
-                          src={suggestion.image.url}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User size={16} className="text-gray-400" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
-                        {suggestion.name}
-                      </p>
-                      <p className="text-[10px] text-gray-500 capitalize">
-                        {suggestion.displayRole}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                style={{
-                  backgroundColor: "rgba(37, 99, 235, 0.2)",
-                  borderRadius: "4px"
-                }}
-              />
-            </MentionsInput>
           </div>
-          <button
-            className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={sendMessage}
-            disabled={isLoading || (!newMessage.trim() && !file)}
-          >
-            {isLoading ? "Sending..." : "Send"}
-          </button>
         </div>
       </div>
 
