@@ -170,12 +170,6 @@ function App() {
       dispatch(chatApis.util.invalidateTags(["chat"]));
     };
 
-    SOCKET.on("connect", () => {
-      if (user?._id) {
-        console.log("Connected to server with userId:", user._id);
-      }
-    });
-
     SOCKET.off("notification:insert");
     SOCKET.on("notification:insert", handleNotification);
     SOCKET.off("chat:message");
@@ -184,7 +178,6 @@ function App() {
     return () => {
       SOCKET.off("notification:insert", handleNotification);
       SOCKET.off("chat:message", handleChatMessage);
-      SOCKET.off("connect");
       SOCKET.disconnect();
     };
   }, [user?._id, user?.owner, dispatch]);
