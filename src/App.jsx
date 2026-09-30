@@ -84,8 +84,7 @@ function App() {
     skip: !user?._id,
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
-    refetchOnReconnect: true,
-    pollingInterval: 15000
+    refetchOnReconnect: true
   });
 
   useEffect(() => {
