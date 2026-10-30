@@ -25,4 +25,3 @@ dist-ssr
 
 # Environment
 .env.*.local
-config.bat
